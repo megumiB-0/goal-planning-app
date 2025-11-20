@@ -1,0 +1,27 @@
+html{
+	font-size: 14px;
+	
+	/*#dbd024,#103390,#559831,#955129,#e2a9f1*/
+}
+body{
+	font-family: 'Noto Sans JP', sans-serif;
+}
+a {
+ color: #a0a0a0;
+ text-decoration: none !important;
+ }
+ a:hover {
+ color: #2C363F;
+}
+
+.goalplanningapp-logo{
+	width: 30%;
+	height: auto;
+}
+footer {
+ width: 100%;
+ height: 60px;
+ position: absolute;
+ bottom: 0;
+ background-color: #88A096;
+ }
