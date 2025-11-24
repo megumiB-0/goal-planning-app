@@ -15,26 +15,9 @@
 <title>Goal Planning App</title>
 </head>
 <body>
-v
-		<header>
-               <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm goalplanningapp-navbar">
-                   <div class="container goalplanningapp-container">
-                       <a class="navbar-brand me-2" th:href="@{/}">
-                           <img class="goalplanningapp-logo" th:src="@{/images/app_logo.png}" alt="Goal Planning App">
-                       	   <span class="navbar-text fw-bold d-none d-md-inline">Goal Planning App</span>
-                       </a>
-
-                       <ul class="navbar-nav ms-auto">
-						   <li class="nav-item">
-							   <a th:href="@{/logout}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-								   ログアウト
-							   </a>
-							   <form id="logout-form" class="d-none" th:action="@{/logout}" method="post"></form>
-						   </li>
-					   </ul>
-			</nav>
-		</header>
+	<div th:replace ="~{fragment :: header}"></div>
 		<main>
+
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div th:if="${param.loggedIn}" class="alart alart-info">
 					ログインしました。
@@ -43,7 +26,9 @@ v
 					ログアウトしました。
 				</div>
 			</div>
-			
+			<div class="d-flex justify-content-center my-4">
+				<button type="submit" class="btn text-white shadow-sm w-30 goalplanningapp-btn">新規登録</button>
+			</div>
 		</main>
 		<footer>
 			<div class="d-flex justify-content-center align-items-center h-100">
