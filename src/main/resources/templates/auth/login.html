@@ -8,23 +8,7 @@
 </head>
 <body>
 	<div class="goalplanningapp-wrapper">
-		<header>
-			<nav class="navbar navbar-expand-md nabar-light bg-white shadow-sm goalplanningapp-nabar">
-				<div class="container goalplanningapp-container">
-					<a class="navbar-brand" th:href="@{/}">
-						<img class="goalplanningapp-logo me-1" th:src="@{/images/app_logo.png}" alt="Goal Planning App">
-					</a>
-					<ul class="navbar-nav ms-auto">
-						<li class="nav-item">
-							<a class="nav-link" th:href="@{/login}">ログイン</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">会員登録</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-		</header>
+		<div th:replace ="~{fragment :: header}"></div>
 		<main>
 			<div class="container pt-4 pb-5  goalplanningapp-container">
 				<div class="row justify-content-center">
