@@ -14,7 +14,7 @@
 				<div class="row justify-content-center">
 					<div class="col-xl-3 col-lg-4 col-md-5 col-sm-7">
 						<h1 class="mb-4 text-center">ログイン</h1>
-						<div th:if="${param.error}" class="alart alart-danger">
+						<div th:if="${param.error}" class="alert alert-danger">
 							メールアドレスまたはパスワードが正しくありません。
 						</div>
 						<form th:action="@{/login}" method="post">

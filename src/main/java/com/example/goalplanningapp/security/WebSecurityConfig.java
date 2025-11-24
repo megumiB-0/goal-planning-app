@@ -21,14 +21,14 @@ public class WebSecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.formLogin((form) -> form
-				.loginPage("/login")
-				.loginProcessingUrl("/login")
-				.defaultSuccessUrl("/?loggedIn")
-				.failureUrl("/login?error")
+				.loginPage("/login")  // ログインページのURL
+				.loginProcessingUrl("/login")   // ログインフォームの送信先URL
+				.defaultSuccessUrl("/login/success") // ログイン成功時のリダイレクト先URL
+				.failureUrl("/login?error") //ログイン失敗時のリダイレクト先URL
 				.permitAll()
 			)
 			.logout((logout) -> logout
-				.logoutSuccessUrl("/?loggedOut")
+				.logoutSuccessUrl("/logout/success") //ログアウト時のリダイレクト先URL
 				.permitAll()
 				);
 		return http.build();
