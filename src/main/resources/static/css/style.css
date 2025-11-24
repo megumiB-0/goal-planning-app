@@ -6,6 +6,10 @@ html{
 body{
 	font-family: 'Noto Sans JP', sans-serif;
 }
+h1{
+	font-size: 1.5rem;
+}
+
 a {
  color: #a0a0a0;
  text-decoration: none !important;
@@ -23,5 +27,32 @@ footer {
  height: 60px;
  position: absolute;
  bottom: 0;
- background-color: #88A096;
+ background-color: #708A8C;
  }
+ 
+.goalplanningapp-wrapper{
+ 	min-height: 100vh;
+	position: relative;
+	padding-bottom: 60px;
+	box-sizing: border-box;
+}
+
+.goalplanningapp-nabar{
+	min-height: 60px;
+}
+
+.goalplanningapp-btn{
+	background-color: #708A8C !important;
+	transition: 0.1s;
+}
+
+.goalplanningapp-btn::-moz-focus-innerhover {
+	opacity: 0.8;
+}
+
+@media screen and (min-width: 1400px){
+	.goalplanningapp-container {
+		max-width:1200px;
+	}
+}
+ 
