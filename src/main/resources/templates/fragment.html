@@ -30,17 +30,55 @@
 					</a>
 					<ul class="navbar-nav ms-auto">
 						<!-- 未ログインであれば表示する -->
-						<li class="nav-item" sec:authorize="isAnoymous()">
+						<li class="nav-item" sec:authorize="isAnonymous()">
 							<a class="nav-link" th:href="@{/login}">ログイン</a>
 						</li>
-						<li class="nav-item" sec:authorize="isAnoymous()">
+						<li class="nav-item" sec:authorize="isAnonymous()">
 							<a class="nav-link" href="#">会員登録</a>
 						</li>
 						<!-- ログイン済みの一般ユーザーであれば表示する -->
 						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_GENERAL')">
-							<a id="navbarDropdownGeneral"
+							<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+								見直す
+							</a>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item" href="#">目標</a></li>
+								<li><a class="dropdown-item" href="#">ルーティン</a></li>
+								<li><a class="dropdown-item" href="#">学習予定</a></li>
+							</ul>
+						</li>						
+						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_GENERAL')">
+							<a id="navbarDropdownGeneral" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspupup="true" aria-extend="false" v-pre>
+								<span sec:authentication="principal.user.name"></span>								
+							</a>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">会員情報</a></li>
+								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">達成履歴</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item goalplanning-dropdown-item" th:href="@{/logout}">
+									ログアウト
+									</a>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">退会</a></li>
+							</ul>
 						</li>
 						<!-- ログイン済みの管理者であれば表示する-->
+						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_ADMIN')">
+							<a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+								管理者メニュー
+							</a>
+							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAdmin">
+								<a class="dropdown-item goalplanning-dropdown-item" href="#">会員一覧</a>
+								<a class="dropdown-item goalplanning-dropdown-item" href="#">資格一覧</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item goalplanning-dropdown-item" th:href="@{/logout}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+									ログアウト
+								</a>
+								<form id="logout-form" class="d-done" th:action="@{/logout}" method="post"></form>
+							</div>
+						</li>
 					</ul>
 				</div>
 			</nav>
