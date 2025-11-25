@@ -17,10 +17,11 @@
 		<!-- CSSファイル -->
 		<link th:href="@{/css/style.css}" rel="stylesheet">
 	</div>
+	<title>部品化用のhtmlファイル</title>
 
 </head>
 	<div th:fragment="header" th:remove="tag">
-				<header>
+		<header>
 			<nav class="navbar navbar-expand-md nabar-light bg-white shadow-sm goalplanningapp-nabar">
 				<div class="container goalplanningapp-container">
 					<a class="navbar-brand" th:href="@{/}">
@@ -28,12 +29,18 @@
 						<span>Goal Planning App</span>
 					</a>
 					<ul class="navbar-nav ms-auto">
-						<li class="nav-item">
+						<!-- 未ログインであれば表示する -->
+						<li class="nav-item" sec:authorize="isAnoymous()">
 							<a class="nav-link" th:href="@{/login}">ログイン</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item" sec:authorize="isAnoymous()">
 							<a class="nav-link" href="#">会員登録</a>
 						</li>
+						<!-- ログイン済みの一般ユーザーであれば表示する -->
+						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_GENERAL')">
+							<a id="navbarDropdownGeneral"
+						</li>
+						<!-- ログイン済みの管理者であれば表示する-->
 					</ul>
 				</div>
 			</nav>
