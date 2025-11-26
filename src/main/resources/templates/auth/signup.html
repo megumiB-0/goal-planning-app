@@ -53,9 +53,9 @@
 								<div th:if="${#fields.hasErrors('gender')}" class="text-danger small mb-2" th:errors="*{gender}"></div>
 								<select class="form-control" th:field="*{gender}" autocomplete="sex">
 									<option value="">選択してください</option>
-									<option value="male">男性</option>
-									<option value="female">女性</option>
-									<option value="other">その他</option>
+									<option th:value="${T(com.example.goalplanningapp.entity.Gender).MALE}">男性</option>
+									<option th:value="${T(com.example.goalplanningapp.entity.Gender).FEMALE}">女性</option>
+									<option th:value="${T(com.example.goalplanningapp.entity.Gender).OTHER}">その他</option>
 								</select>
 							</div>
 						</div>

@@ -18,7 +18,7 @@ public class SignupForm {
 	@NotBlank(message = "氏名を入力してください。")
 	private String name;
 
-	@NotBlank(message = "生年月日を入力してください。")
+	@NotNull(message = "生年月日を入力してください。")
 	@Past(message = "生年月日は未来の日付にできません。")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
