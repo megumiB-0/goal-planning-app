@@ -56,9 +56,10 @@
 								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">達成履歴</a></li>
 								<li><hr class="dropdown-divider"></li>
 								<li>
-									<a class="dropdown-item goalplanning-dropdown-item" th:href="@{/logout}">
+									<a class="dropdown-item goalplanningapp-dropdown-item" th:href="@{logout}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" >
 									ログアウト
 									</a>
+									<form id="logout-form" class="d-none" th:action="@{/logout}" method="post"></form>
 								</li>
 								<li><hr class="dropdown-divider"></li>
 								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">退会</a></li>
@@ -69,24 +70,23 @@
 							<a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
 								管理者メニュー
 							</a>
-							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAdmin">
-								<a class="dropdown-item goalplanning-dropdown-item" href="#">会員一覧</a>
-								<a class="dropdown-item goalplanning-dropdown-item" href="#">資格一覧</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item goalplanning-dropdown-item" th:href="@{/logout}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item goalplanning-dropdown-item" href="#">会員一覧</a></li>
+								<li><a class="dropdown-item goalplanning-dropdown-item" href="#">資格一覧</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item goalplanning-dropdown-item" th:href="@{/logout}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 									ログアウト
-								</a>
-								<form id="logout-form" class="d-done" th:action="@{/logout}" method="post"></form>
-							</div>
+									</a>
+									<form id="logout-form" class="d-none" th:action="@{/logout}" method="post"></form>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</div>
 			</nav>
 		</header>
 	</div>
-
-
-
 	<div th:fragment="footer" th:remove="tag">
 		<footer>
 			<div class="d-flex justify-content-center align-items-center h-100">
@@ -98,5 +98,4 @@
 		<!-- Bootstrap -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 	</div>
-	
 </html>
