@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org" xmlns="http://www.thymeleaf.org/extras/spring-security">
 <head>
-	<div th:relpace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: meta}"></div>
 	<div th:replace="~{fragment ::styles}"></div>
-<meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
 	<div class="goalplanningapp-wrapper">
 		<div th:replace="~{fragment :: header}"></div>
-
 	<main>
 		<div class="container pt-4 pb-5 goalplanningapp-container">
 			<div class="row justify-content-center">
@@ -39,9 +37,9 @@
 									</div>
 								</label>
 							</div>
-							　<div class="col-md-7">
+							<div class="col-md-7">
 								<div th:if="${#fields.hasErrors('dateOfBirth')}" class="text-danger mb-2" th:errors="*{dateOfBirth}"></div>
-								<input type="date" class="form-control" th:field="*{dateOfBirth}" autocomplete="bday" value="1995-01-01">  
+								<input type="date" class="form-control" th:field="*{dateOfBirth}" autocomplete="bday" placeholder="1995-01-01">  
 							</div>
 						</div>
 						<div class="form-group row mb-3">
@@ -52,7 +50,7 @@
 								</div>
 							</div>
 							<div class="col-md-7">
-								<div th:if="${#fields.hasErrors('gender')" class="text-danger small mb-2" th:errors="*{gender}"></div>
+								<div th:if="${#fields.hasErrors('gender')}" class="text-danger small mb-2" th:errors="*{gender}"></div>
 								<select class="form-control" th:field="*{gender}" autocomplete="sex">
 									<option value="">選択してください</option>
 									<option value="male">男性</option>
@@ -93,9 +91,12 @@
 								</div>
 							</div>
 							<div class="col-md-7">
-								<div th:if="${#fields.hasErrors(passwordConfirmation)}" class="text-danger small mb-2" th:errors="*{passwordConfirmation}"></div>
+								<div th:if="${#fields.hasErrors('passwordConfirmation')}" class="text-danger small mb-2" th:errors="*{passwordConfirmation}"></div>
 								<input type="password" class="form-control" th:field="*{passwordConfirmation}" autocomplete="new-password">
 							</div>
+						</div>
+						<div class="d-flex justify-content-center my-4">
+							<button type="submit" class="btn text-white shadow-sm w-50 goalplanningapp-btn">登録</button>
 						</div>
 					</form>
 				</div>

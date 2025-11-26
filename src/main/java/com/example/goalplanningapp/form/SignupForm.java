@@ -23,7 +23,7 @@ public class SignupForm {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
 	@NotNull(message = "性別を選択してください。")
-	private Gender genter;
+	private Gender gender;
 	
 	@NotBlank(message = "メールアドレスを入力してください。")
 	@Email(message = "メールアドレスは正しい形で入力してください。")
