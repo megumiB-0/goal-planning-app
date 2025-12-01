@@ -1,5 +1,6 @@
 package com.example.goalplanningapp.service;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,11 @@ public class QualificationService {
 	// 全ての資格を取得する
 	public List<Qualification> findAllQualifications(){
 		return qualificationRepository.findAll();
+	}
+	
+	// 指定したidを持つ資格を取得する
+	public Optional<Qualification> findQualificationById(Integer id){
+		return qualificationRepository.findById(id);
 	}
 
 }
