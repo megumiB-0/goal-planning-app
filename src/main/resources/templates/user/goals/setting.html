@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+	<title>目標設定</title>
+</head>
+<body>
+	<div class="goalplanningapp-wrapper">
+		<div th:replace="~{fragment :: header}"></div>
+		<main>
+			<div class="container pt-4 pb-5 goalplanningapp-container">
+				<div class="row justify-content-center">
+					<div class="col-xl-5 col-lg-6 col-md-8">
+						<h1 class="mb-4 text-center">目標設定</h1>
+						<form th:action="@{/goals/save}" th:object="${goalSettingForm}" method="post">
+							<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
+								<option value="">--- 選択してください ---</option>
+								<option th:each="q : ${qualifications}"
+										th:value="${q.id}"
+										th:text="${q.qualificationName}"
+										th:data-minutes="${q.estimatedTime}">
+								</option>
+								<option value="manual">その他（手動入力）</option>
+							</select>
+							<!--手動入力欄（資格名）-->
+							<div class="mb-3" id="manualInputArea" style="display:none;">
+								<label for="manualQualificationName" class="form-label">資格名（手動入力）</label>
+								<input type="text" th:field="*{estimatedTime}" class="form-control" id="manualQualificationName">
+							</div>
+							<!-- 必要時間 -->
+							<div class="mb-3">
+								<label for="estimatedTime" class="form-label">必要学習時間(h)</label>
+								<input type="number" th:field="*{estimatedTime}" class="form-control" id="estimatedTime">
+							</div>
+							<!--開始日-->
+							<div class="mb-3">
+								<label for="startDate" class="form-label">学習開始日</label>
+								<input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+							</div>
+							<!--目標達成日-->
+							<div class="mb-3">
+								<label for="goalDate" class="form-label">目標達成日</label>
+								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate">
+							</div>
+							<!-- 計算ボタン -->
+							<div class="d-flex justify-content-center my-4">
+							<button type="button" class="btn btn-outline-primary" id="calculateButton">計算</button>	
+							</div>
+						</form>
+							
+							<!-- 登録ボタン（フォーム送信用） -->
+							<div class="d-flex justify-content-center my-4">
+								<button type="submit" class="btn btn-primary">登録</button>
+							</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+	<div th:replace="~{fragment :: scripts}"></div>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.example.goalplanningapp.entity;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ public class Qualification {
 	private Integer id;
 	
 	@Column(name = "qualification_name")
-	private String qualiicationName;
+	private String qualificationName;
 	
 	@Column(name = "estimated_time")
 	private Integer estimatedTime; //分単位
