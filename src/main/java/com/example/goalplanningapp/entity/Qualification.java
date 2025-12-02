@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -19,11 +21,16 @@ public class Qualification {
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "qualification_name")
-	private String qualificationName;
+	@Column(name = "name")
+	private String name;
 	
-	@Column(name = "estimated_time")
-	private Integer estimatedTime; //分単位
+	@Column(name = "estimated_minutes")
+	private Double estimatedMinutes; //分単位
+	
+	 // Userと紐づけるが、管理者登録の場合はNULL許可
+	@ManyToOne
+	@JoinColumn(name = "created_by_user_id", nullable = true)
+	private User createdBy;
 	
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private Timestamp createdAt;

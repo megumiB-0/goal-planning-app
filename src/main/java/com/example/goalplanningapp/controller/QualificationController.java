@@ -36,8 +36,8 @@ public class QualificationController {
 		// GoalSettingFormに資格情報をセット
 		GoalSettingForm form = new GoalSettingForm();
 		form.setQualificationId(qualification.getId());
-		form.setQualificationName(qualification.getQualificationName());
-		form.setEstimatedTime(qualification.getEstimatedTime());
+		form.setCustomQualificationName(qualification.getName());
+		form.setCustomEstimatedMinutes(qualification.getEstimatedMinutes());
 		model.addAttribute("goalSettingForm", form);
 		
 		// 目標設定画面へ
