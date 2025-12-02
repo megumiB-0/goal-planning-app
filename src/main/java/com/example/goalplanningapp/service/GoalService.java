@@ -50,8 +50,8 @@ public class GoalService {
 		Goal goal = new Goal();
 		goal.setQualification(qualificationEntity);
 		
-		LocalDate startDate = LocalDate.parse(form.getStartDate());
-		LocalDate goalDate = LocalDate.parse(form.getGoalDate());
+		LocalDate startDate = form.getStartDate();
+		LocalDate goalDate = form.getGoalDate();
 
 		goal.setStartDate(startDate);
 		goal.setGoalDate(goalDate);
