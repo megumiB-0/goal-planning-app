@@ -60,8 +60,8 @@ public class GoalSettingController {
 		
 		try {
 		//String→LocalDateに変換
-		LocalDate start = LocalDate.parse(form.getStartDate());
-		LocalDate goal = LocalDate.parse(form.getGoalDate());
+		LocalDate start =form.getStartDate();
+		LocalDate goal = form.getGoalDate();
 		
 		Qualification qualification;
 		Integer qualificationIdInt = null;
