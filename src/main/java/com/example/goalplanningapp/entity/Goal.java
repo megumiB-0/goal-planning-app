@@ -1,6 +1,6 @@
 package com.example.goalplanningapp.entity;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
@@ -24,7 +24,7 @@ public class Goal {
 	
 	@ManyToOne
 	@JoinColumn(name = "qualification_id", nullable = false)
-	private Qualification qualigication;
+	private Qualification qualification;
 	
 	@Column(name = "start_date")
 	private LocalDate startDate;

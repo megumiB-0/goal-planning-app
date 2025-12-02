@@ -1,7 +1,5 @@
 package com.example.goalplanningapp.form;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,10 +17,8 @@ public class GoalSettingForm {
 	
 	// ユーザー入力
 	@NotNull(message = "開始日を設定してください。")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String startDate;
 	@NotNull(message = "いつまでに目標達成したいか設定してください。")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Future(message = "目標達成日は未来の日付である必要があります。")
 	private String goalDate;
 	

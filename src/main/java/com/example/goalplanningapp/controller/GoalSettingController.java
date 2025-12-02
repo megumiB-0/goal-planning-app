@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.goalplanningapp.entity.Qualification;
 import com.example.goalplanningapp.form.GoalSettingForm;
@@ -51,7 +50,6 @@ public class GoalSettingController {
 	@PostMapping("/confirm")
 	public String create(@ModelAttribute @Validated GoalSettingForm form,
 						 BindingResult bindingResult,
-						 RedirectAttributes redirectAttributes,
 						 Model model)
 	{
 		if (bindingResult.hasErrors()) {
@@ -59,41 +57,38 @@ public class GoalSettingController {
 			model.addAttribute("showConfirm",false);
 			return "user/goals/setting";
 		}
+		
+		try {
+		//String→LocalDateに変換
+		LocalDate start = LocalDate.parse(form.getStartDate());
+		LocalDate goal = LocalDate.parse(form.getGoalDate());
+		
 		Qualification qualification;
 		Integer qualificationIdInt = null;
 		
 		// "manual"を判定してnull またはIntegerに変換
-		if("manual".equals(form.getQualificationId()) || form.getQualificationId() == null || form.getQualificationId().isEmpty()) {
+		if("manual".equals(form.getQualificationId()) || form.getQualificationId() == null) {
 			qualification = new Qualification();
 			qualification.setName(form.getCustomQualificationName());
 			
 			//時間　→　分　に変換して登録
 			if(form.getCustomEstimatedHours() !=null) {
-				Double minutes = (Double)(form.getCustomEstimatedHours() * 60);
-				qualification.setEstimatedMinutes(minutes);
-			}			
+				qualification.setEstimatedMinutes(form.getCustomEstimatedHours() * 60);
+			}
 			qualificationService.save(qualification);
 			qualificationIdInt = qualification.getId();
 		}else {
 			// 既存資格の ID を Integer に変換
-			try {
+
 				qualificationIdInt = Integer.parseInt(form.getQualificationId());
-			}catch(NumberFormatException e) {
-				bindingResult.rejectValue("qualificationId", "invalid", "資格IDが不正です。");
-				model.addAttribute("goalSettingForm",form);
-				model.addAttribute("showConfirm",false);
-				return "user/goals/setting";
-			}
+			
 			qualification= qualificationService.findQualificationById(qualificationIdInt)
 						   .orElseThrow(() -> new IllegalArgumentException("資格が見つかりません。")); 
 		}
 		
 		
 		// ここから計算処理やモデルへのセット
-		LocalDate start = LocalDate.parse(form.getStartDate());
-		LocalDate goal = LocalDate.parse(form.getGoalDate());
-	
-		try {
+
 			double hoursPerDay = goalCalculationService.calculateHoursPerDay(
 					qualification.getEstimatedMinutes(),start,goal);
 			double hoursPerWeek = goalCalculationService.calculateHoursPerWeek(hoursPerDay); 
@@ -102,7 +97,7 @@ public class GoalSettingController {
 			model.addAttribute("hoursPerWeek",hoursPerWeek);
 			model.addAttribute("showConfirm", true);
 			
-		}catch(IllegalArgumentException e) {
+		}catch(Exception e) {
 			bindingResult.reject("calculateError",e.getMessage());
 			model.addAttribute("goalSettingForm",form);
 			model.addAttribute("showConfirm",false);
