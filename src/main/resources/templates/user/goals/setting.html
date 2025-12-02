@@ -16,7 +16,7 @@
 						
 						<!-- 入力フォーム -->
 						<div th:if="${showConfirm != true}">
-						<form th:action="@{/confirm}" th:object="${goalSettingForm}" method="post">
+						<form th:action="@{/goals/confirm}" th:object="${goalSettingForm}" method="post">
 							<label>とりたい資格を選択してください。</label>
 							<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
 								<option value="">--- 選択してください ---</option>
