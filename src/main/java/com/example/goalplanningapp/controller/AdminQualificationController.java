@@ -31,8 +31,9 @@ public class AdminQualificationController {
 	// 資格情報登録のためフォームの入力項目とフォームクラスのフィールドをバインドする
 	@GetMapping("/register")
 	public String register(Model model) {
-		model.addAttribute("qualificationRegisterFoem", new QualificationRegisterForm());
+		model.addAttribute("qualificationRegisterForm", new QualificationRegisterForm());
 		return "admin/qualifications/register";
 	}
+
 	
 }

@@ -3,9 +3,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.goalplanningapp.entity.Qualification;
 import com.example.goalplanningapp.repository.QualificationRepository;
+
+
 
 @Service
 public class QualificationService {
@@ -23,6 +26,12 @@ public class QualificationService {
 	// 指定したidを持つ資格を取得する
 	public Optional<Qualification> findQualificationById(Integer id){
 		return qualificationRepository.findById(id);
+	}
+
+	// 資格を登録する
+	@Transactional
+	public Qualification save(Qualification qualification){
+		return qualificationRepository.save(qualification);
 	}
 
 }

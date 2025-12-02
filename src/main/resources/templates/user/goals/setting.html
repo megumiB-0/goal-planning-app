@@ -13,27 +13,30 @@
 				<div class="row justify-content-center">
 					<div class="col-xl-5 col-lg-6 col-md-8">
 						<h1 class="mb-4 text-center">目標設定</h1>
-						<form th:action="@{/goals/save}" th:object="${goalSettingForm}" method="post">
+						
+						<!-- 入力フォーム -->
+						<div th:if="${showConfirm != true}">
+						<form th:action="@{/confirm}" th:object="${goalSettingForm}" method="post">
 							<label>とりたい資格を選択してください。</label>
 							<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
 								<option value="">--- 選択してください ---</option>
 								<option th:each="q : ${qualifications}"
 										th:value="${q.id}"
-										th:text="${q.qualificationName}"
-										th:data-minutes="${q.estimatedTime}">
+										th:text="${q.name}"
+										th:data-minutes="${q.estimatedMinutes}">
 								</option>
-								<!--種導入力-->
+								<!--手動入力-->
 								<option value="manual">その他（手動入力）</option>
 							</select>
 							<!--手動入力欄（資格名）-->
-							<div class="mb-3" id="manualInputArea" style="display:none;">
-								<label for="manualQualificationName" class="form-label">資格名（手動入力）</label>
-								<input type="text" th:field="*{estimatedTime}" class="form-control" id="manualQualificationName">
+							<div class="mb-3 mt-2" id="manualNameArea">
+								<label class="form-label">資格名（手動入力）</label>
+								<input type="text" th:field="*{customQualificationName}" class="form-control">
 							</div>
 							<!-- 必要時間 -->
-							<div class="mb-3">
-								<label for="estimatedTime" class="form-label">必要学習時間(h)</label>
-								<input type="number" class="form-control" id="estimatedTime" th:field="*{estimatedTime}">
+							<div class="mb-3" id="manualHoursArea">
+								<label for="estimatedMinutes" class="form-label">必要学習時間(時間)</label>
+								<input type="number" class="form-control" th:field="*{customEstimatedHours}" id="customEstimatedHours">
 							</div>
 							<!--開始日-->
 							<div class="mb-3">
@@ -45,18 +48,33 @@
 								<label for="goalDate" class="form-label">目標達成日</label>
 								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate">
 							</div>
-							<!-- 計算ボタン -->
+							<!-- 計算・送信 -->
 							<div class="d-flex justify-content-center my-4">
-								<button type="button" class="btn btn-outline-primary" id="calculateButton">計算</button>	
+								<button type="submit" class="btn btn-outline-primary">計算</button>	
 							</div>
-							<!-- 計算結果を表示するエリア -->
-							<div class="alert alert-info mt-3" id="studyMessage" style="display:none;"></div>
-							<!-- 登録ボタン（フォーム送信用） -->
-							<div class="d-flex justify-content-center my-4">
-								<button type="submit" class="btn btn-primary">登録</button>
+							<!-- 入力エラー表示 -->
+							<div th:if="${#fields.hasErrors()}" class="text-danger">
+								<p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
 							</div>
 						</form>
-							
+						</div>
+
+						<!-- 確認画面 -->
+						<div th:if="${showConfirm == true}">
+							<h2>目標確認</h2>
+							<p>資格名：<span th:text="${goalName}"></span></p>
+							<p>1日あたり必要学習時間：<span th:text="${hoursPerDay}"></span></p>
+							<p>1週間あたり必要学習時間：<span th:text="${hoursPerWeek}"></span></p>
+							<form th:action="@{/save}" method="post"　class="d-flex justify-content-center my-4">
+								<input type="hidden" th:field="*{qualificationId}" th:value="${goalSettingForm.qualificationId}">
+								<input type="hidden" th:field="*{customQualificationName}" th:value="${goalSettingForm.customQualificationName}">
+								<input type="hidden" th:field="*{customEstimatedHours}" th:value="${goalSettingForm.customEstimatedHours}">
+								<input type="hidden" th:field="*{startDate}" th:value="${goalSettingForm.startDate}">
+								<input type="hidden" th:field="*{goalDate}" th:value="${goalSettingForm.goalDate}">
+								<button type="submit" class="btn btn-primary">目標を登録</button>
+							</form>
+							<a th:href="@{/goals/setting}" class="btn btn-link mt-2">戻る</a>
+						</div>
 
 					</div>
 				</div>
@@ -65,7 +83,7 @@
 		<div th:replace="~{fragment :: footer}"></div>
 	</div>
 	<div th:replace="~{fragment :: scripts}"></div>
-	<script src="/js/settingtime.js"></script>
+	<script src="/js/setting.js"></script>
 
 </body>
 </html>

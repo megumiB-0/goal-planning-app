@@ -11,7 +11,7 @@ VALUES
 
 /* usersテーブル */
 INSERT IGNORE INTO qualifications
-(qualification_name,estimated_time)
+(name,estimated_minutes)
 VALUES
 ('FP3級','9000'),-- 150h
 ('FP2級','18000'),-- 300h

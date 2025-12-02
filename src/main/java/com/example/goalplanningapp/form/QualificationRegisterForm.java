@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 public class QualificationRegisterForm {
 	@NotBlank(message = "資格名を入れてください。")
-	private String qualiicationName;
+	private String name;
 	@NotNull(message = "必要学習時間を入力してください。")
 	@Min(value = 1, message = "必要学習時間は1時間以上に設定してください。")
-	private Integer estimatedTime;
+	private Double estimatedMinutes;
 	//↑は時間、記録は分なので、どこかで単位換算処理が必要！
 
 }
