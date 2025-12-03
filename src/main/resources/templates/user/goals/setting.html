@@ -26,7 +26,7 @@
 										th:data-minutes="${q.estimatedMinutes}">
 								</option>
 								<!--手動入力-->
-								<option value="manual">その他（手動入力）</option>
+								<option value="-1">その他（手動入力）</option>
 							</select>
 							<!--手動入力欄（資格名）-->
 							<div class="mb-3 mt-2" id="manualNameArea">
@@ -40,11 +40,13 @@
 							</div>
 							<!--開始日-->
 							<div class="mb-3">
+								<div th:if="${#fields.hasErrors('startDate')}" class="text-danger small mb-2" th:errors="*{startDate}"></div>
 								<label for="startDate" class="form-label">学習開始日</label>
 								<input type="date" th:field="*{startDate}" class="form-control" id="startDate">
 							</div>
 							<!--目標達成日-->
 							<div class="mb-3">
+								<div th:if="${#fields.hasErrors('goalDate')}" class="text-danger small mb-2" th:errors="*{goalDate}"></div>
 								<label for="goalDate" class="form-label">目標達成日</label>
 								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate">
 							</div>
@@ -62,20 +64,19 @@
 						<!-- 確認画面 -->
 						<div th:if="${showConfirm == true}">
 							<h2>目標確認</h2>
-							<p>資格名：<span th:text="${goalName}"></span></p>
+							<p>資格名：<span th:text="${qualificationName}"></span></p>
 							<p>1日あたり必要学習時間：<span th:text="${hoursPerDay}"></span></p>
 							<p>1週間あたり必要学習時間：<span th:text="${hoursPerWeek}"></span></p>
-							<form th:action="@{/save}" method="post"　class="d-flex justify-content-center my-4">
-								<input type="hidden" th:field="*{qualificationId}" th:value="${goalSettingForm.qualificationId}">
-								<input type="hidden" th:field="*{customQualificationName}" th:value="${goalSettingForm.customQualificationName}">
-								<input type="hidden" th:field="*{customEstimatedHours}" th:value="${goalSettingForm.customEstimatedHours}">
-								<input type="hidden" th:field="*{startDate}" th:value="${goalSettingForm.startDate}">
-								<input type="hidden" th:field="*{goalDate}" th:value="${goalSettingForm.goalDate}">
+							<form th:action="@{/goals/save}" method="post" class="d-flex justify-content-center my-4">
+								<input type="hidden" name="qualificationId" th:value="${goalSettingForm.qualificationId}">
+  								<input type="hidden" name="customQualificationName" th:value="${goalSettingForm.customQualificationName}">
+								<input type="hidden" name="customEstimatedHours" th:value="${goalSettingForm.customEstimatedHours}">
+								 <input type="hidden" name="startDate" th:value="${goalSettingForm.startDate}">
+								<input type="hidden" name="goalDate" th:value="${goalSettingForm.goalDate}">
 								<button type="submit" class="btn btn-primary">目標を登録</button>
 							</form>
 							<a th:href="@{/goals/setting}" class="btn btn-link mt-2">戻る</a>
 						</div>
-
 					</div>
 				</div>
 			</div>

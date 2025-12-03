@@ -50,5 +50,10 @@ public class UserDetailsImpl implements UserDetails {
 		return user.getEnabled();
 	}
 	
+	//user_Id取得（qualificationテーブル、goalテーブル追加に必要）
+	public Integer getId() {
+		return user.getId();
+	}
+	
 	}
 	

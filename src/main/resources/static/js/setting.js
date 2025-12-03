@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded",function(){
 		    console.log("minutes:", minutes);
 		
 		
-		if(select.value ==="manual"){
+		if(select.value ==="-1"){
 			// 手動入力を選んだ時
 			manualName.style.display="block";
 			manualHours.style.display="block";
