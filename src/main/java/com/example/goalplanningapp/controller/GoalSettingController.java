@@ -115,11 +115,7 @@ public class GoalSettingController {
 	public String saveGoal(@ModelAttribute GoalSettingForm form,
 						   @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		//デバッグ
-		System.out.println("qualificatuinId:" + form.getQualificationId());
-		System.out.println("customQualificationName:" + form.getCustomQualificationName());
-		System.out.println("customEstimatedHours:" + form.getCustomEstimatedHours());
-		
+
 		
 		//ログインユーザーIDをセット
 		User loginUser = userDetails.getUser();

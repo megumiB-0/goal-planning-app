@@ -17,37 +17,63 @@
 						<!-- 入力フォーム -->
 						<div th:if="${showConfirm != true}">
 						<form th:action="@{/goals/confirm}" th:object="${goalSettingForm}" method="post">
-							<label>とりたい資格を選択してください。</label>
-							<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
-								<option value="">--- 選択してください ---</option>
-								<option th:each="q : ${qualifications}"
-										th:value="${q.id}"
-										th:text="${q.name}"
-										th:data-minutes="${q.estimatedMinutes}">
-								</option>
-								<!--手動入力-->
-								<option value="-1">その他（手動入力）</option>
-							</select>
+							<div class="form-group row mb-3">
+								<div class="col-md-5">
+									<label for="qualificationId" class="col-form-label text-md-left fw-bold" >
+										<div class="d-flex align-items-center">
+											<span class="me-1">目指す資格を選択</span>
+											<span class="badge bg-danger">必須</span> 
+										</div>
+									</label>
+								</div>
+								<div class="col-md-7">
+									<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
+										<option value="">--- 選択してください ---</option>
+										<option th:each="q : ${qualifications}"
+												th:value="${q.id}"
+												th:text="${q.name}"
+												th:data-minutes="${q.estimatedMinutes}">
+										</option>
+										<!--手動入力-->
+										<option value="-1">その他（手動入力）</option>
+									</select>
+								</div>
+							</div>
 							<!--手動入力欄（資格名）-->
-							<div class="mb-3 mt-2" id="manualNameArea">
+							
+							<div class="col-md-7" id="manualNameArea">
 								<label class="form-label">資格名（手動入力）</label>
 								<input type="text" th:field="*{customQualificationName}" class="form-control">
 							</div>
 							<!-- 必要時間 -->
-							<div class="mb-3" id="manualHoursArea">
-								<label for="estimatedMinutes" class="form-label">必要学習時間(時間)</label>
+							<div class="col-md-7" id="manualHoursArea">
+								<label for="estimatedMinutes" class="form-label">
+										<div class="d-flex align-items-center">
+											<span class="me-1">必要学習時間(時間)</span>
+										</div>
+								</label>
 								<input type="number" class="form-control" th:field="*{customEstimatedHours}" id="customEstimatedHours">
 							</div>
 							<!--開始日-->
 							<div class="mb-3">
 								<div th:if="${#fields.hasErrors('startDate')}" class="text-danger small mb-2" th:errors="*{startDate}"></div>
-								<label for="startDate" class="form-label">学習開始日</label>
+								<label for="startDate" class="form-label">
+									<div class="d-flex align-items-center">
+										<span class="me-1">学習開始日</span>
+										<span class="badge bg-danger">必須</span> 
+									</div>
+								</label>
 								<input type="date" th:field="*{startDate}" class="form-control" id="startDate">
 							</div>
 							<!--目標達成日-->
 							<div class="mb-3">
 								<div th:if="${#fields.hasErrors('goalDate')}" class="text-danger small mb-2" th:errors="*{goalDate}"></div>
-								<label for="goalDate" class="form-label">目標達成日</label>
+								<label for="goalDate" class="form-label">
+									<div class="d-flex align-items-center">
+										<span class="me-1">目標達成日</span>
+										<span class="badge bg-danger">必須</span> 
+									</div>	
+								</label>
 								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate">
 							</div>
 							<!-- 計算・送信 -->
@@ -55,7 +81,7 @@
 								<button type="submit" class="btn btn-outline-primary">計算</button>	
 							</div>
 							<!-- 入力エラー表示 -->
-							<div th:if="${#fields.hasErrors()}" class="text-danger">
+							<div th:if="${#fields.hasErrors()}" class="alert alert-danger">
 								<p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
 							</div>
 						</form>
@@ -63,7 +89,7 @@
 
 						<!-- 確認画面 -->
 						<div th:if="${showConfirm == true}">
-							<h2>目標確認</h2>
+							<h1>目標確認</h1>
 							<p>資格名：<span th:text="${qualificationName}"></span></p>
 							<p>1日あたり必要学習時間：<span th:text="${hoursPerDay}"></span></p>
 							<p>1週間あたり必要学習時間：<span th:text="${hoursPerWeek}"></span></p>
