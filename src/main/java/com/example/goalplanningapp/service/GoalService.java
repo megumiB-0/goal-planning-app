@@ -1,5 +1,7 @@
 package com.example.goalplanningapp.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,12 @@ public class GoalService {
 	@Transactional
 	// フォームからデータベース保存
 	public Goal saveGoalWithQualification(GoalSettingForm form, User loginUser) {
-
+		// 未完了の目標がすでに存在するか確認
+		Optional<Goal> activeGoal = goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser);
+		// すでに未完了が1件あったら目標作成不可
+		if(activeGoal.isPresent()) {
+			throw new IllegalStateException("未完了の目標がすでに存在します。新規に目標作成することはできません。");
+		}
 		Qualification qualificationEntity;
 		// 手動入力の場合はQualificationを作成
 		if(form.getQualificationId() == -1) {
@@ -46,6 +53,9 @@ public class GoalService {
 			Integer qualificationId = form.getQualificationId();
 			qualificationEntity = qualificationRepository.findById(qualificationId)
 							  .orElseThrow(()-> new IllegalArgumentException("資格が見つかりません。"));
+			
+			
+			
 		}
 		// 目標設定を作成	
 		// 各フィールドをフォームからコピー
