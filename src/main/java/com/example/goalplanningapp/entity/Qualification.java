@@ -21,16 +21,16 @@ public class Qualification {
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "name")
+	@Column(name = "name", nullable = false)
 	private String name;
 	
-	@Column(name = "estimated_minutes")
+	@Column(name = "estimated_minutes", nullable = false)
 	private Double estimatedMinutes; //分単位
 	
 	 // Userと紐づけるが、管理者登録の場合はNULL許可
 	@ManyToOne
 	@JoinColumn(name = "created_by_user_id", nullable = true)
-	private User createdBy;
+	private User user;
 	
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private Timestamp createdAt;

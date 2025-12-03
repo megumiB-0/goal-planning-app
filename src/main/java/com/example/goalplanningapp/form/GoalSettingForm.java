@@ -12,12 +12,16 @@ import lombok.Data;
 public class GoalSettingForm {
 	// 資格に関する項目（コントローラでセット）
 	@NotNull(message = "目標資格を選択してください。")
-	//資格id
-	private String qualificationId;
+	//資格id（選択肢にある場合にセット）
+	private Integer qualificationId;
+	
 	//資格名（資格IDがある場合はDBの名前、ない場合は手動入力で使う）
 	private String customQualificationName;
 	//必要時間(時間)（資格IDがある場合はDBの値、ない場合は手動入力）
 	private Double customEstimatedHours;
+	
+	// ユーザーId（作成者Id）
+	private Integer userId;
 	
 	// ユーザー入力
 	@NotNull(message = "開始日を設定してください。")

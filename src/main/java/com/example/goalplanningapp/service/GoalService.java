@@ -1,12 +1,11 @@
 package com.example.goalplanningapp.service;
 
-import java.time.LocalDate;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.Qualification;
+import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.GoalSettingForm;
 import com.example.goalplanningapp.repository.GoalRepository;
 import com.example.goalplanningapp.repository.QualificationRepository;
@@ -27,21 +26,24 @@ public class GoalService {
 	
 	@Transactional
 	// フォームからデータベース保存
-	public Goal saveGoalWithQualification(GoalSettingForm form) {
+	public Goal saveGoalWithQualification(GoalSettingForm form, User loginUser) {
+
 		Qualification qualificationEntity;
 		// 手動入力の場合はQualificationを作成
-		if("manual".equals(form.getQualificationId())) {
+		if(form.getQualificationId() == -1) {
 			Qualification newQualification = new Qualification();
 			newQualification.setName(form.getCustomQualificationName());
 			// 必要学習時間を登録
 			if(form.getCustomEstimatedHours() != null) {
 				newQualification.setEstimatedMinutes(form.getCustomEstimatedHours() * 60);
 			}
+			//ログインユーザーをセット
+			newQualification.setUser(loginUser);
 			// 新しい資格を保存
 			qualificationEntity = qualificationRepository.save(newQualification);
 		}else {
 			//既存資格Idを取得
-			Integer qualificationId = Integer.parseInt(form.getQualificationId());
+			Integer qualificationId = form.getQualificationId();
 			qualificationEntity = qualificationRepository.findById(qualificationId)
 							  .orElseThrow(()-> new IllegalArgumentException("資格が見つかりません。"));
 		}
@@ -49,15 +51,13 @@ public class GoalService {
 		// 各フィールドをフォームからコピー
 		Goal goal = new Goal();
 		goal.setQualification(qualificationEntity);
-		
-		LocalDate startDate = form.getStartDate();
-		LocalDate goalDate = form.getGoalDate();
+		goal.setStartDate(form.getStartDate());
+		goal.setGoalDate(form.getGoalDate());
+		goal.setUser(loginUser); 
 
-		goal.setStartDate(startDate);
-		goal.setGoalDate(goalDate);
-	
 	// DBにエンティティを保存
     return goalRepository.save(goal);
 	
 }
+
 }

@@ -1,8 +1,10 @@
 package com.example.goalplanningapp.controller;
 
+
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.goalplanningapp.entity.Qualification;
+import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.GoalSettingForm;
+import com.example.goalplanningapp.security.UserDetailsImpl;
 import com.example.goalplanningapp.service.GoalCalculationService;
 import com.example.goalplanningapp.service.GoalService;
 import com.example.goalplanningapp.service.QualificationService;
@@ -32,7 +36,6 @@ public class GoalSettingController {
 		this.goalCalculationService = goalCalculationService;
 		this.goalService = goalService;
 	}
-
 	
 	@GetMapping("/setting")
 	public String showSettingForm(Model model) {
@@ -49,25 +52,25 @@ public class GoalSettingController {
 	// 目標登録
 	@PostMapping("/confirm")
 	public String create(@ModelAttribute @Validated GoalSettingForm form,
+
 						 BindingResult bindingResult,
 						 Model model)
 	{
+
+		
+		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("goalSettingForm", form);
 			model.addAttribute("showConfirm",false);
 			return "user/goals/setting";
 		}
-		
-		try {
-		//String→LocalDateに変換
-		LocalDate start =form.getStartDate();
-		LocalDate goal = form.getGoalDate();
-		
+
 		Qualification qualification;
-		Integer qualificationIdInt = null;
 		
-		// "manual"を判定してnull またはIntegerに変換
-		if("manual".equals(form.getQualificationId()) || form.getQualificationId() == null) {
+		// 資格ID取得
+		try {		
+		// 手動入力かどうか
+		if(form.getQualificationId() != null && form.getQualificationId() == -1) {
 			qualification = new Qualification();
 			qualification.setName(form.getCustomQualificationName());
 			
@@ -75,24 +78,26 @@ public class GoalSettingController {
 			if(form.getCustomEstimatedHours() !=null) {
 				qualification.setEstimatedMinutes(form.getCustomEstimatedHours() * 60);
 			}
+			/*
 			qualificationService.save(qualification);
-			qualificationIdInt = qualification.getId();
+			*/
 		}else {
-			// 既存資格の ID を Integer に変換
-
-				qualificationIdInt = Integer.parseInt(form.getQualificationId());
 			
-			qualification= qualificationService.findQualificationById(qualificationIdInt)
+			qualification= qualificationService.findQualificationById(form.getQualificationId())
 						   .orElseThrow(() -> new IllegalArgumentException("資格が見つかりません。")); 
 		}
-		
-		
-		// ここから計算処理やモデルへのセット
+		//フォームから取得したデータ
+		LocalDate start =form.getStartDate(); // 開始日
+		LocalDate goal = form.getGoalDate(); //終了日
 
+		
+		// ここから画面表示用の計算処理やモデルへのセット
+			
 			double hoursPerDay = goalCalculationService.calculateHoursPerDay(
-					qualification.getEstimatedMinutes(),start,goal);
+			qualification.getEstimatedMinutes(),start,goal);
 			double hoursPerWeek = goalCalculationService.calculateHoursPerWeek(hoursPerDay); 
-			model.addAttribute("qualification",qualification);
+
+			model.addAttribute("qualificationName",qualification.getName());
 			model.addAttribute("hoursPerDay",hoursPerDay);
 			model.addAttribute("hoursPerWeek",hoursPerWeek);
 			model.addAttribute("showConfirm", true);
@@ -107,8 +112,21 @@ public class GoalSettingController {
 	
 	
 	@PostMapping("/save")
-	public String saveGoal(@ModelAttribute GoalSettingForm form) {
-		goalService.saveGoalWithQualification(form); //DBに保存
+	public String saveGoal(@ModelAttribute GoalSettingForm form,
+						   @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+		//デバッグ
+		System.out.println("qualificatuinId:" + form.getQualificationId());
+		System.out.println("customQualificationName:" + form.getCustomQualificationName());
+		System.out.println("customEstimatedHours:" + form.getCustomEstimatedHours());
+		
+		
+		//ログインユーザーIDをセット
+		User loginUser = userDetails.getUser();
+		// goal登録用のform,loginUserデータをメソッドに渡す
+		goalService.saveGoalWithQualification(form,loginUser); 
+
+		
 		return "redirect:/home";
 	}
 	

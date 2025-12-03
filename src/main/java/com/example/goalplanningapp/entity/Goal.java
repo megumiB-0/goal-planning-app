@@ -23,6 +23,10 @@ public class Goal {
 	private Integer id;
 	
 	@ManyToOne
+	@JoinColumn(name = "user_id",nullable = false)
+	private User user;
+	
+	@ManyToOne
 	@JoinColumn(name = "qualification_id", nullable = false)
 	private Qualification qualification;
 	

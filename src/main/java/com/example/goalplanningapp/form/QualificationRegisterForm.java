@@ -12,6 +12,6 @@ public class QualificationRegisterForm {
 	@NotNull(message = "必要学習時間を入力してください。")
 	@Min(value = 1, message = "必要学習時間は1時間以上に設定してください。")
 	private Double estimatedMinutes;
-	//↑は時間、記録は分なので、どこかで単位換算処理が必要！
-
+	// ユーザーId（作成者）
+	private Integer UserId;
 }
