@@ -16,6 +16,7 @@
 						
 						<!-- 入力フォーム -->
 						<div th:if="${showConfirm != true}">
+
 						<form th:action="@{/goals/confirm}" th:object="${goalSettingForm}" method="post">
 							<div class="form-group row mb-3">
 								<div class="col-md-5">

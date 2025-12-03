@@ -10,6 +10,14 @@
 		<div th:replace ="~{fragment :: header}"></div>
 		<main>
 			<div class="container pt-4 pb-5 goalplanningapp-container">
+				//登録成功メッセージ表示
+				<div th:if="${successMessage}" class="alert alert-info mb-3">
+					<p th:text="${successMessage}"></p>
+				</div>
+				//エラーメッセージ表示
+				<div th:if="${errorMessage}" class="alert alert-danger mb-3">
+					<p th:text="${errorMessage}"></p>
+				</div>
 				<div th:if="${param.loggedIn}" class="alert alert-info">
 					ログインしました。
 				</div>
