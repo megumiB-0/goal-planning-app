@@ -13,6 +13,7 @@ public class GoalCalculationService {
 		if (diffDays <= 0) throw new IllegalArgumentException("目標日は開始日より後に設定してください。");
 		
 		double hoursPerDay = (double) estimatedMinutes / 60 / diffDays; //分→時間
+		hoursPerDay = Math.round(hoursPerDay * 10) / 10.0; //小数点以下１桁で四捨五入
 		
 		if (hoursPerDay > 24) {
 			throw new IllegalArgumentException("1日に必要な学習時間が24時間を超えています。期間を長くするか、必要学習時間を減らしてください。");
