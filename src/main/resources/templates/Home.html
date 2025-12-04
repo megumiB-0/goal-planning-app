@@ -11,25 +11,23 @@
 		<main>
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row">
-					//登録成功メッセージ表示
-					<div th:if="${successMessage}" class="alert alert-info mb-3">
+					<!-- ログインメッセージ表示 -->
+					<div th:if="${loginMessage}" class="justify-content-center alert alert-info mb-3">
+						<p th:text="${loginMessage}"></p>
+					</div>
+					<!-- 登録成功メッセージ表示 -->
+					<div th:if="${successMessage}" class="justify-content-center alert alert-info mb-3">
 						<p th:text="${successMessage}"></p>
 					</div>
-					//エラーメッセージ表示
-					<div th:if="${errorMessage}" class="alert alert-danger mb-3">
+					<!-- エラーメッセージ表示-->
+					<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
 						<p th:text="${errorMessage}"></p>
 					</div>
-					<div th:if="${param.loggedIn}" class="alert alert-info">
-						ログインしました。
-					</div>
-<!--				<div th:if="${param.loggedOut}" class="alert alert-info">
-						ログアウトしました。
-					</div>
--->					
+					
 				</div>
 				<div th:if="${hasGoal}">
-					<div class="d-flex justify-content-center my-4">
-						<h1>*{goalDate}までに*{qualification_estimatedMinutes}時間学習して*{qualification_name}を取得する！</h1>
+					<div class="row d-flex mb-3">
+						<h1 th:text="${message}" class="alert alert-light"></h1>
 					</div>					
 				</div>
 				<div th:unless="${hasGoal}">

@@ -45,9 +45,4 @@ public class Goal {
 	
 	@Column(name = "ended_at")
 	private LocalDate endedAt;
-	
-	public LocalDate getEndedAt() {
-	    return endedAt;
 	}
-
-}

@@ -23,7 +23,12 @@ public class WebSecurityConfig {
 			.formLogin((form) -> form
 				.loginPage("/login")  // ログインページのURL
 				.loginProcessingUrl("/login")   // ログインフォームの送信先URL
-				.defaultSuccessUrl("/home?loggedIn",true) // ログイン成功時のリダイレクト先URL
+				//.defaultSuccessUrl("/home",true) // ログイン成功時のリダイレクト先URL
+				.successHandler((request, response, authentication) ->{
+					//ログイン直後のみメッセージ表示
+					request.getSession().setAttribute("loginMessage", "ログインしました");
+					response.sendRedirect("/home");
+				})
 				.failureUrl("/login?error") //ログイン失敗時のリダイレクト先URL
 				.permitAll()
 			)
