@@ -24,6 +24,7 @@ public class GoalCalculationService {
 	// 週割り学習時間を計算
 	public double calculateHoursPerWeek(double hoursPerDay ) {
 		double hoursPerWeek = (double) hoursPerDay * 7;
+		hoursPerWeek = Math.round(hoursPerWeek * 10) / 10.0; //小数点以下１桁で四捨五入
 		return hoursPerWeek;
 	}
 }
