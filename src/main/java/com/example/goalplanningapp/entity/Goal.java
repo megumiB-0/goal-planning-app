@@ -43,8 +43,11 @@ public class Goal {
 	@Column(name = "updated_at", insertable = false, updatable = false)
 	private Timestamp updatedAt;
 	
-	@Column(name = "ended_at", insertable = false, updatable = false)
-	private Timestamp endedAt;
+	@Column(name = "ended_at")
+	private LocalDate endedAt;
 	
+	public LocalDate getEndedAt() {
+	    return endedAt;
+	}
 
 }

@@ -116,13 +116,13 @@ public class GoalSettingController {
 	public String saveGoal(@ModelAttribute GoalSettingForm form,
 						   @AuthenticationPrincipal UserDetailsImpl userDetails,
 						   RedirectAttributes redirectAttributes) {
-		//ログインユーザーIDをセット
+		//ログインユーザーをセット
 		User loginUser = userDetails.getUser();
 		// goal登録用のform,loginUserデータをメソッドに渡す
 		try {
 			goalService.saveGoalWithQualification(form,loginUser); 
 			//ホームに登録成功メッセージを表示する
-			redirectAttributes.addFlashAttribute("goalMessage","目標登録に成功しました！");
+			redirectAttributes.addFlashAttribute("successMessage","目標登録に成功しました！");
 			}catch(IllegalStateException e) {
 			redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
 			return "redirect:/home";

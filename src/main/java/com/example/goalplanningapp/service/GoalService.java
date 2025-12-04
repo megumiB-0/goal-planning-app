@@ -53,9 +53,6 @@ public class GoalService {
 			Integer qualificationId = form.getQualificationId();
 			qualificationEntity = qualificationRepository.findById(qualificationId)
 							  .orElseThrow(()-> new IllegalArgumentException("資格が見つかりません。"));
-			
-			
-			
 		}
 		// 目標設定を作成	
 		// 各フィールドをフォームからコピー
