@@ -1,6 +1,10 @@
 package com.example.goalplanningapp.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +64,24 @@ public class HomeController {
 			//モデルに渡す
 			model.addAttribute("message",message);
 			
+			// グラフに必要なデータを取得
+			LocalDate startDate = goal.getStartDate();
+			
+			List<Map<String,Object>> studyData =new ArrayList<>();	
+			LocalDate date = startDate;
+			// 実績ライン用
+			while (!date.isAfter(goalDate)) {
+				Map<String, Object> rec = new HashMap<>();
+				rec.put("x", date.toString());
+				rec.put("y", 0);     // 今は仮データをセットしている（要修正）
+				studyData.add(rec);
+				date = date.plusDays(1);	
+			}
+			model.addAttribute("studyData",studyData);
+			//目標ライン用
+			model.addAttribute("startDate",startDate.toString());
+			model.addAttribute("goalDate",goalDate);
+			model.addAttribute("estimatedHours",estimatedHours);
 		}
 		
 		return "home";
