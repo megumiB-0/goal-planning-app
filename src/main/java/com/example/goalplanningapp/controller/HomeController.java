@@ -80,7 +80,7 @@ public class HomeController {
 			model.addAttribute("studyData",studyData);
 			//目標ライン用
 			model.addAttribute("startDate",startDate.toString());
-			model.addAttribute("goalDate",goalDate);
+			model.addAttribute("goalDate",goalDate.toString());
 			model.addAttribute("estimatedHours",estimatedHours);
 		}
 		
