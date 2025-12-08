@@ -1,7 +1,8 @@
 package com.example.goalplanningapp.entity;
 
-import java.security.Timestamp;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,16 +30,16 @@ public class LearningRecord {
 	private Goal goal;
 	
 	@Column(name = "learning_day")
-	private Date learningDay;
+	private LocalDate learningDay;
 	
 	@Column(name = "start_time")
-	private Timestamp startTime;
+	private LocalTime startTime;
 	
 	@Column(name = "end_time")
-	private Timestamp endTime;
+	private LocalTime endTime;
 	
-	@Column(name = "learning_time")
-	private Integer learningTime;
+	@Column(name = "learning_minutes")
+	private Integer learningMinutes;
 	
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private Timestamp createdAt;
@@ -46,7 +47,7 @@ public class LearningRecord {
 	@Column(name = "updated_at", insertable = false, updatable = false)
 	private Timestamp updatedAt;
 	
-	@Column(name = "deleted_at", insertable = false, updatable = false)
-	private Timestamp deleted;
+	@Column(name = "deleted_at")
+	private LocalDate deletedAt;
 
 }

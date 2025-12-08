@@ -1,6 +1,7 @@
 package com.example.goalplanningapp.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +39,7 @@ public class Qualification {
 	@Column(name = "updated_at", insertable = false, updatable = false)
 	private Timestamp updatedAt;
 	
-	@Column(name = "deleted_at", insertable = false, updatable = false)
-	private Timestamp deletedAt;
+	@Column(name = "deleted_at")
+	private LocalDate deletedAt;
 
 }

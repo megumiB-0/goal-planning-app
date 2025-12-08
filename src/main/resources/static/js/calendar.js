@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded',function(){
 		locale: 'ja', 							// 日本語表記 
 		themeSystem:'bootstrap5',				// BootStrapデザイン
 		editable: true,							// イベントをドラッグで動かせる
-		slotDuration: '00:30:00',				// 15分刻み
+		slotDuration: '00:30:00',				// 30分刻み
 		contentHeight: '350px'
 		
 	});

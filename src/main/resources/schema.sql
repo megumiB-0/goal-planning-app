@@ -48,8 +48,10 @@ CREATE TABLE IF NOT EXISTS learning_records (
 	learning_day DATE NOT NULL,
 	start_time DATETIME NULL,
 	end_time DATETIME NULL,
-	learning_time DECIMAL(5,1) NULL,
+	learning_minutes INT NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	deleted_at DATETIME NULL
+	deleted_at DATETIME NULL,
+	FOREIGN KEY (user_id) REFERENCES users (id),
+	FOREIGN KEY (goal_id) REFERENCES goals (id)
 );
