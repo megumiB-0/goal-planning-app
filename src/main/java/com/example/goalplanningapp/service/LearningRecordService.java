@@ -33,6 +33,9 @@ public class LearningRecordService {
 		if(learningRecordRepository.existsOverlap(user,learningDay,startTime,endTime)) {
 			throw new IllegalStateException("この時間帯はすでに登録されています。");
 		}
+		//未来の日付チェック
+		validateNotFuture(learningDay); 
+		
 		// 学習時間を分で計算
 		int learningMinutes = calculateMinutes(startTime,endTime);
 		
@@ -70,6 +73,9 @@ public class LearningRecordService {
 		if(learningRecordRepository.existsOverlapExcludingId(user,learningDay,startTime,endTime,id)) {
 			throw new IllegalStateException("この時間帯はすでに登録されています。");
 		}
+		//未来の日付チェック
+		validateNotFuture(learningDay); 
+		
 		// 学習時間を分で計算
 		int learningMinutes = calculateMinutes(startTime,endTime);
 		//更新
@@ -93,7 +99,7 @@ public class LearningRecordService {
 		learningRecordRepository.delete(record);
 	}
 	
-	//共通メソッド（CREATEとPUT）
+	//共通メソッド（POSTとPUT）時間計算
 	public int calculateMinutes(LocalTime startTime, LocalTime endTime) {
 		int startTotalMinutes = startTime.getHour() * 60 + startTime.getMinute();
 		int endTotalMinutes;
@@ -106,5 +112,14 @@ public class LearningRecordService {
 		//経過時間（分）を計算
 		return endTotalMinutes - startTotalMinutes;
 		}
+	
+	//共通メソッド（POSTとPUT）未来の日付NG
+	public void validateNotFuture(LocalDate targetDate) {
+		LocalDate today = LocalDate.now();
+		if(targetDate.isAfter(today)) {
+			throw new IllegalStateException("未来の日付には登録できません。");
+		}
 	}
+}
+
 
