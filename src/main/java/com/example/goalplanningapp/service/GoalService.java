@@ -64,7 +64,14 @@ public class GoalService {
 
 	// DBにエンティティを保存
     return goalRepository.save(goal);
+    
+    }
 	
-}
+    //現在のgoalを取得する
+    public Goal getCurrentGoal(User loginUser) {
+    	return goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser)
+    						 .orElseThrow(()-> new IllegalStateException("現在の目標が見つかりません。"));
+    }
+
 
 }
