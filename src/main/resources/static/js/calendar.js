@@ -14,35 +14,21 @@ document.addEventListener('DOMContentLoaded',async function(){
 		selectMirror: true,						// selectを使うには必須
 		locale: 'ja', 							// 日本語表記 
 		themeSystem:'bootstrap5',				// BootStrapデザイン
-		contentHeight: '350px',
-		//slotDuration: '00:30:00',				// 30分刻み
+		contentHeight: '500px',
+		slotDuration: '00:15:00',				// 15分刻み
+		slotLabelInterval: '01:00:00',			// 1時間ごとに時間表示
 		editable: true,							// イベントをドラッグで動かせる
+		
+
 		//追加
-		eventDurationEditable: true,
-		eventStartEditable: true,
+		eventDurationEditable: true,			// イベント終了時間（duration）を変更できる
+		eventStartEditable: true,				// イベント開始時間を変更できる
 		unselectAuto: false,
 		selectOverlap: true, 
 		
 		// 初期イベントの読み込み(GET) SpringBootのAPI
 		events: '/api/learning-records/events',
-		
-		/*async function (fetchInfo, successCallback, failureCallback){
-			try{
-				const res = await fetch('/api/learning-records/events');
-				const data = await res.json();
-				//サーバーのレコードをFullCalender形式に変換
-				const events = data.map(record =>({
-					id: record.id,
-					title: record.learningMinutes + "分",
-					start: record.learningDay + "T" + record.startTime,
-					end: record.learningDay + "T" + record.endTime
-				}));
-				//FullCalendarに渡す
-				successCallback(events);
-			}catch(error){
-				failureCallback(error);
-			}
-		},*/
+
 		
 		// クリックで新規作成（POST）
 		select: async function (info) {
@@ -71,6 +57,9 @@ document.addEventListener('DOMContentLoaded',async function(){
 			}
 						
 			const saved =await res.json();
+
+			calendar.unselect();  // 選択状態を解除する（タイトルが表示されない解決策）
+			
 			// カレンダーに即時反映（これにより複数登録可能）
 			calendar.addEvent({
 				id: saved.id,
@@ -78,6 +67,7 @@ document.addEventListener('DOMContentLoaded',async function(){
 				start: saved.start,
 				end: saved.end
 			});
+
 		},
 
 		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止)
