@@ -50,7 +50,7 @@ public class HomeController {
 		User loginUser = userDetailsImpl.getUser();
 		// 有効な目標を取得
 		Optional<Goal> activeGoal = goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser);
-
+		
 		// hasGoal設定（ビューの場合分け用）
 		model.addAttribute("hasGoal",activeGoal.isPresent());
 		// 目標を渡す準備
@@ -58,7 +58,7 @@ public class HomeController {
 			Goal goal = activeGoal.get();
 			//メッセージに必要な値を取得
 			LocalDate goalDate = goal.getGoalDate();
-			Double estimatedHours = (goal.getQualification().getEstimatedMinutes() / 60);
+			long estimatedHours = Math.round(goal.getQualification().getEstimatedMinutes() / 60);
 			String qualigicationName = goal.getQualification().getName();
 			
 			String message =  goalDate + "までに" +
@@ -66,6 +66,19 @@ public class HomeController {
 							  qualigicationName + "を取得する!";
 			//モデルに渡す
 			model.addAttribute("message",message);
+			
+			//右２段目　（これまでの学習時間）
+			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser);
+			model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
+			//右２段目　（残りの学習時間）
+			Long remainingHours = learningRecordService.getTodaysRemaining(loginUser,goal);
+			model.addAttribute("remainingHours", remainingHours);
+			
+			//右１段目
+			Long achievementRate = learningRecordService.getAchievementRate(loginUser, goal);
+			model.addAttribute("achievementRate", achievementRate);
+			
+			
 			
 			// グラフに必要なデータを取得
 			LocalDate startDate = goal.getStartDate();

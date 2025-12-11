@@ -28,6 +28,7 @@ import com.example.goalplanningapp.service.GoalService;
 import com.example.goalplanningapp.service.LearningRecordService;
 
 
+
 @RestController
 @RequestMapping("/api/learning-records")
 public class LearningRecordApiController {
@@ -103,5 +104,6 @@ public class LearningRecordApiController {
 	public Map<LocalDate, Long> getDailyTotals(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		return learningRecordService.getDailyTotals(userDetailsImpl.getUser());
 	}
+	
 
 }
