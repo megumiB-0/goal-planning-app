@@ -2,9 +2,11 @@ const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 
+
 document.addEventListener('DOMContentLoaded',async function(){
 	//カレンダー描画要素
 	const calendarEl = document.getElementById('calendar');
+	const dailyTotals = await fetchDailyTotals();
 	// FullCalendarのインスタンスを作る
 	const calendar = new FullCalendar.Calendar(calendarEl,{
 		initialView: 'timeGridWeek',			// １週間の縦型view
@@ -31,8 +33,27 @@ document.addEventListener('DOMContentLoaded',async function(){
 			if(day === 6){
 				headerEl.style.color="#A4C0C9";
 			}
+			//ヘッダーに合計時間を表示する
+			//toISOString()ではずれてしまったので修正
+			const year = info.date.getFullYear();
+			const month = info.date.getMonth() + 1;
+			const day1 = info.date.getDate();
+			
+			const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
+//			const dateStr = info.date.toISOString().split('T')[0];
+			const totalMin = dailyTotals.get(dateStr);
+			if(totalMin != null){
+				const totalDiv = document.createElement('div')
+				totalDiv.style.fontSize = "0.8rem";
+				totalDiv.style.marginTop = "2px";
+				totalDiv.style.color = "#778899";
+				totalDiv.innerText = `${totalMin}分`;
+				info.el.appendChild(totalDiv);
+			}
+			
+			
 		},
-
+		
 
 		//追加
 		eventDurationEditable: true,			// イベント終了時間（duration）を変更できる
@@ -112,6 +133,17 @@ document.addEventListener('DOMContentLoaded',async function(){
 			await updateEvent(info);
 		}
 	});
+	
+	//日ごとの合計学習時間を取得
+	async function fetchDailyTotals(){
+		const res = await fetch('/api/learning-records/daily-totals');
+		if(!res.ok)return new Map();
+		const jsonData = await res.json();
+		const map = new Map();
+		Object.entries(jsonData).forEach(([learningDay,totalMinutes]) => {map.set(learningDay, totalMinutes)});
+		return map;
+	}
+	
 	
 	calendar.render();
 	

@@ -1,6 +1,7 @@
 package com.example.goalplanningapp.controller;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.goalplanningapp.dto.EventDTO;
@@ -95,5 +97,11 @@ public class LearningRecordApiController {
 		return ResponseEntity.ok().build();
 	}
 	
+	//ヘッダーに合計時間表示
+	@GetMapping("/daily-totals")
+	@ResponseBody
+	public Map<LocalDate, Long> getDailyTotals(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
+		return learningRecordService.getDailyTotals(userDetailsImpl.getUser());
+	}
 
 }
