@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import com.example.goalplanningapp.dto.DailyTotalDTO;
@@ -144,6 +145,33 @@ public class LearningRecordService {
 			map.put(dto.getLearningDay(), runningTotalMinutes);
 		}
 		return map;
+	}
+	
+	//今日時点での累計学習時間を計算
+	public Long getTodaysCumulative(@AuthenticationPrincipal User user) {
+		Map<LocalDate, Long> cumulativeMap = getDailyCumulativeTotals(user);
+		LocalDate today = LocalDate.now();
+		Long todaysCumulativeMinutes = cumulativeMap.get(today);
+		return todaysCumulativeMinutes/60;
+	}
+	//今日時点での累計学習時間を計算
+	public Long getTodaysRemaining(@AuthenticationPrincipal User user, Goal goal) {
+		Long estimatedHours = Math.round(goal.getQualification().getEstimatedMinutes()/60);
+		Long todaysCumulativeHours = getTodaysCumulative(user);
+		Long remainingHours = estimatedHours - todaysCumulativeHours;
+		return remainingHours;
+	}
+	
+	// 今日時点での目標達成度(%)
+	public Long getAchievementRate(@AuthenticationPrincipal User user, Goal goal) {
+		Long estimatedHours = Math.round(goal.getQualification().getEstimatedMinutes()/60);
+		Long todaysCumulativeHours = getTodaysCumulative(user);
+		Long achievementRate =(long) Math.round((todaysCumulativeHours / estimatedHours) * 100);
+		System.out.println("achievementRate:"+achievementRate);
+		System.out.println("todaysCumulativeHours:"+todaysCumulativeHours);
+		System.out.println("estimatedHours:"+estimatedHours);
+		
+		return achievementRate;		
 	}
 	
 	
