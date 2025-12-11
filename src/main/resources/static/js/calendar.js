@@ -13,12 +13,26 @@ document.addEventListener('DOMContentLoaded',async function(){
 		selectable: true,						// クリックで選択可能
 		selectMirror: true,						// selectを使うには必須
 		locale: 'ja', 							// 日本語表記 
+		firstDay: 1,							// 月曜はじまり
 		themeSystem:'bootstrap5',				// BootStrapデザイン
 		contentHeight: '500px',
 		slotDuration: '00:15:00',				// 15分刻み
 		slotLabelInterval: '01:00:00',			// 1時間ごとに時間表示
 		editable: true,							// イベントをドラッグで動かせる
-		
+
+		//週末だけヘッダー色を変更する
+		dayHeaderDidMount: function(info){
+			const day = info.date.getDay(); //0=日,6=土
+			const headerEl = info.el.querySelector('a');
+			if(!headerEl)return;
+			if(day === 0){
+				headerEl.style.color ="#E8B4B4";
+			}
+			if(day === 6){
+				headerEl.style.color="#A4C0C9";
+			}
+		},
+
 
 		//追加
 		eventDurationEditable: true,			// イベント終了時間（duration）を変更できる
