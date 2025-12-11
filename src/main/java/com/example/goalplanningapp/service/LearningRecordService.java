@@ -2,10 +2,13 @@ package com.example.goalplanningapp.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.example.goalplanningapp.dto.DailyTotalDTO;
 import com.example.goalplanningapp.dto.LearningRecordDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningRecord;
@@ -120,6 +123,30 @@ public class LearningRecordService {
 			throw new IllegalStateException("未来の日付には登録できません。");
 		}
 	}
+	
+	//日ごとの合計学習時間計算
+	public Map<LocalDate, Long> getDailyTotals(User user){
+		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
+		Map<LocalDate, Long> map = new HashMap<>();
+		for(DailyTotalDTO dto : dailyTotals) {
+			map.put(dto.getLearningDay(), dto.getTotalMinutes());
+		}
+		return map;
+	}
+	
+	//日ごとの累積学習時間を計算
+	public Map<LocalDate,Long> getDailyCumulativeTotals(User user){
+		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
+		Map<LocalDate, Long> map = new HashMap<>();
+		Long runningTotalMinutes = (long) 0; // 累計学習時間初期値=0
+		for(DailyTotalDTO dto : dailyTotals) {
+			runningTotalMinutes += dto.getTotalMinutes();
+			map.put(dto.getLearningDay(), runningTotalMinutes);
+		}
+		return map;
+	}
+	
+	
 }
 
 

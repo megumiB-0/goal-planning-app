@@ -17,6 +17,7 @@ import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.repository.GoalRepository;
 import com.example.goalplanningapp.security.UserDetailsImpl;
+import com.example.goalplanningapp.service.LearningRecordService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,6 +26,8 @@ public class HomeController {
 	//DI
 	@Autowired
 	private GoalRepository goalRepository;
+	@Autowired
+	private LearningRecordService learningRecordService;
 
 	@GetMapping("/")
 	public String index() {
@@ -66,14 +69,17 @@ public class HomeController {
 			
 			// グラフに必要なデータを取得
 			LocalDate startDate = goal.getStartDate();
-			
+	
 			List<Map<String,Object>> studyData =new ArrayList<>();	
 			LocalDate date = startDate;
-			// 実績ライン用
-			while (!date.isAfter(goalDate)) {
+			// 実績ライン用（累積学習時間マップを取得）
+			Map<LocalDate, Long> cumulativeMap = learningRecordService.getDailyCumulativeTotals(loginUser);
+			LocalDate today = LocalDate.now();
+			while (!date.isAfter(today)) {
 				Map<String, Object> rec = new HashMap<>();
 				rec.put("x", date.toString());
-				rec.put("y", 0);     // 今は仮データをセットしている（要修正）
+				Long cumulative = cumulativeMap.getOrDefault(date, (long) 0);    // 累計時間があればそれを入れる。なければ0を入れる
+				rec.put("y", cumulative / 60); 
 				studyData.add(rec);
 				date = date.plusDays(1);	
 			}
