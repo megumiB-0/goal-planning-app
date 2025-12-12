@@ -17,111 +17,96 @@
 <body>
 	<div class="goalplanningapp-wrapper">
 		<div th:replace ="~{fragment :: header}"></div>
-		<main>
-			<div class="container pt-4 pb-5 goalplanningapp-container">
-				<div class="row mb-4">
-					<div class="col-12">
-					<!-- ログインメッセージ表示 -->
-					<div th:if="${loginMessage}" class="justify-content-center alert alert-info mb-3">
-						<p th:text="${loginMessage}"></p>
-					</div>
-					<!-- 登録成功メッセージ表示 -->
-					<div th:if="${successMessage}" class="justify-content-center alert alert-info mb-3">
-						<p th:text="${successMessage}"></p>
-					</div>
-					<!-- エラーメッセージ表示-->
-					<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
-						<p th:text="${errorMessage}"></p>
-					</div>
-					</div>
-
-		<!-- 目標設定済み -->
-				<div th:if="${hasGoal}">
-				<div class="row d-flex mb-3">
-						<h1 th:text="${message}" class="alert alert-light"></h1>
-				</div>					
-				</div>
-				<!-- 下段（左右分割） -->
-				<div class="row">
-					<!-- 左側：7/12 -->
-					<div class="col-md-7 mb-4">
-						<div class="card p-3">
-							<h4 class="card-title">進捗グラフ</h4>
-								<canvas id="myChart"></canvas>
-								
-					<script th:inline="javascript">
-					/* <![CDATA[*/
-					let studyData = /*[[${studyData}]]*/ [];
-					let startDate = /*[[${startDate}]]*/ [];
-					let goalDate = /*[[${goalDate}]]*/ [];
-					let estimatedHours = /*[[${estimatedHours}]]*/ [];
-					/*]]:*/
-					</script>
-					<script src="/js/study-chart.js"></script>
+			<main>
+				<div class="container pt-4 pb-5 goalplanningapp-container">
+					<div class="row mb-4">
+						<div class="col-12">
+						<!-- ログインメッセージ表示 -->
+						<div th:if="${loginMessage}" class="justify-content-center alert alert-info mb-3">	
+							<p th:text="${loginMessage}"></p>
+						</div>
+						<!-- 登録成功メッセージ表示 -->
+						<div th:if="${successMessage}" class="justify-content-center alert alert-info mb-3">
+							<p th:text="${successMessage}"></p>
+						</div>
+						<!-- エラーメッセージ表示-->
+						<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
+							<p th:text="${errorMessage}"></p>
 						</div>
 					</div>
-					<!-- 右側：5/12（中に row ×3） -->
-					<div class="col-md-5">
-					<!-- row 1 -->
-						<div class="row mb-3">
-							<div class="col">
-								<div class="card p-3">
-									<p>目標達成度：<span th:text="${achievementRate}">%</p>
-									<p>進捗評価</p>
-								</div>
-							</div>
-						</div>
-					<!-- row 2 -->
-						<div class="row mb-3">
-							<div class="col">
-								<div class="card p-3">
-									<p>これまでの学習時間：<span th:text="${todaysCumulativeHours}"></span>時間</p>
-									<p>残りの学習時間　：<span th:text="${remainingHours}"></span>時間</p>
-								</div>
-							</div>
-						</div>
-					<!-- row 3 -->
+					<!-- 目標設定済み -->
+					<div th:if="${hasGoal}">
+						<div class="row d-flex mb-3">
+							<h1 th:text="${message}" class="alert alert-light"></h1>
+						</div>					
+						<!-- 下段（左右分割） -->
 						<div class="row">
-							<div class="col">
+							<!-- 左側：7/12 -->
+							<div class="col-md-7 mb-4">
 								<div class="card p-3">
-									右側 row3
+									<h4 class="card-title">進捗グラフ</h4>
+										<canvas id="myChart"></canvas>			
+									<script th:inline="javascript">
+										/* <![CDATA[*/
+										let studyData = /*[[${studyData}]]*/ [];
+										let startDate = /*[[${startDate}]]*/ [];
+										let goalDate = /*[[${goalDate}]]*/ [];
+										let estimatedHours = /*[[${estimatedHours}]]*/ [];
+										/*]]:*/	
+									</script>
+									<script src="/js/study-chart.js"></script>
+								</div>
+							</div>
+							<!-- 右側：5/12（中に row ×3） -->
+							<div class="col-md-5">
+								<!-- row 1 -->
+								<div class="row mb-3">
+									<div class="col">
+										<div class="card p-3">
+											<p>目標達成度：<span th:text="${achievementRate+ '%'}"></p>
+											<p>進捗評価</p>
+										</div>	
+									</div>
+								</div>
+								<!-- row 2 -->
+								<div class="row mb-3">
+									<div class="col">
+										<div class="card p-3">
+											<p>これまでの学習時間：<span th:text="${todaysCumulativeHours}"></span>時間</p>
+											<p>残りの学習時間　：<span th:text="${remainingHours}"></span>時間</p>
+										</div>
+									</div>
+								</div>
+								<!-- row 3 -->
+								<div class="row">
+									<div class="col">
+										<div class="card p-3">
+											右側 row3
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-					<div class="row">
-						<div class="card">
-							<h4 class="text-center mt-3">スケジュール & 実績入力</h5>
-							<!-- カレンダー本体 -->
-							<div id="calendar"></div>
-							<!-- カレンダー用js -->
-							<script src="/js/calendar.js"></script>
+						<div class="row">
+							<div class="card">
+								<h4 class="text-center mt-3">スケジュール & 実績入力</h5>
+								<!-- カレンダー本体 -->
+								<div id="calendar"></div>
+								<!-- カレンダー用js -->
+								<script src="/js/calendar.js"></script>
+							</div>
 						</div>
+					</div>	
+					<!-- 目標未設定 -->
+					<div th:unless="${hasGoal}">
+						<div class="d-flex justify-content-center my-4">
+							<a th:href="@{/goals/setting}" class="btn btn-primary mt-2">目標設定</a>
+						</div>											
 					</div>
-				</div>	
-				
-				
-				
-				
-				
-		<!-- 目標未設定 -->
-				<div th:unless="${hasGoal}">
-					<div class="d-flex justify-content-center my-4">
-						<a th:href="@{/goals/setting}" class="btn btn-primary mt-2">目標設定</a>
-					</div>											
 				</div>
-				
-				
-				
-				
-				
-				</div>
-			</div>
-		</main>
+			</main>
 		<div th:replace="~{fragment :: footer}"></div>
-	</div>
-	<div th:replace="~{fragment :: scripts}"></div>
-
+		<div th:replace="~{fragment :: scripts}"></div>
+	</div>	
 </body>
 </html>
