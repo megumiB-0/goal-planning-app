@@ -47,7 +47,7 @@ public class LearningRecordApiController {
 									@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		Goal goal = goalService.getCurrentGoal(userDetailsImpl.getUser());
 		try {
-			// 保存して帰ってくる
+			// 保存して返ってくる
 			LearningRecord saved =learningRecordService.createRecord(dto, userDetailsImpl.getUser(), goal);
 			//保存した内容をDTOに詰めて返す
 			EventDTO event = new EventDTO(

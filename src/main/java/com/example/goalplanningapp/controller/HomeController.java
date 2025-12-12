@@ -68,7 +68,7 @@ public class HomeController {
 			model.addAttribute("message",message);
 			
 			//右２段目　（これまでの学習時間）
-			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser);
+			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser)/60;
 			model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
 			//右２段目　（残りの学習時間）
 			Long remainingHours = learningRecordService.getTodaysRemaining(loginUser,goal);
