@@ -66,17 +66,28 @@ public class HomeController {
 							  qualigicationName + "を取得する!";
 			//モデルに渡す
 			model.addAttribute("message",message);
+
+			//右１段目（進捗割合）
+			Long achievementRate = learningRecordService.getAchievementRate(loginUser, goal);
+			model.addAttribute("achievementRate", achievementRate);	
+			//右１段目（進捗評価アイコン）
+			String evalIcon = learningRecordService.evaluateProgress(loginUser,goal);
+			model.addAttribute("evalIcon", evalIcon);
 			
 			//右２段目　（これまでの学習時間）
-			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser)/60;
+			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser) / 60;
 			model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
 			//右２段目　（残りの学習時間）
 			Long remainingHours = learningRecordService.getTodaysRemaining(loginUser,goal);
 			model.addAttribute("remainingHours", remainingHours);
-			
-			//右１段目
-			Long achievementRate = learningRecordService.getAchievementRate(loginUser, goal);
-			model.addAttribute("achievementRate", achievementRate);
+			//右３段目（1日xx時間学習で達成）
+			Double hours = learningRecordService.getEstimatedPerDay(loginUser, goal) / 60.0;
+			Double estimatedPerDay = Math.round(hours * 10) / 10.0;
+			Double hoursPerWeek = estimatedPerDay * 7;
+			Double estimatedPerWeek = Math.round(hoursPerWeek * 10) / 10.0;
+			model.addAttribute("estimatedperday", estimatedPerDay);
+			model.addAttribute("estimatedperWeek", estimatedPerWeek);
+
 			
 			
 			

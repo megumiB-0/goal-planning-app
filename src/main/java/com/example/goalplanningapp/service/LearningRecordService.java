@@ -2,6 +2,7 @@ package com.example.goalplanningapp.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -127,21 +128,28 @@ public class LearningRecordService {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	
 	//日ごとの合計学習時間計算
 	public Map<LocalDate, Long> getDailyTotals(User user){
 		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
 		//結果を日付順で返したいのでLinkesHashMapを使う
 		Map<LocalDate, Long> map = new LinkedHashMap<>();
+		LocalDate today =LocalDate.now();
 		//データが0件の時は今日だけ0で返す
-		if(dailyTotals == null || dailyTotals.isEmpty()) {
-			map.put(LocalDate.now(),0L);
+		if(dailyTotals.isEmpty()) {
+			map.put(today,0L);
 			return map;
 		}
 		//日付順にソートをかける
 		dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));		
 		//学習開始日と今日の日付を取得
 		LocalDate start = dailyTotals.get(0).getLearningDay();
-		LocalDate today = LocalDate.now();
 		//List(dailyTotals)をマップにする
 		Map<LocalDate,Long>dailyTotalMap = dailyTotals.stream().collect(Collectors.toMap(
 				DailyTotalDTO::getLearningDay,
@@ -153,12 +161,6 @@ public class LearningRecordService {
 			map.put(date, minutes);
 		}
 		return map;
-		/*
-		for(DailyTotalDTO dto : dailyTotals) {
-			map.put(dto.getLearningDay(), dto.getTotalMinutes());
-		}
-		return map;
-		*/
 	}
 	
 	//日ごとの累積学習時間(分)を計算
@@ -169,20 +171,20 @@ public class LearningRecordService {
 		if(dailyTotals.isEmpty()) {
 			 return new LinkedHashMap<>();
 		}
-		//get(0)が安全に呼べるようにする
-		Map<LocalDate, Long> map = new LinkedHashMap<>();
 		//ソートをかける
 		dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));
-		// 累計学習時間初期値=0
-		Long cumulativeMinutes = (long) 0;
-		//学習開始日と今日の日付を取得
-		LocalDate start = dailyTotals.get(0).getLearningDay();
-		LocalDate today = LocalDate.now();
+		//get(0)が安全に呼べるようにする
+		Map<LocalDate, Long> map = new LinkedHashMap<>();
 		Map<LocalDate, Long> dailyMap = dailyTotals.stream().collect(Collectors.toMap(
 				DailyTotalDTO::getLearningDay,
 				DailyTotalDTO::getTotalMinutes
 			));
-		// 学習開始日から直近学習した日までをfor分で回す
+		//累積学習時間の初期値0
+		Long cumulativeMinutes = 0L;
+		//学習開始日と今日の日付を取得
+		LocalDate start = dailyTotals.get(0).getLearningDay();
+		LocalDate today = LocalDate.now();
+		// 学習開始日から直近学習した日までをfor文で回す
 		for(LocalDate date = start; !date.isAfter(today);date = date.plusDays(1)) {
 			//データがある場合は累積に加算
 			if(dailyMap.containsKey(date)) {
@@ -191,54 +193,77 @@ public class LearningRecordService {
 			//データがない日は　cumulativeMinutesのまま（=直前の値）
 			map.put(date, cumulativeMinutes);
 		}
-			System.out.println("cumulativeMinutes="+ cumulativeMinutes);
 
 		return map;
 		}
 	
-	
-	
-	
-/*	public Map<LocalDate,Long> getDailyCumulativeTotals(User user){
-		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
-		Map<LocalDate, Long> map = new HashMap<>();
-		Long runningTotalMinutes = (long) 0; // 累計学習時間初期値=0
-		for(DailyTotalDTO dto : dailyTotals) {
-			runningTotalMinutes += dto.getTotalMinutes();
-			map.put(dto.getLearningDay(), runningTotalMinutes);
-		}
-		return map;
-	}
-*/	
 	//今日時点での累計学習時間(分)を計算
-	public Long getTodaysCumulative(@AuthenticationPrincipal User user) {
+	public Long getTodaysCumulative(User user) {
 		Map<LocalDate, Long> map = getDailyCumulativeTotals(user);
 		LocalDate today = LocalDate.now();
 		Long todaysCumulativeMinutes = map.getOrDefault(today,0L);
 		return todaysCumulativeMinutes;
 	}
 	
-	//今日時点での残りの学習時間(時間)を計算
-	public Long getTodaysRemaining(@AuthenticationPrincipal User user, Goal goal) {
-		Long estimatedMinutes = Math.round(goal.getQualification().getEstimatedMinutes());
+//--進捗計算--
+	//共通部分
+	private Map<String, Long> getProgressValues(User user,Goal goal){
+		Long estimatedMinutes =  Math.round(goal.getQualification().getEstimatedMinutes());
 		Long todaysCumulativeMinutes = getTodaysCumulative(user);
-		Long remainingHours = estimatedMinutes/60 - todaysCumulativeMinutes/60;
-		return remainingHours;
+		Long remainingDays = ChronoUnit.DAYS.between(LocalDate.now().plusDays(1), goal.getGoalDate());
+		Map<String, Long> map =new LinkedHashMap<>();
+		map.put("estimatedMinutes", estimatedMinutes);
+		map.put("todaysCumulativeMinutes",todaysCumulativeMinutes);
+		map.put("remainingDays", remainingDays);
+		return map;
 	}
 	
 	// 今日時点での目標達成度(%)
-	public Long getAchievementRate(@AuthenticationPrincipal User user, Goal goal) {
-		Double estimatedMinutes = goal.getQualification().getEstimatedMinutes();
-		Long todaysCumulativeMinutes = getTodaysCumulative(user);
-		double rate = (double)todaysCumulativeMinutes/estimatedMinutes;
-		Long achievementRate =(long) Math.round(rate * 100);
-		System.out.println("achievementRate:"+achievementRate);
-		System.out.println("todaysCumulativeMinutes:"+todaysCumulativeMinutes);
-		System.out.println("estimatedMinutes:"+estimatedMinutes);
-		
-		return achievementRate;		
+	public Long getAchievementRate(User user, Goal goal) {
+		Map<String, Long> v = getProgressValues(user, goal);
+		double rate = (double)v.get("todaysCumulativeMinutes")/v.get("estimatedMinutes");
+		Long achievementRate = Math.round(rate * 100);
+		return achievementRate;
+	}	
+
+	//今日時点での残りの学習時間(時間)を計算
+	public Long getTodaysRemaining(User user, Goal goal) {
+		Map<String, Long> v = getProgressValues(user, goal);
+		Long remainingHours = v.get("estimatedMinutes")/60 - v.get("todaysCumulativeMinutes")/60;
+		return remainingHours;
+	}
+
+	// 目標達成日までの1日あたりの必要学習時間(分)	
+	public Double getEstimatedPerDay(@AuthenticationPrincipal User user,Goal goal) {
+		Map<String, Long> v = getProgressValues(user, goal);
+		Long remainingMinutes = v.get("estimatedMinutes") - v.get("todaysCumulativeMinutes");
+		Double estimatedPerDay = (double) (remainingMinutes/v.get("remainingDays"));
+		return estimatedPerDay;
 	}
 	
+	//進捗評価
+	public String evaluateProgress(User user,Goal goal) {
+		Map<String, Long> v = getProgressValues(user, goal);
+		
+		LocalDate start = goal.getStartDate();
+		LocalDate end = goal.getGoalDate();
+		LocalDate today = LocalDate.now();
+		long totalDays = ChronoUnit.DAYS.between(start, end);
+		long passedDays = ChronoUnit.DAYS.between(start, today);
+		//期間の経過（％）		
+		double dayProgress = (double) passedDays / totalDays * 100;
+		//学習時間の進捗率(%)		
+		double studyProgress = (double) v.get("todaysCumulativeMinutes")/v.get("estimatedMinutes") * 100;
+		//評価
+		double diff = studyProgress / dayProgress;
+		if(diff >=1) {			//まる
+			return "bi bi-sun-fill text-success︎";
+		}else if(diff >= 0.8) {	//さんかく
+			return "bi bi-cloud-fill text-warning";
+		}else {					//ばつ
+			return "bi bi-umbrella-fill text-dark";
+		}
+	}
 	
 }
 
