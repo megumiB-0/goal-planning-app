@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+<title>ルーティン新規登録</title>
+</head>
+<body>
+	<div class="goalplanningapp-wrapper">
+		<div th:replace="~{fragment :: header}"></div>
+		<main>
+			<div class="container pt-4 pb-5 goalplanningapp-container">
+				<div class="row justify-content-center">
+					<div class="col-xl-5 col-lg-6 col-md-8">
+						<h1 class="mb-4 text-center">ルーティン新規登録</h1>
+						<form th:action="@{/routines}" method="post">
+							<table>
+								<thead>
+									<tr>
+										<th>項目</th>
+										<th>開始</th>
+										<th>終了</th>
+										<th>曜日</th>
+									</tr>									
+								</thead>
+								<tbody>
+									<tr th:each="title, stat : ${titles}">
+										<!-- タイトル -->
+										<td>
+											<input type="hidden" 
+												   th:name="|rows[${stat.index}].title|" 
+												   th:value="${title}"/>
+											<span th:text="${title}"></span>
+										</td>
+										<!-- 開始時間 -->
+										<td>
+											<input type="time"
+												   th:name="|rows[${stat.index}].startTime|"/>
+										</td>
+										<!-- 終了時間 -->
+										<td>
+											<input type="time"
+												   th:name="|rows[${stat.index}].endTime|"/>
+										</td>
+										<!-- 曜日 -->
+										<td>
+											<label th:each="day : ${days}" style="margin-right:6px;">
+												<input type="checkbox"
+													   th:name="|rows[${stat.index}].days|"
+													   th:value="${day}"/>
+												<span th:text="${day.label}"></span>
+											</label>
+										</td>
+									</tr>
+								</tbody>
+<!--								
+								-- 起床 --
+								<tr>
+									<td>
+										起床
+										<input type="hidden" name="title" value="起床">
+									</td>
+									<td><input type="time" name="startTime" required></td>
+									<td><input type="time" name="endTime" required></td>
+									<td>
+										<label><input type="checkbox" name="days" th:value="MONDAY">月</label>
+										<label><input type="checkbox" name="days" th:value="TUESDAY">火</label>
+									</td>
+								</tr>
+								-- 朝食 --
+								<tr>
+									<td>
+										朝食
+										<input type="hidden" name="title" value="朝食">
+									</td>
+									<td><input type="time" name="startTime" required></td>
+									<td><input type="time" name="endTime" required></td>
+									<td>
+										<label><input type="checkbox" name="days" th:value="MONDAY">月</label>
+										<label><input type="checkbox" name="days" th:value="TUESDAY">火</label>
+									</td>
+								</tr>
+								-- 就寝 --
+								<tr>
+									<td>
+										就寝
+										<input type="hidden" name="title" value="就寝">
+									</td>
+									<td><input type="time" name="startTime" required></td>
+									<td><input type="time" name="endTime" required></td>
+									<td>
+										<label><input type="checkbox" name="days" th:value="MONDAY">月</label>
+										<label><input type="checkbox" name="days" th:value="TUESDAY">火</label>
+									</td>
+								</tr>
+-->
+							</table>
+							<!-- 送信 -->
+							<div>
+								<button type="submit">まとめて登録</button>							
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</main>
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+	<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

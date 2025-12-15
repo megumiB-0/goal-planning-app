@@ -33,6 +33,6 @@ public class RoutineScheduleDay {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "day_of_week", nullable = false)
-	private DayOfWeek dayOfWeek;
+	private DayOfWeek day;
 
 }
