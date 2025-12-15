@@ -1,8 +1,5 @@
 package com.example.goalplanningapp.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +8,11 @@ import com.example.goalplanningapp.entity.DayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.RoutineScheduleDay;
 import com.example.goalplanningapp.entity.User;
+import com.example.goalplanningapp.form.RoutineForm;
+import com.example.goalplanningapp.form.RoutineRowForm;
 import com.example.goalplanningapp.repository.RoutineScheduleRepository;
+
+
 
 @Service
 public class RoutineScheduleService {
@@ -22,39 +23,48 @@ public class RoutineScheduleService {
 		this.routineScheduleRepository = routineScheduleRepository;
 	}
 	
-	public RoutineSchedule createRoutine(
-			User user,
-			String title,
-			LocalTime startTime,
-			LocalTime endTime,
-			LocalDate from,
-			List<DayOfWeek> days
-	) {
-		//親
-		RoutineSchedule schedule = new RoutineSchedule();
-		schedule.setUser(user);
-		schedule.setTitle(title);
-		schedule.setStartTime(startTime);
-		schedule.setEndTime(endTime);
-		schedule.setEffectiveFrom(from);
-		schedule.setEffectiveTo(null);
+	// ルーティン作成
+	public void createRoutines(User user,RoutineForm form) {
+		for (RoutineRowForm row : form.getRows()) {
+			//入力されていない行はスキップ
+			if(row.getStartTime() == null ||
+			   row.getEndTime() == null ||
+			   row.getDays() == null ||
+			   row.getDays().isEmpty()
+			   ) {
+				continue;
+				}
 
-		//子
-		List<RoutineScheduleDay> dayEntities = new ArrayList<>();
-		
-		for(DayOfWeek day : days) {
-			RoutineScheduleDay d = new RoutineScheduleDay();
-			d.setDayOfWeek(day);
-			d.setRoutineSchedule(schedule);
-			dayEntities.add(d);
+			//曜日ごとに保存
+			RoutineSchedule schedule = new RoutineSchedule();
+				schedule.setUser(user);
+				schedule.setTitle(row.getTitle());
+				schedule.setStartTime(row.getStartTime());
+				schedule.setEndTime(row.getEndTime());
+				schedule.setEffectiveFrom(form.getEffectiveFrom());
+				schedule.setEffectiveTo(null);
+
+				for(DayOfWeek day : row.getDays()) {
+				RoutineScheduleDay scheduleDay =new RoutineScheduleDay();
+				scheduleDay.setDay(day);
+				scheduleDay.setRoutineSchedule(schedule);
+				schedule.getDays().add(scheduleDay);
+				}
+				routineScheduleRepository.save(schedule);	
+				
+				
 		}
-		
-		//親に子をセットする
-		schedule.setRoutineScheduleDays(dayEntities);
-		//保存
-		return routineScheduleRepository.save(schedule);
-
-	};
-
+	}
+	
+	// ルーティン一覧取得
+	public List<RoutineSchedule> findByUser(User user){
+		return routineScheduleRepository.findByUserOrderByEffectiveFromDesc(user);
+	}
+	// ルーティンの有無確認
+	public boolean existsByUser(User user) {
+		return routineScheduleRepository.existsByUser(user);
+	}
+	
+	
 	
 }

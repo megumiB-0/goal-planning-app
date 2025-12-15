@@ -4,6 +4,7 @@ package com.example.goalplanningapp.entity;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -55,6 +56,6 @@ public class RoutineSchedule {
 	@OneToMany(mappedBy = "routineSchedule", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private List<RoutineScheduleDay> routineScheduleDays;
+	private List<RoutineScheduleDay> days = new ArrayList<>();
 	
 }
