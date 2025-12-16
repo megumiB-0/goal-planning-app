@@ -12,12 +12,13 @@ import lombok.Data;
 public class RoutineRowForm {
 	private String title;
 	
-	//通常イベント用
-	private LocalTime startTime;
-	private LocalTime endTime;
+	// 表示用（起床・就寝のみ）
+	private String sleepType;
 	
-	//睡眠用（起床就寝）
-	private LocalTime sleepTime; 
+	//通常イベント用
+	private LocalTime startTime; //開始(睡眠なら就寝)
+	private LocalTime endTime;   //終了(睡眠なら起床)
+	
 	private List<DayOfWeek> days = new ArrayList<>();
 
 }

@@ -9,5 +9,6 @@ import lombok.Data;
 @Data
 public class RoutineForm {
 	private LocalDate effectiveFrom;
+	private LocalDate effectiveTo;
 	private List<RoutineRowForm> rows = new ArrayList<>();
 }

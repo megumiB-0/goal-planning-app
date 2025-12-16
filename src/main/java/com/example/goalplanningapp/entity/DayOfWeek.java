@@ -17,5 +17,9 @@ public enum DayOfWeek {
 	public String getLabel() {
 		return label;
 	}
+	public DayOfWeek next() {
+		int nextOrdinal = (this.ordinal() + 1) % values().length;
+		return values()[nextOrdinal];
+	}
 	
 }
