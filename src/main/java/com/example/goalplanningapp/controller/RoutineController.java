@@ -60,10 +60,12 @@ public class RoutineController {
 	public String create(
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@ModelAttribute RoutineForm form
-			
 			) {
 	    System.out.println("form=" + form);
 	    System.out.println("rows=" + form.getRows());
+	    // サービス呼び出し
+	    routineScheduleService.createRoutines(userDetailsImpl.getUser(), form);
+	  	    
 		return "redirect:/routines";
 
 		

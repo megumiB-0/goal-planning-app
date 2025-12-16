@@ -1,5 +1,6 @@
 package com.example.goalplanningapp.service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -72,6 +73,14 @@ public class GoalService {
     	return goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser)
     						 .orElseThrow(()-> new IllegalStateException("現在の目標が見つかりません。"));
     }
+    //現在のgoalの開始日を取得する
+    public LocalDate getCurrentGoalStartDate(User loginUser) {
+    	return goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser)
+    						 .map(Goal :: getStartDate)
+    						 .orElseThrow(()-> new IllegalStateException("現在の目標が見つかりません。"));
+    }
+    
+    
 
 
 }
