@@ -44,18 +44,12 @@ public class RoutineController {
 	public String newForm(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			Model model) {
 		User user = userDetailsImpl.getUser();
+		RoutineForm form = routineScheduleService.createInitialForm();
+		
 		if(routineScheduleService.existsByUser(user)) {
 			return "redirect:/routines";
 		}
-		model.addAttribute("titles", List.of(
-				"起床",
-				"朝食",
-				"昼食",
-				"夕食",
-				"仕事",
-				"入浴",
-				"その他"
-				));
+		model.addAttribute("routineForm", form);
 		model.addAttribute("days",DayOfWeek.values());
 		return "user/routines/new";
 	}
