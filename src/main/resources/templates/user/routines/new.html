@@ -13,7 +13,7 @@
 				<div class="row justify-content-center">
 					<div class="col-xl-5 col-lg-6 col-md-8">
 						<h1 class="mb-4 text-center">ルーティン新規登録</h1>
-						<form th:action="@{/routines}" method="post">
+						<form th:action="@{/routines}" method="post" th:object="${routineForm}">
 							<table>
 								<thead>
 									<tr>
@@ -24,29 +24,35 @@
 									</tr>									
 								</thead>
 								<tbody>
-									<tr th:each="title, stat : ${titles}">
+									<tr th:each="row, stat : *{rows}">
 										<!-- タイトル -->
 										<td>
+											<span th:text="${row.title}"></span>
 											<input type="hidden" 
-												   th:name="|rows[${stat.index}].title|" 
-												   th:value="${title}"/>
-											<span th:text="${title}"></span>
+												   th:field = "*{rows[__${stat.index}__].title}"/>
 										</td>
-										<!-- 開始時間 -->
+										<!-- 開始時間（通常）/睡眠（起床・就寝） -->
+										<td >
+											<input th:unless="${row.title =='起床' or row.title =='就寝'}"
+												   type="time"
+												   th:field="*{rows[__${stat.index}__].startTime}"/>
+											<input th:if="${row.title =='起床' or row.title =='就寝'}"
+												   type="time" 
+												   th:field="*{rows[__${stat.index}__].sleepTime}"/>
+										</td>
+										<!-- 終了時間 （通常のみ）-->
 										<td>
-											<input type="time"
-												   th:name="|rows[${stat.index}].startTime|"/>
+											<input th:unless="${row.title =='起床' or row.title =='就寝'}"
+												　　type="time"						
+												   th:field="*{rows[__${stat.index}__].endTime}"/>
 										</td>
-										<!-- 終了時間 -->
-										<td>
-											<input type="time"
-												   th:name="|rows[${stat.index}].endTime|"/>
-										</td>
+
+
 										<!-- 曜日 -->
 										<td>
 											<label th:each="day : ${days}" style="margin-right:6px;">
 												<input type="checkbox"
-													   th:name="|rows[${stat.index}].days|"
+													   th:field="*{rows[__${stat.index}__].days}"
 													   th:value="${day}"/>
 												<span th:text="${day.label}"></span>
 											</label>
