@@ -1,6 +1,6 @@
 package com.example.goalplanningapp.service;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.example.goalplanningapp.entity.DayOfWeek;
+import com.example.goalplanningapp.dto.CalendarEventDTO;
+import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.RoutineScheduleDay;
 import com.example.goalplanningapp.entity.User;
@@ -99,7 +100,7 @@ public class RoutineScheduleService {
 			
 		}
 			// 全曜日で睡眠チェック
-			for(DayOfWeek day : DayOfWeek.values()) {
+			for(RoutineDayOfWeek day : RoutineDayOfWeek.values()) {
 				RoutineRowForm wakeRowForDay  = findRowForDay(wakeRows, day);
 				RoutineRowForm sleepRowForDay = findRowForDay(sleepRows, day);
 				if ((wakeRowForDay == null && sleepRowForDay == null)) {
@@ -140,7 +141,7 @@ public class RoutineScheduleService {
 			schedule.setEffectiveFrom(effectiveFrom);
 			schedule.setEffectiveTo(null);
 			// 曜日ごとに保存
-			for(DayOfWeek day : row.getDays()) {
+			for(RoutineDayOfWeek day : row.getDays()) {
 			RoutineScheduleDay scheduleDay = new RoutineScheduleDay();
 			scheduleDay.setDay(day);
 			scheduleDay.setRoutineSchedule(schedule);
@@ -156,9 +157,9 @@ public class RoutineScheduleService {
 			    LocalTime sleepTime = sleepRow.getStartTime(); // 就寝時間
 			    
 			    // 就寝ルーティンの各曜日をループ
-			    for (DayOfWeek sleepDay : sleepRow.getDays()) {
+			    for (RoutineDayOfWeek sleepDay : sleepRow.getDays()) {
 			    	// 起床は必ず翌日の曜日
-			        DayOfWeek wakeDay = sleepDay.next();
+			        RoutineDayOfWeek wakeDay = sleepDay.next();
 			        // 対応する起床ルーティンを探す
 			        RoutineRowForm wakeRow = findRowForDay(wakeRows, wakeDay);
 			        if (wakeRow == null) {
@@ -210,7 +211,7 @@ public class RoutineScheduleService {
 		    User user,
 		    LocalTime startTime,
 		    LocalTime endTime,
-		    DayOfWeek day,
+		    RoutineDayOfWeek day,
 		    LocalDate effectiveFrom) {
 
 		    String key = startTime + "_" + endTime;
@@ -235,7 +236,7 @@ public class RoutineScheduleService {
 		}
 	
 	// ヘルパー
-	private RoutineRowForm findRowForDay(List<RoutineRowForm> rows, DayOfWeek day) {
+	private RoutineRowForm findRowForDay(List<RoutineRowForm> rows, RoutineDayOfWeek day) {
 	    for (RoutineRowForm row : rows) {
 	        if (row.getDays() != null && row.getDays().contains(day)) return row;
 	    }
@@ -249,5 +250,62 @@ public class RoutineScheduleService {
 	public boolean existsByUser(User user) {
 		return routineScheduleRepository.existsByUser(user);
 	}
+	
+	// カレンダーにルーティン表示
+    public List<CalendarEventDTO> getRoutineEvents(User user) {
+
+        // 今週（月曜始まり）
+        LocalDate startOfWeek =
+            LocalDate.now().with(java.time.DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        List<RoutineSchedule> schedules = findByUser(user);
+
+        List<CalendarEventDTO> events = new ArrayList<>();
+
+        for (RoutineSchedule schedule : schedules) {
+            for (RoutineScheduleDay day : schedule.getDays()) {
+
+                // RoutineDayOfWeek → 今週の日付
+                LocalDate date =
+                    toDateInWeek(day.getDay(), startOfWeek);
+
+                if (date.isBefore(startOfWeek)
+                    || date.isAfter(endOfWeek)) {
+                    continue;
+                }
+
+                LocalDateTime start =
+                    LocalDateTime.of(date, schedule.getStartTime());
+                LocalDateTime end =
+                    LocalDateTime.of(date, schedule.getEndTime());
+
+                events.add(new CalendarEventDTO(
+                    schedule.getTitle(),
+                    start.toString(),
+                    end.toString()
+                ));
+            }
+        }
+        return events;
+    }
+
+    /**
+     * RoutineDayOfWeek → 今週の LocalDate
+     */
+    private LocalDate toDateInWeek(
+            RoutineDayOfWeek routineDay,
+            LocalDate monday) {
+
+        int diff =
+            routineDay.ordinal()
+            - RoutineDayOfWeek.MONDAY.ordinal();
+
+        return monday.plusDays(diff);
+    }
+	
+	
+	
+	
 	
 }

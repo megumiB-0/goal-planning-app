@@ -12,5 +12,5 @@ public interface RoutineScheduleRepository extends JpaRepository <RoutineSchedul
 	List<RoutineSchedule> findByUserOrderByEffectiveFromDesc(User user);
 	// ルーティンがあるかないか
 	boolean existsByUser(User user);
-	
+
 }

@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.goalplanningapp.entity.DayOfWeek;
+import com.example.goalplanningapp.dto.CalendarEventDTO;
+import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.RoutineForm;
@@ -40,6 +42,16 @@ public class RoutineController {
 		return "user/routines/index";
 	}
 	
+	@GetMapping("/calendar")
+	@ResponseBody
+	public List<CalendarEventDTO> routineCalendar(
+	        @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+
+		User user = userDetailsImpl.getUser();
+	    return routineScheduleService
+	            .getRoutineEvents(user);
+	}
+	
 	//ルーティン初回登録のためのページ表示
 	@GetMapping("/new")
 	public String newForm(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
@@ -51,7 +63,7 @@ public class RoutineController {
 			return "redirect:/routines";
 		}
 		model.addAttribute("routineForm", form);
-		model.addAttribute("days",DayOfWeek.values());
+		model.addAttribute("days",RoutineDayOfWeek.values());
 		return "user/routines/new";
 	}
 	
@@ -76,15 +88,8 @@ public class RoutineController {
 	    	
 	    }
 		
-		
-		
-		
-/*		User user = userDetailsImpl.getUser();
-		routineScheduleService.createRoutines(
-				user, title, startTime, endTime, effectiveFrom, days
-		);
-		return "redirect:/routines";
-*/
+	
+	    
 	}
 	
 
