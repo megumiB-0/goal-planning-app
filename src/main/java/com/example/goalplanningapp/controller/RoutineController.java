@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.goalplanningapp.entity.DayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
@@ -59,15 +60,21 @@ public class RoutineController {
 	@PostMapping
 	public String create(
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-			@ModelAttribute RoutineForm form
+			@ModelAttribute RoutineForm form,
+			RedirectAttributes ra
 			) {
 	    System.out.println("form=" + form);
 	    System.out.println("rows=" + form.getRows());
 	    // サービス呼び出し
-	    routineScheduleService.createRoutines(userDetailsImpl.getUser(), form);
-	  	    
+	    try {
+	    routineScheduleService.createRoutines(userDetailsImpl.getUser(), form); 
+		ra.addFlashAttribute("successMessage","ルーティン登録しました！");
 		return "redirect:/routines";
-
+	    }catch(IllegalStateException e) {
+	    	ra.addFlashAttribute("errorMessage", e.getMessage());
+	    	return "redirect:/routines/new";
+	    	
+	    }
 		
 		
 		
