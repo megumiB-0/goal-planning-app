@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.goalplanningapp.entity.DayOfWeek;
+import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 
 import lombok.Data;
 
@@ -19,6 +19,6 @@ public class RoutineRowForm {
 	private LocalTime startTime; //開始(睡眠なら就寝)
 	private LocalTime endTime;   //終了(睡眠なら起床)
 	
-	private List<DayOfWeek> days = new ArrayList<>();
+	private List<RoutineDayOfWeek> days = new ArrayList<>();
 
 }

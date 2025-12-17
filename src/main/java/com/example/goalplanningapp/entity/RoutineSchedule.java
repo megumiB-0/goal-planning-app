@@ -58,4 +58,9 @@ public class RoutineSchedule {
 	@EqualsAndHashCode.Exclude
 	private List<RoutineScheduleDay> days = new ArrayList<>();
 	
+	public boolean hasDay(RoutineDayOfWeek day) {
+		return days.stream()
+				.anyMatch(d -> d.getDay() == day);
+	}
+	
 }
