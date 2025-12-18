@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.goalplanningapp.dto.CalendarEventDTO;
 import com.example.goalplanningapp.entity.RoutineDayOfWeek;
@@ -75,16 +74,16 @@ public class RoutineController {
 	public String createRoutine(
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@ModelAttribute RoutineForm form,
-			RedirectAttributes ra
+			Model model
 			) {
 	    // サービス呼び出し
 	    try {
 	    routineScheduleService.createInitialRoutines(userDetailsImpl.getUser(), form); 
-		ra.addFlashAttribute("successMessage","ルーティン登録しました！");
-		return "redirect:/routines";
+		model.addAttribute("successMessage","ルーティン登録しました！");
+		return "redirect:/routines/";
 	    }catch(IllegalStateException e) {
-	    	ra.addFlashAttribute("errorMessage", e.getMessage());
-	    	return "redirect:/routines/routine-form";
+	    	model.addAttribute("errorMessage", e.getMessage());
+	    	return "user/routines/routine-form";
 	    	
 	    }
 	}
@@ -111,22 +110,22 @@ public class RoutineController {
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@RequestParam("effectiveFrom") LocalDate effectiveFrom,
 			@ModelAttribute RoutineForm form,
-			RedirectAttributes ra
+			Model model
 			) {
 		//バリデーション
 		if(effectiveFrom == null) {
-			ra.addFlashAttribute("errorMessage","適用開始日を入力してください。");
-			return "redirect:/routines/routine-form";
+			model.addAttribute("errorMessage","適用開始日を入力してください。");
+			return "user/routines/routine-form";
 		}
 		
 	    // サービス呼び出し
 	    try {
 	    routineScheduleService.updateRoutines(userDetailsImpl.getUser(), form, effectiveFrom); 
-		ra.addFlashAttribute("successMessage","ルーティン更新しました！");
+	    model.addAttribute("successMessage","ルーティン更新しました！");
 		return "redirect:/routines";
 	    }catch(IllegalStateException e) {
-	    	ra.addFlashAttribute("errorMessage", e.getMessage());
-	    	return "redirect:/routines/routine-form";
+	    	model.addAttribute("errorMessage", e.getMessage());
+	    	return "user/routines/routine-form";
 	    	
 	    }
 	}
