@@ -1,4 +1,5 @@
 
+console.log("routine-form-set.js loaded");
 function addRow(button){
 	const tr =button.closest('[data-role="routine-row"]');
 	if(!tr) return;

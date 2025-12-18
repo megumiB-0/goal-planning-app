@@ -146,15 +146,19 @@ public class RoutineScheduleService {
 			for (RoutineRowForm sleepRow : sleepRows) {
 			    LocalTime sleepTime = sleepRow.getStartTime(); // 就寝時間
 			    
+
+			    
 			    // 就寝ルーティンの各曜日をループ
 			    for (RoutineDayOfWeek sleepDay : sleepRow.getDays()) {
 			    	// 起床は必ず翌日の曜日
 			        RoutineDayOfWeek wakeDay = sleepDay.next();
 			        // 対応する起床ルーティンを探す
 			        RoutineRowForm wakeRow = findRowForDay(wakeRows, wakeDay);
-			        if (wakeRow == null) {
-			            throw new IllegalStateException(wakeDay.next() + "の起床ルーティンがありません。");
+			        
+			        if (sleepRow == null || wakeRow == null) {
+			        	throw new IllegalStateException("就寝・起床時間を両方入力してください。");
 			        }
+			        
 			        LocalTime wakeTime = wakeRow.getEndTime(); // 起床時間
 			        // 跨日しない（1:00 → 7:00 など）→ 起床日の睡眠として登録
 			        if (!sleepTime.isAfter(wakeTime)) {
