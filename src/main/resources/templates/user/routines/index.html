@@ -17,15 +17,15 @@
 				<div class="row justify-content-center">
 					<div class="col-xl-5 col-lg-6 col-md-8">
 						<h1 class="mb-4 text-center">ルーティン一覧</h1>
-						
-						
-						
-						<ul>
-							<li th:each="routine : ${routines}">
-								<span th:text="${routine.title}">タイトル</span>
-							</li>
-						</ul>
-							<div id="calendar"></div>
+							<div>
+								<a th:href="@{/routines/update}" class="btn btn-primary">
+									修正する
+								</a>
+								<a th:href="@{/home}"class="btn btn-outline-primary">
+									HOMEに戻る
+								</a>
+							</div>
+								<div id="calendar"></div>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const calendar = new FullCalendar.Calendar(

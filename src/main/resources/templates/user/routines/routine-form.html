@@ -4,7 +4,7 @@
 	<div th:replace="~{fragment :: meta}"></div>
 	<div th:replace="~{fragment :: styles}"></div>
 	
-<title>ルーティン新規登録</title>
+<title th:text="${isUpdate}? 'ルーティン更新' : 'ルーティン新規登録'">ルーティンフォーム</title>
 </head>
 <body>
 	<div class="goalplanningapp-wrapper">
@@ -13,12 +13,21 @@
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row justify-content-center">
 					<div class="col-xl-10 col-lg-11 col-md-12">
-						<h1 class="mb-4 text-center">ルーティン新規登録</h1>
+						<h1 class="mb-4 text-center" th:text="${isUpdate}? 'ルーティン更新' : 'ルーティン新規登録'">
+							ルーティン新規登録
+						</h1>
 						<!-- エラーメッセージ表示-->
 						<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
 							<p th:text="${errorMessage}"></p>
 						</div>
-						<form th:action="@{/routines}" method="post" th:object="${routineForm}">
+						<form th:action="${isUpdate} ? @{/routines/update} : @{/routines}"
+							  method="post"
+							  th:object="${routineForm}">
+							<div th:if="${isUpdate}" style="margin-bottom: 1rem;">
+								<label>適用開始日</label>
+								<input type="date" th:field="*{effectiveFrom}" required/>
+							</div>
+							
 							<table>
 								<thead>
 									<tr>
@@ -77,13 +86,13 @@
 											<td>
 												<button type="button" onclick="addRow(this)">+ 行を追加</button>
 											</td>
-										</trdata-role="routine-rows">
+										</tr>
 									</th:block>
 								</tbody>
 							</table>
 							<!-- 送信 -->
-							<div>
-								<button type="submit">まとめて登録</button>							
+							<div style="margin-top:1rem;">
+								<button type="submit" th:text="${isUpdate} ? ' 更新 ' : ' 登録 '}"></button>							
 							</div>
 						</form>
 					</div>
