@@ -16,6 +16,7 @@ import com.example.goalplanningapp.entity.RoutineScheduleDay;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.RoutineForm;
 import com.example.goalplanningapp.form.RoutineRowForm;
+import com.example.goalplanningapp.mapper.RoutineFormMapper;
 import com.example.goalplanningapp.repository.RoutineScheduleRepository;
 
 import jakarta.transaction.Transactional;
@@ -28,11 +29,13 @@ public class RoutineScheduleService {
 	//DI
 	private final RoutineScheduleRepository routineScheduleRepository;
 	private final GoalService goalService;
+	private final RoutineFormMapper routineFormMapper;
 	public RoutineScheduleService(
 			RoutineScheduleRepository routineScheduleRepository,
-			GoalService goalService) {
+			GoalService goalService, RoutineFormMapper routineFormMapper) {
 		this.routineScheduleRepository = routineScheduleRepository;
 		this.goalService = goalService;
+		this.routineFormMapper = routineFormMapper;
 	}
 	
 	// 睡眠用
@@ -67,21 +70,20 @@ public class RoutineScheduleService {
 		return row;
 	}
 	
+
 	
 	
-	// ルーティン作成
+	
+	// ルーティン作成(初回・更新 共通)
 	@Transactional
-	public void createRoutines(User user,RoutineForm form) {
-		LocalDate effectiveFrom = goalService.getCurrentGoalStartDate(user);	
+	public void createRoutines(User user,RoutineForm form, LocalDate effectiveFrom) {
 		if(effectiveFrom == null) {
-			throw new IllegalStateException("effectiveFrom is null");
+			throw new IllegalArgumentException("effectiveFrom is null");
 		}
 		
 		// 振り分け
 		List<RoutineRowForm> wakeRows = new ArrayList<>();
 		List<RoutineRowForm> sleepRows = new ArrayList<>();
-//		RoutineRowForm wakeRow = null;
-//		RoutineRowForm sleepRow = null;
 
 		// 睡眠
 		for(RoutineRowForm row : form.getRows()) {
@@ -89,12 +91,10 @@ public class RoutineScheduleService {
 				if("就寝".equals(row.getSleepType())) {
 					//startTimeを使う
 					sleepRows.add(row);
-//					sleepRow = row;
 					}
 					
 				if("起床".equals(row.getSleepType())) {
 					wakeRows.add(row);
-//					wakeRow = row;
 					}
 			}
 			
@@ -119,16 +119,6 @@ public class RoutineScheduleService {
 					continue;
 					}
 
-
-//			if(wakeRow == null || sleepRow == null) {
-//				throw new IllegalStateException("睡眠ルーティンは「起床」と「就寝」を入力してください。");
-//			}
-//			if(wakeRow.getEndTime() == null || sleepRow.getStartTime() == null) {
-//				throw new IllegalStateException("起床時間：就寝時間は必須です。");
-//			}
-//			if(wakeRow.getDays() == null || wakeRow.getDays().isEmpty()) {
-//				throw new IllegalStateException("起床の曜日を選択してください");
-//			}
 			// 通常ルーティン（起床・就寝以外）
 			if(row.getStartTime() == null || row.getEndTime() == null) {
 				continue;
@@ -242,6 +232,36 @@ public class RoutineScheduleService {
 	    }
 	    return null;
 	}
+	
+	// 初回登録用ラッパー
+	@Transactional
+	public void createInitialRoutines(User user, RoutineForm form) {		
+		LocalDate effectiveFrom = goalService.getCurrentGoalStartDate(user);	
+		if(effectiveFrom == null) {
+			throw new IllegalStateException("goal start is null");
+		}
+		createRoutines(user, form, effectiveFrom);
+	}
+	
+	// 更新用ラッパー
+ 	@Transactional
+ 	public void updateRoutines(User user, RoutineForm form, LocalDate newEffectiveFrom) {
+ 		//現在のルーティンを終了させる
+ 		List<RoutineSchedule> current = routineScheduleRepository.findCurrentByUser(user);
+ 		LocalDate endDate = newEffectiveFrom.minusDays(1);
+
+ 		for(RoutineSchedule r : current){
+ 			r.setEffectiveTo(endDate);
+ 		}
+ 		
+ 		// ルーティン登録
+ 		createRoutines(user, form, newEffectiveFrom);
+ 		
+ 		}
+	
+	
+	
+	
 	// ルーティン一覧取得
 	public List<RoutineSchedule> findByUser(User user){
 		return routineScheduleRepository.findByUserOrderByEffectiveFromDesc(user);
@@ -304,7 +324,14 @@ public class RoutineScheduleService {
         return monday.plusDays(diff);
     }
 	
-	
+ // 最新ルーティン取得後フォームへ戻す
+ 	public RoutineForm getCurrentRoutineForm(User user) {
+ 		List<RoutineSchedule> schedules = routineScheduleRepository.findCurrentByUser(user);
+ 		return routineFormMapper.toForm(schedules);
+ 		
+ 	}
+ 	
+
 	
 	
 	
