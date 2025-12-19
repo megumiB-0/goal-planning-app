@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.goalplanningapp.dto.CalendarEventDTO;
+import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.RoutineForm;
 import com.example.goalplanningapp.security.UserDetailsImpl;
+import com.example.goalplanningapp.service.GoalService;
 import com.example.goalplanningapp.service.RoutineScheduleService;
 
 
@@ -27,19 +29,25 @@ import com.example.goalplanningapp.service.RoutineScheduleService;
 public class RoutineController {
 	//DI
 	private final RoutineScheduleService routineScheduleService;
-	public RoutineController(RoutineScheduleService routineScheduleService) {
+	private final GoalService goalService;
+	public RoutineController(RoutineScheduleService routineScheduleService,
+							 GoalService goalService) {
 		this.routineScheduleService = routineScheduleService;
+		this.goalService = goalService;
 	}
 	
-	
-	// ログインユーザーの取得
-	// ユーザーのルーティン一覧を取得
-	// 一覧を画面に渡す
+	// index
 	@GetMapping
 	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
+		// ログインユーザーの取得
 		User user = userDetailsImpl.getUser();
+		// ユーザーのルーティン一覧を取得	
 		List<RoutineSchedule> routines = routineScheduleService.findByUser(user);
 		model.addAttribute("routines",routines);
+		// ルーティン有無でボタン表示を変える
+		boolean isUpdate = routineScheduleService.existsByUser(user);
+		model.addAttribute("isUpdate", isUpdate); //true=更新　false=新規
+		// 一覧を画面に渡す
 		return "user/routines/index";
 	}
 	
@@ -49,8 +57,9 @@ public class RoutineController {
 	        @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
 		User user = userDetailsImpl.getUser();
+		Goal goal = goalService.getCurrentGoal(user);
 	    return routineScheduleService
-	            .getRoutineEvents(user);
+	            .getRoutineEvents(user, goal.getGoalDate());
 	}
 	
 	//ルーティン初回登録のためのページ表示

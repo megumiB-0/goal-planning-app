@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import com.example.goalplanningapp.dto.DailyTotalDTO;
-import com.example.goalplanningapp.dto.LearningRecordDTO;
+import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningRecord;
 import com.example.goalplanningapp.entity.User;
@@ -31,9 +31,9 @@ public class LearningRecordService {
 	}
 	
 	//POST用
-	public LearningRecord createRecord(LearningRecordDTO dto, User user, Goal goal) {
+	public LearningRecord createRecord(LearningTimeDTO dto, User user, Goal goal) {
 		// String →　　日付型へ
-		LocalDate learningDay = LocalDate.parse(dto.getLearningDay());
+		LocalDate learningDay = LocalDate.parse(dto.getDay());
 		LocalTime startTime = LocalTime.parse(dto.getStartTime());
 		LocalTime endTime = LocalTime.parse(dto.getEndTime());
 		//重複チェック
@@ -66,14 +66,14 @@ public class LearningRecordService {
 
 	//PUT用
 	@Transactional
-	public void updateRecord(Integer id, LearningRecordDTO dto, User user) {
+	public void updateRecord(Integer id, LearningTimeDTO dto, User user) {
 		LearningRecord record = learningRecordRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Record not found"));
 		if(!record.getUser().getId().equals(user.getId())) {
 			throw new SecurityException("Not allowed");
 		}
 		//DTO →　LocalDate,LocalTimeへ変換
-		LocalDate learningDay = LocalDate.parse(dto.getLearningDay());
+		LocalDate learningDay = LocalDate.parse(dto.getDay());
 		LocalTime startTime = LocalTime.parse(dto.getStartTime());
 		LocalTime endTime = LocalTime.parse(dto.getEndTime());
 		//重複チェック（自身のIDは除外）

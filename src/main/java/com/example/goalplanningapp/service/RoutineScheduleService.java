@@ -1,4 +1,5 @@
 package com.example.goalplanningapp.service;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.example.goalplanningapp.dto.CalendarEventDTO;
+import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.RoutineScheduleDay;
@@ -263,9 +265,7 @@ public class RoutineScheduleService {
  		
  		}
 	
-	
-	
-	
+
 	// ルーティン一覧取得
 	public List<RoutineSchedule> findByUser(User user){
 		return routineScheduleRepository.findByUserOrderByEffectiveFromDesc(user);
@@ -275,57 +275,53 @@ public class RoutineScheduleService {
 		return routineScheduleRepository.existsByUser(user);
 	}
 	
+	
+	
+	
+	
+	
 	// カレンダーにルーティン表示
-    public List<CalendarEventDTO> getRoutineEvents(User user) {
-
-        // 今週（月曜始まり）
-        LocalDate startOfWeek =
-            LocalDate.now().with(java.time.DayOfWeek.MONDAY);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
+    public List<CalendarEventDTO> getRoutineEvents(User user, LocalDate goalDate) {
+    	Goal goal = goalService.getCurrentGoal(user);
+    	LocalDate periodStart = goal.getStartDate();
+    	LocalDate periodEnd = goalDate;    	
 
         List<RoutineSchedule> schedules = findByUser(user);
-
         List<CalendarEventDTO> events = new ArrayList<>();
 
+
         for (RoutineSchedule schedule : schedules) {
-            for (RoutineScheduleDay day : schedule.getDays()) {
-
-                // RoutineDayOfWeek → 今週の日付
-                LocalDate date =
-                    toDateInWeek(day.getDay(), startOfWeek);
-
-                if (date.isBefore(startOfWeek)
-                    || date.isAfter(endOfWeek)) {
-                    continue;
-                }
-
-                LocalDateTime start =
-                    LocalDateTime.of(date, schedule.getStartTime());
-                LocalDateTime end =
-                    LocalDateTime.of(date, schedule.getEndTime());
-
-                events.add(new CalendarEventDTO(
-                    schedule.getTitle(),
-                    start.toString(),
-                    end.toString()
-                ));
-            }
+        	
+        	LocalDate effectiveFrom = schedule.getEffectiveFrom();
+        	LocalDate effectiveTo = schedule.getEffectiveTo() !=null
+        							? schedule.getEffectiveTo()
+        							: periodEnd; //nullなら目標達成日まで
+        	
+        	
+        	LocalDate start = periodStart.isAfter(effectiveFrom)
+        					  ? periodStart
+        					  : effectiveFrom;
+        	LocalDate end = periodStart.isAfter(effectiveTo)
+        				   	  ? periodEnd
+        					  : effectiveTo;
+        	if(start.isAfter(end)) continue;
+        		// 全日程チェック
+        		for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+        			DayOfWeek dow = date.getDayOfWeek();
+        			for (RoutineScheduleDay day : schedule.getDays()) {
+        				if (dow == day.getDay().toJavaDay()) {
+        					LocalDateTime startTime = LocalDateTime.of(date, schedule.getStartTime());
+        					LocalDateTime endTime = LocalDateTime.of(date, schedule.getEndTime());
+        					events.add(new CalendarEventDTO(
+        							schedule.getTitle(),
+        							startTime.toString(),
+        							endTime.toString()
+        					));
+        				}
+        			}
+        		}
         }
         return events;
-    }
-
-    /**
-     * RoutineDayOfWeek → 今週の LocalDate
-     */
-    private LocalDate toDateInWeek(
-            RoutineDayOfWeek routineDay,
-            LocalDate monday) {
-
-        int diff =
-            routineDay.ordinal()
-            - RoutineDayOfWeek.MONDAY.ordinal();
-
-        return monday.plusDays(diff);
     }
 	
  // 最新ルーティン取得後フォームへ戻す

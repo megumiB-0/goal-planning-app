@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class LearningRecordDTO {
-	private String learningDay;
+public class LearningTimeDTO {
+	private String day;
 	private String startTime;
 	private String endTime;
 }

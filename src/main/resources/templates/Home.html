@@ -94,6 +94,11 @@
 								<div id="calendar"></div>
 								<!-- カレンダー用js -->
 								<script src="/js/calendar.js"></script>
+								<script>
+									const calendarEl = document.getElementById('calendar');
+									const calendar = initLearningCalendar({calendarEl, editable:true});
+									calendar.render();
+								</script>
 							</div>
 						</div>
 					</div>	

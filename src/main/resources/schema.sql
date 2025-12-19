@@ -74,3 +74,17 @@ CREATE TABLE IF NOT EXISTS routine_schedule_days (
 	FOREIGN KEY (routine_schedule_id) REFERENCES routine_schedules (id)
 	ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS learning_plans (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	user_id INT NOT NULL,
+	goal_id INT NOT NULL,
+	planning_day DATE NOT NULL,
+	start_time TIME NULL,
+	end_time TIME NULL,
+	planning_minutes INT NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES users (id),
+	FOREIGN KEY (goal_id) REFERENCES goals (id)
+);	

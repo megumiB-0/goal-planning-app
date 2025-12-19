@@ -2,71 +2,91 @@ const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 
-
-document.addEventListener('DOMContentLoaded',async function(){
-	//カレンダー描画要素
-	const calendarEl = document.getElementById('calendar');
+// カレンダー共通部分
+async function initLearningCalendar({calendarEl, editable = true}){
 	const dailyTotals = await fetchDailyTotals();
+	
 	// FullCalendarのインスタンスを作る
 	const calendar = new FullCalendar.Calendar(calendarEl,{
 		initialView: 'timeGridWeek',			// １週間の縦型view
 		allDaySlot: false, 						// 終日枠を表示しない
 		nowIndicator: true,						// 現在時刻の赤線
-		selectable: true,						// クリックで選択可能
-		selectMirror: true,						// selectを使うには必須
+		selectable: editable,					// クリックで選択可能
+		selectMirror: editable, 				// selectを使うには必須
 		locale: 'ja', 							// 日本語表記 
 		firstDay: 1,							// 月曜はじまり
 		themeSystem:'bootstrap5',				// BootStrapデザイン
-		contentHeight: '500px',
+		contentHeight: '800px',
 		slotDuration: '00:15:00',				// 15分刻み
 		slotLabelInterval: '01:00:00',			// 1時間ごとに時間表示
-		editable: true,							// イベントをドラッグで動かせる
-
-		//週末だけヘッダー色を変更する
-		dayHeaderDidMount: function(info){
-			const day = info.date.getDay(); //0=日,6=土
-			const headerEl = info.el.querySelector('a');
-			if(!headerEl)return;
-			if(day === 0){
-				headerEl.style.color ="#E8B4B4";
-			}
-			if(day === 6){
-				headerEl.style.color="#A4C0C9";
-			}
-			//ヘッダーに合計時間を表示する
-			//toISOString()ではずれてしまったので修正
-			const year = info.date.getFullYear();
-			const month = info.date.getMonth() + 1;
-			const day1 = info.date.getDate();
-			
-			const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
-//			const dateStr = info.date.toISOString().split('T')[0];
-			const totalMin = dailyTotals.get(dateStr);
-			if(totalMin != null){
-				const totalDiv = document.createElement('div')
-				totalDiv.style.fontSize = "0.8rem";
-				totalDiv.style.marginTop = "2px";
-				totalDiv.style.color = "#778899";
-				totalDiv.innerText = `${totalMin}分`;
-				info.el.appendChild(totalDiv);
-			}
-			
-			
-		},
-		
-
-		//追加
-		eventDurationEditable: true,			// イベント終了時間（duration）を変更できる
-		eventStartEditable: true,				// イベント開始時間を変更できる
+		editable: true,							// イベントをドラッグで動かせる	
+		eventDurationEditable: editable,		// イベント終了時間（duration）を変更できる
+		eventStartEditable: editable,			// イベント開始時間を変更できる
 		unselectAuto: false,
 		selectOverlap: true, 
 		
-		// 初期イベントの読み込み(GET) SpringBootのAPI
-		events: '/api/learning-records/events',
 
-		
-		// クリックで新規作成（POST）
-		select: async function (info) {
+		// イベントの読み込み(GET)  home　=　SpringBootのAPI(learning-records)  routine　=　routine　　
+		events: editable ? '/api/learning-records/events' : '/routines/calendar',
+
+		//週末だけヘッダー色を変更する
+		dayHeaderDidMount: function(info){
+			//週末だけヘッダー色変更
+			const day = info.date.getDay(); //0=日,6=土
+			const headerEl = info.el.querySelector('a');
+			if(!headerEl) return;
+			if(day === 0) headerEl.style.color ="#E8B4B4";
+			if(day === 6) headerEl.style.color="#A4C0C9";
+			
+			//ヘッダー合計学習時間表示
+			if(editable && dailyTotals){
+				const year = info.date.getFullYear();
+				const month = info.date.getMonth() + 1;
+				const day1 = info.date.getDate();
+				const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
+	
+				const totalMin = dailyTotals.get(dateStr);
+				if(totalMin != null){
+					const totalDiv = document.createElement('div')
+					totalDiv.style.fontSize = "0.8rem";
+					totalDiv.style.marginTop = "2px";
+					totalDiv.style.color = "#778899";
+					totalDiv.innerText = `${totalMin}分`;
+					info.el.appendChild(totalDiv);
+				}
+			}
+		},
+
+    eventDidMount: function(info){
+      switch(info.event.title){
+        case '睡眠':
+          info.el.style.backgroundColor = '#A3D2CA';  // 背景
+          info.el.style.borderColor = '#273C75';      // 枠線
+          break;
+        case '朝食':
+		case '昼食':
+		case '夕食':
+          info.el.style.backgroundColor = '#d6ceeb';
+          info.el.style.borderColor = '#273C75';
+          break;
+		case '入浴':
+          info.el.style.backgroundColor = '#F28C8C';
+          info.el.style.borderColor = '#273C75';
+          break;
+        case '仕事':
+          info.el.style.backgroundColor = '#8FA998';
+          info.el.style.borderColor = '#273C75';
+          break;
+        default:
+          info.el.style.backgroundColor = '#E4B363';
+          info.el.style.borderColor = '#273C75';
+      }
+    },			
+			
+
+
+		// クリックで新規作成（POST）編集可のみ有効
+		select: editable ? async function (info) {
 			const minutes = (new Date(info.end) - new Date(info.start)) / 60000;
 			
 			const body = {
@@ -102,11 +122,10 @@ document.addEventListener('DOMContentLoaded',async function(){
 				start: saved.start,
 				end: saved.end
 			});
+		} : undefined,
 
-		},
-
-		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止)
-		eventClick: async function(info){
+		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止) 編集可のみ有効
+		eventClick: editable ?　async function(info){
 			if(!confirm("この記録を削除しますか?")) return;
 			info.jsEvent.preventDefault(); //accidental dragを無効化
 			const id = info.event.id;
@@ -122,28 +141,14 @@ document.addEventListener('DOMContentLoaded',async function(){
 			}else{
 				alert("削除に失敗しました。");
 			}
-		},
-
+		} : undefined,
 		
-		//ドラッグで時間変更（PUT）
-		eventDrop: async function (info) {
-			await updateEvent(info);
-		},
-		eventResize: async function(info){
-			await updateEvent(info);
-		}
+	//ドラッグで時間変更（PUT）	 編集可のみ
+	 	eventDrop: editable ?　async function (info) {await updateEvent(info);
+		}: undefined,
+		eventResize: editable ? async function(info){await updateEvent(info);
+		}: undefined
 	});
-	
-	//日ごとの合計学習時間を取得
-	async function fetchDailyTotals(){
-		const res = await fetch('/api/learning-records/daily-totals');
-		if(!res.ok)return new Map();
-		const jsonData = await res.json();
-		const map = new Map();
-		Object.entries(jsonData).forEach(([learningDay,totalMinutes]) => {map.set(learningDay, totalMinutes)});
-		return map;
-	}
-	
 	
 	calendar.render();
 	
@@ -173,4 +178,15 @@ document.addEventListener('DOMContentLoaded',async function(){
 		}
 
 	}
-});
+	
+	//日ごとの合計学習時間を取得
+	async function fetchDailyTotals(){
+		const res = await fetch('/api/learning-records/daily-totals');
+		if(!res.ok)return new Map();
+		const jsonData = await res.json();
+		const map = new Map();
+		Object.entries(jsonData).forEach(([learningDay,totalMinutes]) => {map.set(learningDay, totalMinutes)});
+		return map;
+	}
+	
+}
