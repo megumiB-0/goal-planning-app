@@ -1,5 +1,8 @@
 
 console.log("routine-form-set.js loaded");
+
+//行追加ボタン
+
 function addRow(button){
 	const tr =button.closest('[data-role="routine-row"]');
 	if(!tr) return;
@@ -32,7 +35,15 @@ function addRow(button){
 //			}
 //		}
 	});
-
 	tbody.insertBefore(newRow, tr.nextSibling);
 	currentIndex++;
 }	
+
+// 全て選択チェックボックス
+	// 各「全て選択」チェックボックスにイベントを追加
+	function toggleAllRows(selectAllCheckbox){
+			const container = selectAllCheckbox.closest('div');
+			container.querySelectorAll('.day-checkbox').forEach(function(dayCheckbox){
+				dayCheckbox.checked = selectAllCheckbox.checked;
+			});		
+	}
