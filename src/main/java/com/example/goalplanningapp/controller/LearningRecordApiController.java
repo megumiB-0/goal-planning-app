@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.goalplanningapp.dto.EventDTO;
-import com.example.goalplanningapp.dto.LearningRecordDTO;
+import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningRecord;
 import com.example.goalplanningapp.security.UserDetailsImpl;
@@ -43,7 +43,7 @@ public class LearningRecordApiController {
 	}
 	//作成
 	@PostMapping("/create")
-	public ResponseEntity<?> create(@RequestBody LearningRecordDTO dto,
+	public ResponseEntity<?> create(@RequestBody LearningTimeDTO dto,
 									@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		Goal goal = goalService.getCurrentGoal(userDetailsImpl.getUser());
 		try {
@@ -79,7 +79,7 @@ public class LearningRecordApiController {
 	//更新
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateRecord(@PathVariable Integer id,
-										  @RequestBody LearningRecordDTO dto,
+										  @RequestBody LearningTimeDTO dto,
 										  @AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		try {
 			learningRecordService.updateRecord(id, dto, userDetailsImpl.getUser());

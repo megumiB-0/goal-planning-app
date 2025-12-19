@@ -1,5 +1,7 @@
 package com.example.goalplanningapp.entity;
 
+import java.time.DayOfWeek;
+
 public enum RoutineDayOfWeek {
 	MONDAY("月"),
 	TUESDAY("火"),
@@ -21,10 +23,13 @@ public enum RoutineDayOfWeek {
 		int nextOrdinal = (this.ordinal() + 1) % values().length;
 		return values()[nextOrdinal];
 	}
-    // java.time.DayOfWeek　　アプリ独自ではなく、javaのDayOfWeek
+    // java.time.DayOfWeek→　　アプリ独自ではなく、javaのDayOfWeek
     public static RoutineDayOfWeek fromJavaDay(java.time.DayOfWeek javaDay) {
         return RoutineDayOfWeek.valueOf(javaDay.name());
     }
-	
-	
+    // →java.time.DayOfWeek　変換
+    public DayOfWeek toJavaDay() {
+        return DayOfWeek.valueOf(this.name());
+    }
+
 }
