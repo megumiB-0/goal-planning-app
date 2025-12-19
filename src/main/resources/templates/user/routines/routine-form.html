@@ -23,14 +23,16 @@
 						<form th:action="${isUpdate} ? @{/routines/update} : @{/routines}"
 								  method="post"
 								  th:object="${routineForm}">
-							<div th:if="${isUpdate}" style="margin-bottom: 1rem;">
-								<label>適用開始日</label>
-								<input type="date" th:field="*{effectiveFrom}" required/>
+							<div th:if="${isUpdate}" class="mb-3 d-flex justify-content-start align-items-center g-2">
+								<label class="col-sm-3 col-form-label text-center fw-bold fs-5">適用開始日</label>
+								<div class="col-sm-9">
+									<input type="date" th:field="*{effectiveFrom}" class="form-control w-auto" required/>
+								</div>
 							</div>
-							<table>
+							<table class="table table-borderless table-hover align-middle mb-4">
 								<thead>
 									<tr>
-										<th>項目</th>
+										<th class="px-3">項目</th>
 										<th>開始</th>
 										<th>終了</th>
 										<th>曜日</th>
@@ -40,58 +42,86 @@
 									<th:block th:each="row, stat : *{rows}">
 										<tr data-role="routine-row">
 											<!-- ===== 項目名 ===== -->
-											<td>
-												<span th:text="${row.title == '睡眠' ? row.sleepType : row.title}"></span>
+											<td class="px-3">
+												<span th:text="${row.title == '睡眠' ? row.sleepType : row.title}"class="fw-bold fs-5"></span>
+												<span th:if="${row.title == '睡眠'}"class="badge bg-danger ms-2">必須</span>
 												<!-- title は必ず送信 -->	
 												<input type="hidden"
-													   th:field="*{rows[__${stat.index}__].title}" />
+													   th:field="*{rows[__${stat.index}__].title}"
+													   class="form-control" />
 												<!-- sleepType は睡眠のときだけ送信 -->
 												<input type="hidden"
 													   th:if="${row.title == '睡眠'}"
-													   th:field="*{rows[__${stat.index}__].sleepType}" />
+													   th:field="*{rows[__${stat.index}__].sleepType}"
+													   class="form-control" />
 											</td>
 											<!-- ===== 開始 ===== -->
 											<td>
-												<!-- 通常ルーティン -->
-												<input type="time"
-													   th:if="${row.title != '睡眠'}"
-													   th:field="*{rows[__${stat.index}__].startTime}" />
-												<!-- 睡眠：就寝 -->
-												<input type="time"
-													   th:if="${row.title == '睡眠' and row.sleepType == '就寝'}"
-													   th:field="*{rows[__${stat.index}__].startTime}" />
+												<div class="d-flex flex-wrap">
+													<!-- 通常ルーティン -->
+													<input type="time"
+														   th:if="${row.title != '睡眠'}"
+														   th:field="*{rows[__${stat.index}__].startTime}"
+														   class="form-control" />
+													<!-- 睡眠：就寝 -->
+													<input type="time"
+														   th:if="${row.title == '睡眠' and row.sleepType == '就寝'}"
+														   th:field="*{rows[__${stat.index}__].startTime}"
+														   class="form-control" />
+												</div>
 											</td>
 											<!-- ===== 終了 ===== -->
 											<td>
 												<!-- 通常ルーティン -->
-												<input type="time"
-													   th:if="${row.title != '睡眠'}"
-													   th:field="*{rows[__${stat.index}__].endTime}" />
-												<!-- 睡眠：起床 -->
-												<input type="time"
-													   th:if="${row.title == '睡眠' and row.sleepType == '起床'}"
-													   th:field="*{rows[__${stat.index}__].endTime}" />
+												<div class="d-flex flex-wrap">
+													<input type="time"
+														   th:if="${row.title != '睡眠'}"
+														   th:field="*{rows[__${stat.index}__].endTime}"
+														   class="form-control" />
+														   
+													<!-- 睡眠：起床 -->
+													<input type="time"
+														   th:if="${row.title == '睡眠' and row.sleepType == '起床'}"
+														   th:field="*{rows[__${stat.index}__].endTime}"
+														   class="form-control" />
+												</div>
 											</td>
 											<!-- ===== 曜日 ===== -->
 											<td>
-												<label th:each="day : ${days}">
-												<input type="checkbox"
-													   th:field="*{rows[__${stat.index}__].days}"
-													   th:value="${day}" />
-												<span th:text="${day.label}"></span>
-												</label>
+												<div class="d-flex flex-column flex-sm-row flex-wrap">
+													<label th:each="day : ${days}"
+														   class="form-check form-check-inline">
+														<input type="checkbox"
+															   th:field="*{rows[__${stat.index}__].days}"
+															   th:value="${day}"
+															   class="form-check-input day-checkbox"/>
+														<span th:text="${day.label}"
+															  class="form-check-label"></span>
+													</label>
+													<!-- 全て選択チェックボックス -->
+													<label class="form-check form-check-inline ms-2">
+														<input type="checkbox"
+															   class="form-check-input select-all-checkbox"
+															   onclick="toggleAllRows(this)"/>
+														<span class="form-check-label">すべて選択</span>
+													</label>
+												</div>
 											</td>
 											<!-- ==== 行追加 ==== -->
 											<td>
-												<button type="button" onclick="addRow(this)">+ 行を追加</button>
+												<button type="button"
+														class="btn btn-outline-primary btn-sm rounded-pill"
+														onclick="addRow(this)">
+													+ 行を追加
+												</button>
 											</td>
 										</tr>
 									</th:block>
 								</tbody>
 							</table>
 							<!-- 送信 -->
-							<div style="margin-top:1rem;">
-							<button type="submit" th:text="${isUpdate} ? ' 更新 ' : ' 登録 '"></button>			
+							<div class="d-flex justify-content-center mt-4">
+							<button type="submit" th:text="${isUpdate} ? ' 更新 ' : ' 登録 '" class="btn btn-primary btn-md px-5"></button>			
 							</div>
 						</form>
 					</div>
