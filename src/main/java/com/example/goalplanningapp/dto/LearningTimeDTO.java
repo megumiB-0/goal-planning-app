@@ -9,4 +9,5 @@ public class LearningTimeDTO {
 	private String day;
 	private String startTime;
 	private String endTime;
+	private Integer minutes;
 }
