@@ -82,6 +82,10 @@ public class RoutineScheduleService {
 		if(effectiveFrom == null) {
 			throw new IllegalArgumentException("effectiveFrom is null");
 		}
+		//時間帯map(同一項目時間被り確認用)
+		Map<String, List<TimeRange>> timeRangeMap = new HashMap<>();
+
+		
 		
 		// 振り分け
 		List<RoutineRowForm> wakeRows = new ArrayList<>();
@@ -116,15 +120,41 @@ public class RoutineScheduleService {
 	
 
 			for (RoutineRowForm row : form.getRows()) {
-				// スキップ条件設定
-				if(row.getDays() == null ||row.getDays().isEmpty()) {
-					continue;
-					}
-
+				
+			// スキップ条件設定
+			//通常ルーティン（起床・就寝以外）
+			if("睡眠".equals(row.getTitle())) {
+				continue;
+			}
+			if(row.getDays() == null || row.getDays().isEmpty()) {
+				continue;
+			}
 			// 通常ルーティン（起床・就寝以外）
 			if(row.getStartTime() == null || row.getEndTime() == null) {
 				continue;
 			}
+			// 開始＜終了チェック
+			if(!row.getStartTime().isBefore(row.getEndTime())){
+				throw new IllegalStateException(
+					row.getTitle() + "の開始時刻は終了時刻よりも前である必要があります。");
+			}
+			
+			for(RoutineDayOfWeek day : row.getDays()) {
+				String key = row.getTitle() + "_" + day;
+				TimeRange newRange = new TimeRange(row.getStartTime(), row.getEndTime());
+				
+				List<TimeRange> existingRanges = timeRangeMap.computeIfAbsent(key, k -> new ArrayList<>());
+				
+				for(TimeRange existing : existingRanges) {
+					if(existing.overlaps(newRange)) {
+						throw new IllegalStateException(
+								row.getTitle() + "は" + day +
+								" に時間帯が重複しています。");
+					}
+				}
+				existingRanges.add(newRange);
+				}
+			
 			RoutineSchedule schedule = new RoutineSchedule();
 			schedule.setUser(user);
 			schedule.setTitle(row.getTitle());
@@ -140,15 +170,12 @@ public class RoutineScheduleService {
 			schedule.getDays().add(scheduleDay);
 			}
 			routineScheduleRepository.save(schedule);
-			continue;
 		}
 		//睡眠ルーティン保存
 			Map<String, RoutineSchedule> sleepScheduleMap = new HashMap<>();
 			// 各就寝ルーティンをループ
 			for (RoutineRowForm sleepRow : sleepRows) {
 			    LocalTime sleepTime = sleepRow.getStartTime(); // 就寝時間
-			    
-
 			    
 			    // 就寝ルーティンの各曜日をループ
 			    for (RoutineDayOfWeek sleepDay : sleepRow.getDays()) {
@@ -331,6 +358,20 @@ public class RoutineScheduleService {
  		
  	}
  	
+	//同一項目時間被り確認用
+	private static class TimeRange{
+		LocalTime start;
+		LocalTime end;
+		TimeRange(LocalTime start, LocalTime end){
+			this.start = start;
+			this.end = end;
+		}
+		boolean overlaps(TimeRange other) {
+			return this.start.isBefore(other.end)
+				&& other.start.isBefore(this.end);
+		}
+		
+	}
 
 	
 	

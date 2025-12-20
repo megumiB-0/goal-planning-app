@@ -60,5 +60,6 @@ public interface LearningPlanRepository extends JpaRepository<LearningPlan, Inte
 			ORDER BY p.planningDay
 			""")
 	List<DailyTotalDTO>findDailyTotals(@Param("user")User user);
+
 		
 }
