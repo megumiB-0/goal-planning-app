@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 
 import lombok.Data;
@@ -16,7 +18,9 @@ public class RoutineRowForm {
 	private String sleepType;
 	
 	//通常イベント用
+	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime startTime; //開始(睡眠なら就寝)
+	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime endTime;   //終了(睡眠なら起床)
 	
 	private List<RoutineDayOfWeek> days = new ArrayList<>();

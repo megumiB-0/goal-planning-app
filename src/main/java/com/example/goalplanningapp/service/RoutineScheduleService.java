@@ -302,11 +302,6 @@ public class RoutineScheduleService {
 		return routineScheduleRepository.existsByUser(user);
 	}
 	
-	
-	
-	
-	
-	
 	// カレンダーにルーティン表示
     public List<CalendarEventDTO> getRoutineEvents(User user, LocalDate goalDate) {
     	Goal goal = goalService.getCurrentGoal(user);
@@ -354,6 +349,7 @@ public class RoutineScheduleService {
  // 最新ルーティン取得後フォームへ戻す
  	public RoutineForm getCurrentRoutineForm(User user) {
  		List<RoutineSchedule> schedules = routineScheduleRepository.findCurrentByUser(user);
+ 		System.out.println("service:"+ schedules);
  		return routineFormMapper.toForm(schedules);
  		
  	}
