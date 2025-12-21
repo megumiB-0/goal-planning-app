@@ -20,6 +20,7 @@
 						<div th:if="${errorMessage}" class="justify-content-center alert alert-danger mb-3">
 							<p th:text="${errorMessage}"></p>
 						</div>
+						<pre th:text="${routineForm}"></pre>
 						<form th:action="${isUpdate} ? @{/routines/update} : @{/routines}"
 								  method="post"
 								  th:object="${routineForm}">
@@ -45,6 +46,7 @@
 											<td class="px-3">
 												<span th:text="${row.title == '睡眠' ? row.sleepType : row.title}"class="fw-bold fs-5"></span>
 												<span th:if="${row.title == '睡眠'}"class="badge bg-danger ms-2">必須</span>
+
 												<!-- title は必ず送信 -->	
 												<input type="hidden"
 													   th:field="*{rows[__${stat.index}__].title}"

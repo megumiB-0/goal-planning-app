@@ -19,8 +19,15 @@ public enum RoutineDayOfWeek {
 	public String getLabel() {
 		return label;
 	}
+	
+	// 次の曜日
 	public RoutineDayOfWeek next() {
 		int nextOrdinal = (this.ordinal() + 1) % values().length;
+		return values()[nextOrdinal];
+	}
+	// 前の曜日
+	public RoutineDayOfWeek prev() {
+		int nextOrdinal = (this.ordinal() - 1 + values().length) % values().length;
 		return values()[nextOrdinal];
 	}
     // java.time.DayOfWeek→　　アプリ独自ではなく、javaのDayOfWeek

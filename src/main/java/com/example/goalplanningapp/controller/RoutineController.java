@@ -89,7 +89,7 @@ public class RoutineController {
 	    try {
 	    routineScheduleService.createInitialRoutines(userDetailsImpl.getUser(), form); 
 		model.addAttribute("successMessage","ルーティン登録しました！");
-		return "redirect:/routines/";
+		return "redirect:/routines";
 	    }catch(IllegalStateException e) {
 	    	model.addAttribute("errorMessage", e.getMessage());
 	    	return "user/routines/routine-form";

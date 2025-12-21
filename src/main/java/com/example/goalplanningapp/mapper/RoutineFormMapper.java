@@ -36,65 +36,118 @@ public class RoutineFormMapper {
 					.toList();
 			row.setDays(days);
 			rows.add(row);
-			
 			});	
 	
 	// ===睡眠ルーティン===
 	rebuildSleepRows(schedules, rows);
+
+	//並び順を変更
+	sortRows(rows);
+	
 	
 	form.setRows(rows);
+	System.out.println("mapper:"+ rows);
 	return form;
 	}
 	
 	// 睡眠を就寝・起床に戻す
 	private void rebuildSleepRows(List<RoutineSchedule> schedules,
 								  List<RoutineRowForm> rows) {
-		Map<RoutineDayOfWeek, LocalTime> sleepMap = new LinkedHashMap<>();
-		Map<RoutineDayOfWeek, LocalTime> wakeMap = new LinkedHashMap<>();	
+		// 時刻　→　曜日
+		Map<LocalTime, List<RoutineDayOfWeek>> sleepTimeMap = new LinkedHashMap<>();
+		Map<LocalTime, List<RoutineDayOfWeek>> wakeTimeMap = new LinkedHashMap<>();	
 		
 		//DB上の睡眠を分類
 		for(RoutineSchedule s : schedules) {
 			if(!"睡眠".equals(s.getTitle())) continue;
+			for(RoutineScheduleDay sd : s.getDays()) {
+				RoutineDayOfWeek day = sd.getDay();
+				LocalTime start = s.getStartTime();
+				LocalTime end = s.getEndTime();
 			
-			RoutineDayOfWeek day = s.getDays().iterator().next().getDay();
-            // 就寝（23:00 → 23:59）
-            if (LocalTime.MAX.equals(s.getEndTime())) {
-                sleepMap.put(day, s.getStartTime());
+			// 日を跨がない睡眠(ex 1:00~9:00)
+			if(start != null && end != null
+							&& !LocalTime.MIN.equals(start)
+							&& !start.isAfter(end)) {
+				// 就寝は前日表示
+				sleepTimeMap
+					.computeIfAbsent(start, k -> new ArrayList<>())
+					.add(day.prev());
+				wakeTimeMap
+				.computeIfAbsent(end, k -> new ArrayList<>())
+				.add(day);
+				
+				continue;
+			}
+			// 就寝（23:00 → 23:59）当日の曜日　　DB上00:00:00で登録される
+            if(start != null && LocalTime.MIN.equals(end)) {
+                sleepTimeMap
+                	.computeIfAbsent(start, k -> new ArrayList<>())
+                	.add(day);
             }
-
+            
             // 起床（00:00 → 07:00）
-            if (LocalTime.MIN.equals(s.getStartTime())) {
-                wakeMap.put(day, s.getEndTime());
+            if (end != null && LocalTime.MIN.equals(start)) {
+                wakeTimeMap
+                	.computeIfAbsent(end, k -> new ArrayList<>())
+                	.add(day);
             }
-        }
+		}
+	}
 
         // ===== 就寝行 =====
-        if (!sleepMap.isEmpty()) {
-            RoutineRowForm sleepRow = new RoutineRowForm();
-            sleepRow.setTitle("睡眠");
-            sleepRow.setSleepType("就寝");
-
-            sleepRow.setStartTime(
-                sleepMap.values().iterator().next()
-            );
-
-            sleepRow.setDays(sleepMap.keySet().stream().toList());
-            rows.add(sleepRow);
-        }
-
-        // ===== 起床行 =====
-        if (!wakeMap.isEmpty()) {
-            RoutineRowForm wakeRow = new RoutineRowForm();
-            wakeRow.setTitle("睡眠");
-            wakeRow.setSleepType("起床");
-
-            wakeRow.setEndTime(
-                wakeMap.values().iterator().next()
-            );
-
-            wakeRow.setDays(wakeMap.keySet().stream().toList());
-            rows.add(wakeRow);
+		for(Map.Entry<LocalTime, List<RoutineDayOfWeek>> entity
+				: sleepTimeMap.entrySet()) {
+			LocalTime sleepTime = entity.getKey();
+			List<RoutineDayOfWeek> days = entity.getValue();
 			
+	           RoutineRowForm row = new RoutineRowForm();
+	            row.setTitle("睡眠");
+	            row.setSleepType("就寝");
+	            row.setStartTime(sleepTime);
+	            row.setDays(days);
+	            rows.add(row);
 		}
-	}	
+        // ===== 起床行 =====
+		for(Map.Entry<LocalTime, List<RoutineDayOfWeek>> entity
+				: wakeTimeMap.entrySet()) {
+			LocalTime wakeTime = entity.getKey();
+			List<RoutineDayOfWeek> days = entity.getValue();
+			
+	           RoutineRowForm row = new RoutineRowForm();
+	            row.setTitle("睡眠");
+	            row.setSleepType("起床");
+	            row.setEndTime(wakeTime);
+	            row.setDays(days);
+	            rows.add(row);
+		}
+	}
+	
+	private void sortRows(List<RoutineRowForm> rows) {
+			// 順番を定義
+			Map<String, Integer> orderMap = new LinkedHashMap<>();
+			orderMap.put("起床", 0);
+			orderMap.put("朝食", 1);			
+			orderMap.put("昼食", 2);
+			orderMap.put("夕食", 3);
+			orderMap.put("仕事", 4);
+			orderMap.put("入浴", 5);
+			orderMap.put("就寝", 6);
+			
+			rows.sort((a,b) -> {
+				int orderA = getOrder(a, orderMap);
+				int orderB = getOrder(b, orderMap);
+				return Integer.compare(orderA, orderB);
+			});
+
+	}
+	
+	private int getOrder(RoutineRowForm row, Map<String, Integer> orderMap) {
+		//睡眠（起床・就寝）
+		if("睡眠".equals(row.getTitle())){
+			return orderMap.getOrDefault(row.getSleepType(), 999);
+		}
+		// 通常
+		return orderMap.getOrDefault(row.getTitle(), 999);
+	}
 }
