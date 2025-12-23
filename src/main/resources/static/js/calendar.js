@@ -1,8 +1,7 @@
 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-// カレンダー共通部分
-
+// カレンダー共通部分（初期化）
 async function initLearningCalendar({
 	calendarEl,
 	crudTarget = null,  // 'records'|'plans'|null
@@ -11,7 +10,14 @@ async function initLearningCalendar({
 	showRecords = false
 }){
 	const crudEnabled = crudTarget !== null;
+	// 実績の非同期取得
 	const dailyTotals = await fetchDailyTotals();
+	let plannedTotals = {};
+	// 計画の非同期取得
+	if(crudTarget === 'plans'){
+		plannedTotals = await fetchPlannedTotals();
+	}
+	
 	
 	// eventSources
 	const eventSources = [];
@@ -74,18 +80,24 @@ async function initLearningCalendar({
 			//ヘッダー合計学習時間表示
 if (crudTarget !== null) {
     // 未定義の場合は空オブジェクトにする
-    const planned = typeof plannedTotals !== 'undefined' ? plannedTotals : {};
-    const daily = typeof dailyTotals !== 'undefined' ? dailyTotals : {};
-
+    const planned = (typeof plannedTotals !== 'undefined') ? plannedTotals : {};
+//    const daily = typeof dailyTotals !== 'undefined' ? dailyTotals : {};
+	const daily = dailyTotals || {}; 
     // /planならplanned、/homeならdaily
     const totalsToUse = Object.keys(planned).length > 0 ? planned : daily;
 
-    const year = info.date.getFullYear();
-    const month = info.date.getMonth() + 1;
-    const day1 = info.date.getDate();
-    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
-
+	const year = info.date.getFullYear();
+	const month = info.date.getMonth() + 1;
+	const day1 = info.date.getDate();
+	const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
     const totalMin = totalsToUse[dateStr] || 0;
+	//　計画の場合は今日以降のみ表示
+	if(Object.keys(planned).length>0){
+		const today = new Date(); today.setHours(0,0,0,0);
+		const cellDate = new Date(info.date.getFullYear(), info.date.getMonth(), info.date.getDate());
+		if(cellDate < today) return;
+	}
+
 
     if (totalMin > 0) {
         const totalDiv = document.createElement('div');
@@ -258,5 +270,11 @@ if (crudTarget !== null) {
 //		return map;
 		return jsonData
 	}
-	
+	//日ごとの合計学習計画を取得
+	async function fetchPlannedTotals(){
+		const res = await fetch('/api/learning-plans/planned-totals');
+		if(!res.ok)return new Map();
+		const jsonData = await res.json();
+		return jsonData
+	}
 }
