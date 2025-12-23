@@ -1,10 +1,7 @@
 package com.example.goalplanningapp.controller;
 
-
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,67 +20,51 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.goalplanningapp.dto.EventDTO;
 import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
-import com.example.goalplanningapp.entity.LearningRecord;
+import com.example.goalplanningapp.entity.LearningPlan;
 import com.example.goalplanningapp.security.UserDetailsImpl;
 import com.example.goalplanningapp.service.GoalService;
-import com.example.goalplanningapp.service.LearningRecordService;
-
-
+import com.example.goalplanningapp.service.LearningPlanService;
 
 @RestController
-@RequestMapping("/api/learning-records")
-public class LearningRecordApiController {
+@RequestMapping("/api/learning-plans")
+public class LearningPlanApiController {
 	@Autowired
-	private final LearningRecordService learningRecordService;
+	private final LearningPlanService learningPlanService;
 	private final GoalService goalService;
 	
-	public LearningRecordApiController(LearningRecordService learningRecordService,
-									   GoalService goalService) {
-		this.learningRecordService = learningRecordService;
+	public LearningPlanApiController(LearningPlanService learningPlanService,GoalService goalService) {
+		this.learningPlanService = learningPlanService;
 		this.goalService = goalService;
 	}
-	//作成
+	
+	// 作成（POST）
 	@PostMapping("/create")
 	public ResponseEntity<?> create(@RequestBody LearningTimeDTO dto,
 									@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		Goal goal = goalService.getCurrentGoal(userDetailsImpl.getUser());
 		try {
-			// 保存して返ってくる
-			LearningRecord saved =learningRecordService.createRecord(dto, userDetailsImpl.getUser(), goal);
-			//保存した内容をDTOに詰めて返す
+			LearningPlan saved =
+					learningPlanService.createPlan(dto, userDetailsImpl.getUser(), goal);
 			EventDTO event = new EventDTO(
 					saved.getId(),
-					saved.getLearningDay().toString() + "T" + saved.getStartTime().toString(),
-					saved.getLearningDay().toString() + "T" + saved.getEndTime().toString());
-			return ResponseEntity.ok(event);			
+					saved.getPlanningDay().toString() + "T" + saved.getStartTime().toString(),
+					saved.getPlanningDay().toString() + "T" + saved.getEndTime().toString());
+	System.out.println("event"+event);
+			return ResponseEntity.ok(event);
+
 		}catch(IllegalStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(Map.of("message",e.getMessage()));
 		}
-		
 	}
-	//取得
-	@GetMapping("/events")
-	public ResponseEntity<?> getEvents(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-		//ユーザーの全学習記録を取得
-		List<LearningRecord> records = learningRecordService.getRecords(userDetailsImpl.getUser());
-		//FullCalendarのJSON形式に変換
-		List<EventDTO> events = records.stream().map(record -> {
-			return new EventDTO(
-					record.getId(),
-					record.getLearningDay().toString()+"T"+ record.getStartTime().toString(),
-					record.getLearningDay().toString()+"T"+ record.getEndTime().toString()
-					);
-		}).toList();
-		return ResponseEntity.ok(events);
-	}
-	//更新
+
+	//更新(PUT)
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateRecord(@PathVariable Integer id,
 										  @RequestBody LearningTimeDTO dto,
 										  @AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
 		try {
-			learningRecordService.updateRecord(id, dto, userDetailsImpl.getUser());
+			learningPlanService.updatePlan(id, dto, userDetailsImpl.getUser());
 			return ResponseEntity.ok().build();			
 		}catch(IllegalStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -91,27 +72,20 @@ public class LearningRecordApiController {
 		}
 	}
 	
-	//削除
+	//削除(Delete)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Integer id,
 									@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-		learningRecordService.deleteRecord(id, userDetailsImpl.getUser());
+		learningPlanService.deletePlan(id, userDetailsImpl.getUser());
 		return ResponseEntity.ok().build();
 	}
 	
 	//ヘッダーに合計時間表示
-	@GetMapping("/daily-totals")
+	@GetMapping("/planned-totals")
 	@ResponseBody
-	public Map<String, Long> getDailyTotals(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-		Map<LocalDate, Long>totals = learningRecordService.getDailyTotals(userDetailsImpl.getUser());
-		// 型変換
-		Map<String, Long> result = totals.entrySet().stream()
-				.collect(Collectors.toMap(
-						e -> e.getKey().toString(),
-						Map.Entry::getValue
-						));
-				return result;
+	public Map<LocalDate, Long> getPlanedTotals(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
+		return learningPlanService.getPlanDailyTotals(userDetailsImpl.getUser());
 	}
-	
 
 }
+

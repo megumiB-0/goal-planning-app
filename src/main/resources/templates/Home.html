@@ -95,9 +95,18 @@
 								<!-- カレンダー用js -->
 								<script src="/js/calendar.js"></script>
 								<script>
+								(async () =>{
+									
 									const calendarEl = document.getElementById('calendar');
-									const calendar = initLearningCalendar({calendarEl, editable:true});
+									const calendar = await initLearningCalendar({
+										calendarEl, 
+										crudTarget:'records',		// 実績はCRUD
+										showRecords: true,
+										showPlans: false,
+										showRoutines: false
+										});
 									calendar.render();
+								})();
 								</script>
 							</div>
 						</div>

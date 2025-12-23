@@ -79,8 +79,5 @@ public class GoalService {
     						 .map(Goal :: getStartDate)
     						 .orElseThrow(()-> new IllegalStateException("現在の目標が見つかりません。"));
     }
-    
-    
-
 
 }

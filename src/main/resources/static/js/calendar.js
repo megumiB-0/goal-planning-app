@@ -1,33 +1,66 @@
 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-
 // カレンダー共通部分
-async function initLearningCalendar({calendarEl, editable = true}){
+
+async function initLearningCalendar({
+	calendarEl,
+	crudTarget = null,  // 'records'|'plans'|null
+	showRoutines = true,
+	showPlans = false,
+	showRecords = false
+}){
+	const crudEnabled = crudTarget !== null;
 	const dailyTotals = await fetchDailyTotals();
+	
+	// eventSources
+	const eventSources = [];
+	
+	// routines(常に表示のみ)
+	if(showRoutines){
+		eventSources.push({
+			url: '/routines/calendar',
+			editable: false
+		});
+	}
+	// plans
+	if(showPlans){
+		eventSources.push({
+			url: '/api/learning-plans/events',
+			editable: crudTarget === 'plans'
+		})
+	}
+	
+	// records
+	if(showRecords){
+		eventSources.push({
+			url: '/api/learning-records/events',
+			editable: crudTarget === 'records'
+		})
+	}
 	
 	// FullCalendarのインスタンスを作る
 	const calendar = new FullCalendar.Calendar(calendarEl,{
 		initialView: 'timeGridWeek',			// １週間の縦型view
 		allDaySlot: false, 						// 終日枠を表示しない
 		nowIndicator: true,						// 現在時刻の赤線
-		selectable: editable,					// クリックで選択可能
-		selectMirror: editable, 				// selectを使うには必須
 		locale: 'ja', 							// 日本語表記 
 		firstDay: 1,							// 月曜はじまり
 		themeSystem:'bootstrap5',				// BootStrapデザイン
 		contentHeight: '800px',
 		slotDuration: '00:15:00',				// 15分刻み
 		slotLabelInterval: '01:00:00',			// 1時間ごとに時間表示
-		editable: true,							// イベントをドラッグで動かせる	
-		eventDurationEditable: editable,		// イベント終了時間（duration）を変更できる
-		eventStartEditable: editable,			// イベント開始時間を変更できる
+		
+		eventSources,
+		
+		editable: crudEnabled,					// イベントをドラッグで動かせる	
+		selectable: crudEnabled,				// クリックで選択可能
+		selectMirror: crudEnabled, 				// selectを使うには必須
+		eventDurationEditable: crudEnabled,		// イベント終了時間（duration）を変更できる
+		eventStartEditable: crudEnabled,		// イベント開始時間を変更できる
 		unselectAuto: false,
 		selectOverlap: true, 
-		
 
-		// イベントの読み込み(GET)  home　=　SpringBootのAPI(learning-records)  routine　=　routine　　
-		events: editable ? '/api/learning-records/events' : '/routines/calendar',
 
 		//週末だけヘッダー色を変更する
 		dayHeaderDidMount: function(info){
@@ -39,22 +72,51 @@ async function initLearningCalendar({calendarEl, editable = true}){
 			if(day === 6) headerEl.style.color="#A4C0C9";
 			
 			//ヘッダー合計学習時間表示
-			if(editable && dailyTotals){
-				const year = info.date.getFullYear();
-				const month = info.date.getMonth() + 1;
-				const day1 = info.date.getDate();
-				const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
+if (crudTarget !== null) {
+    // 未定義の場合は空オブジェクトにする
+    const planned = typeof plannedTotals !== 'undefined' ? plannedTotals : {};
+    const daily = typeof dailyTotals !== 'undefined' ? dailyTotals : {};
+
+    // /planならplanned、/homeならdaily
+    const totalsToUse = Object.keys(planned).length > 0 ? planned : daily;
+
+    const year = info.date.getFullYear();
+    const month = info.date.getMonth() + 1;
+    const day1 = info.date.getDate();
+    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
+
+    const totalMin = totalsToUse[dateStr] || 0;
+
+    if (totalMin > 0) {
+        const totalDiv = document.createElement('div');
+        totalDiv.style.fontSize = "0.8rem";
+        totalDiv.style.marginTop = "2px";
+        totalDiv.style.color = "#778899";
+        totalDiv.innerText = `${totalMin}分`;
+        info.el.appendChild(totalDiv);
+    }
+}
+
+
+
+
+
+//			if(crudTarget !== null && dailyTotals){
+//				const year = info.date.getFullYear();
+//				const month = info.date.getMonth() + 1;
+//				const day1 = info.date.getDate();
+//				const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
 	
-				const totalMin = dailyTotals.get(dateStr);
-				if(totalMin != null){
-					const totalDiv = document.createElement('div')
-					totalDiv.style.fontSize = "0.8rem";
-					totalDiv.style.marginTop = "2px";
-					totalDiv.style.color = "#778899";
-					totalDiv.innerText = `${totalMin}分`;
-					info.el.appendChild(totalDiv);
-				}
-			}
+//				const totalMin = dailyTotals.get(dateStr);
+//				if(totalMin != null){
+//					const totalDiv = document.createElement('div')
+//					totalDiv.style.fontSize = "0.8rem";
+//					totalDiv.style.marginTop = "2px";
+//					totalDiv.style.color = "#778899";
+//					totalDiv.innerText = `${totalMin}分`;
+//					info.el.appendChild(totalDiv);
+//				}
+//			}
 		},
 
     eventDidMount: function(info){
@@ -81,22 +143,26 @@ async function initLearningCalendar({calendarEl, editable = true}){
           info.el.style.backgroundColor = '#E4B363';
           info.el.style.borderColor = '#273C75';
       }
-    },			
-			
-
-
+    },
+	
+	// 新規作成
 		// クリックで新規作成（POST）編集可のみ有効
-		select: editable ? async function (info) {
+		select: crudEnabled ? async function (info) {
+			const apiBase =
+				crudTarget === 'plans'
+				? '/api/learning-plans'
+				: '/api/learning-records';	
+			
 			const minutes = (new Date(info.end) - new Date(info.start)) / 60000;
 			
 			const body = {
-				learningDay: info.startStr.substring(0,10),
+				day: info.startStr.substring(0,10),
 				startTime: info.startStr.substring(11,16),
 				endTime: info.endStr.substring(11,16),
-				learningMinutes: minutes
+				minutes: minutes
 			};
 			
-			const res =await fetch('/api/learning-records/create',{
+			const res =await fetch(`${apiBase}/create`,{
 				method: 'POST',
 				headers: {"Content-Type": "application/json",
 						   [csrfHeader]: csrfToken
@@ -118,23 +184,24 @@ async function initLearningCalendar({calendarEl, editable = true}){
 			// カレンダーに即時反映（これにより複数登録可能）
 			calendar.addEvent({
 				id: saved.id,
-				title: body.learningMinutes + "分",
+				title: body.minutes + "分",
 				start: saved.start,
 				end: saved.end
 			});
 		} : undefined,
 
 		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止) 編集可のみ有効
-		eventClick: editable ?　async function(info){
+		eventClick: crudEnabled ?　async function(info){
 			if(!confirm("この記録を削除しますか?")) return;
-			info.jsEvent.preventDefault(); //accidental dragを無効化
-			const id = info.event.id;
-			const res = await fetch(`/api/learning-records/${id}`,{
+			
+			const apiBase =
+				crudTarget === 'plans'
+				? '/api/learning-plans'
+				: '/api/learning-records';	
+
+			const res = await fetch(`/api/learning-records/${info.event.id}`,{
 				method:'DELETE',
-				headers:{
-					"Content-Type":"application/json",
-					[csrfHeader]: csrfToken
-				}
+				headers:{[csrfHeader]: csrfToken}
 			});
 			if(res.ok){
 				info.event.remove();
@@ -144,26 +211,28 @@ async function initLearningCalendar({calendarEl, editable = true}){
 		} : undefined,
 		
 	//ドラッグで時間変更（PUT）	 編集可のみ
-	 	eventDrop: editable ?　async function (info) {await updateEvent(info);
-		}: undefined,
-		eventResize: editable ? async function(info){await updateEvent(info);
-		}: undefined
+	 	eventDrop: crudEnabled ? updateEvent : undefined,
+		eventResize: crudEnabled ? updateEvent : undefined,
 	});
 	
 	calendar.render();
 	
 	// 共通の　PUT処理
 	async function updateEvent(info){
-		const id = info.event.id;
+		const apiBase =
+		crudTarget === 'plans'
+			? '/api/learning-plans'
+			: '/api/learning-records';
+			
 		const body = {
-			learningDay: info.event.startStr.substring(0,10),
+			day: info.event.startStr.substring(0,10),
 			startTime: info.event.startStr.substring(11,16),
 			endTime: info.event.endStr.substring(11,16),
-			learningMinutes:
+			minutes:
 				(new Date(info.event.end) - new Date(info.event.start))/60000
 		};
 		
-		const res = await fetch(`/api/learning-records/${id}`,{
+		const res = await fetch(`${apiBase}/${info.event.id}`,{
 			method: 'PUT',
 			headers: {"Content-Type": "application/json",
 					  [csrfHeader]: csrfToken},
@@ -184,9 +253,10 @@ async function initLearningCalendar({calendarEl, editable = true}){
 		const res = await fetch('/api/learning-records/daily-totals');
 		if(!res.ok)return new Map();
 		const jsonData = await res.json();
-		const map = new Map();
-		Object.entries(jsonData).forEach(([learningDay,totalMinutes]) => {map.set(learningDay, totalMinutes)});
-		return map;
+//		const map = new Map();
+//		Object.entries(jsonData).forEach(([day,totalMinutes]) => {map.set(day, totalMinutes)});
+//		return map;
+		return jsonData
 	}
 	
 }
