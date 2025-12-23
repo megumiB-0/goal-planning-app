@@ -1,6 +1,7 @@
 package com.example.goalplanningapp.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,21 @@ public class LearningPlanApiController {
 					.body(Map.of("message",e.getMessage()));
 		}
 	}
-
+	//取得
+	@GetMapping("/events")
+	public ResponseEntity<?> getEvents(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
+		//ユーザーの全学習記録を取得
+		List<LearningPlan> plans = learningPlanService.getPlans(userDetailsImpl.getUser());
+		//FullCalendarのJSON形式に変換
+		List<EventDTO> events = plans.stream().map(plan -> {
+			return new EventDTO(
+					plan.getId(),
+					plan.getPlanningDay().toString()+"T"+ plan.getStartTime().toString(),
+					plan.getPlanningDay().toString()+"T"+ plan.getEndTime().toString()
+					);
+		}).toList();
+		return ResponseEntity.ok(events);
+	}
 	//更新(PUT)
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateRecord(@PathVariable Integer id,
