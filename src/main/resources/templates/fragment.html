@@ -49,7 +49,7 @@
 							<ul class="dropdown-menu">
 								<li><a class="dropdown-item" th:href="@{/goals/setting}">目標</a></li>
 								<li><a class="dropdown-item" th:href="@{/routines/new}">ルーティン</a></li>
-								<li><a class="dropdown-item" href="#">学習予定</a></li>
+								<li><a class="dropdown-item" th:href="@{/plans}">学習予定</a></li>
 							</ul>
 						</li>						
 						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_GENERAL')">

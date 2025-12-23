@@ -1,11 +1,17 @@
 package com.example.goalplanningapp.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.goalplanningapp.dto.DailyTotalDTO;
 import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningPlan;
@@ -33,8 +39,8 @@ public class LearningPlanService {
 		if(learningPlanRepository.existsOverlap(user, planningDay, startTime, endTime)) {
 			throw new IllegalStateException("この時間帯はすでに登録されています。");
 		}
-		// 過去の日付チェック
-		validateNotPast(planningDay);
+		// 現在時刻以前は計画登録NG
+		validateNotPast(planningDay,startTime);
 		
 		//学習予定時間を分で計算
 		int planningMinutes = calculateMinutes(startTime,endTime);
@@ -53,6 +59,7 @@ public class LearningPlanService {
 	
 	//GET用
 	public List<LearningPlan> getPlans(User user){
+
 		return learningPlanRepository.findByUser(user);
 	}
 	
@@ -72,8 +79,9 @@ public class LearningPlanService {
 		if(learningPlanRepository.existsOverlapExcludingId(user, planningDay, startTime, endTime,id)) {
 			throw new IllegalStateException("この時間帯はすでに登録されています。");
 		}
-		// 過去の日付チェック
-		validateNotPast(planningDay);
+		// 作成日時チェック（現在以降か）
+		validateNotPast(planningDay,startTime);
+
 		//学習予定時間を分で計算
 		int planningMinutes = calculateMinutes(startTime,endTime);
 		
@@ -96,6 +104,39 @@ public class LearningPlanService {
 		learningPlanRepository.delete(plan);
 	}
 	
+	//日ごとの合計学習予定時間計算
+	public Map<LocalDate, Long> getPlanDailyTotals(User user){
+		List<DailyTotalDTO> dailyTotals = learningPlanRepository.findDailyTotals(user);
+		//結果を日付順で返したいのでLinkesHashMapを使う
+		Map<LocalDate, Long> map = new LinkedHashMap<>();
+		LocalDate today =LocalDate.now();
+		//データが空の時はからマップ
+		if(dailyTotals.isEmpty()) {
+			return map;
+		}
+		//日付順にソートをかける
+		dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));		
+		//List(dailyTotals)をマップにする
+		Map<LocalDate,Long>dailyTotalMap = dailyTotals.stream()
+				.collect(Collectors.toMap(
+						DailyTotalDTO::getLearningDay,
+						DailyTotalDTO::getTotalMinutes
+						));
+		//今日以降のデータだけマップに追加
+		for(DailyTotalDTO dto : dailyTotals) {
+			LocalDate date = dto.getLearningDay();
+			if(!date.isBefore(today)) {
+				map.put(date,dailyTotalMap.getOrDefault(date, 0L));
+			}
+		}
+		System.out.println(dailyTotals);
+		return map;
+	}
+	
+	
+	
+	
+	
 	//共通メソッド（POSTとPUT）時間計算
 	public int calculateMinutes(LocalTime startTime, LocalTime endTime) {
 		int startTotalMinutes = startTime.getHour() * 60 + startTime.getMinute();
@@ -110,10 +151,12 @@ public class LearningPlanService {
 		return endTotalMinutes - startTotalMinutes;
 		}
 	//共通メソッド（POSTとPUT）過去の日付NG
-	public void validateNotPast(LocalDate targetDate) {
-		LocalDate today = LocalDate.now();
-		if(targetDate.isBefore(today)) {
-			throw new IllegalStateException("過去の日付には登録できません。");
+	public void validateNotPast(LocalDate planningDay, LocalTime startTime) {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime target = LocalDateTime.of(planningDay, startTime);
+		
+		if(target.isBefore(now)) {
+			throw new IllegalStateException("現在時刻以前には計画を登録できません。");
 		}
 	}
 }
