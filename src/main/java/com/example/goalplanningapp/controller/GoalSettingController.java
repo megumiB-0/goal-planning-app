@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.Qualification;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.GoalSettingForm;
@@ -38,9 +39,43 @@ public class GoalSettingController {
 		this.goalService = goalService;
 	}
 	
+	// 目標トップページ
+	@GetMapping
+	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
+		User user = userDetailsImpl.getUser();
+		Goal currentGoal = goalService.getCurrentGoal(user);
+		
+		boolean isEdit = goalService.hasActiveGoal(user);
+		model.addAttribute("isEdit", isEdit); //修正(true)新規（false）
+		
+		// 有効な目標がない
+		if(currentGoal == null) {
+			// 新規登録
+			return "redirect:/goals/setting";
+		}
+		// 有効な目標がある
+		model.addAttribute("goal", currentGoal);
+		return "user/goals/index";
+		
+	}
+	
+	// 新規登録
 	@GetMapping("/setting")
-	public String showSettingForm(Model model) {
-		model.addAttribute("goalSettingForm", new GoalSettingForm());
+	public String showSettingForm(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+								  Model model,
+								  RedirectAttributes redirectAttributes) {
+		User user = userDetailsImpl.getUser();
+		boolean hasActiveGoal = goalService.hasActiveGoal(user);
+		if(hasActiveGoal) {
+			redirectAttributes.addFlashAttribute("errorMessage","すでに有効な目標があります。修正してください。");
+			return "redirect:/goals";
+		}
+		
+		GoalSettingForm form = new GoalSettingForm();
+		model.addAttribute("goalSettingForm", form);
+		
+		boolean isEdit = goalService.hasActiveGoal(user);
+		model.addAttribute("isEdit", isEdit); //新規(false)
 		
 		// 資格一覧
 		List<Qualification> qualifications = qualificationService.findAllQualifications();
@@ -49,17 +84,39 @@ public class GoalSettingController {
 		return "user/goals/setting";
 		
 	}
+	// 修正
+	@GetMapping("/edit")
+	public String showEditForm(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+							   Model model) {
+		User user = userDetailsImpl.getUser();
+		Goal goal = goalService.getCurrentGoal(user);
+		if(goal == null) {
+			return "redirect:/goals/setting";
+		}
+		
+		GoalSettingForm form = new GoalSettingForm();
+		form.setQualificationId(-1);
+		form.setCustomQualificationName(goal.getQualification().getName());
+		form.setCustomEstimatedHours(goal.getQualification().getEstimatedMinutes() / 60);
+		form.setStartDate(goal.getStartDate());
+		form.setGoalDate(goal.getGoalDate());
+		
+
+		boolean isEdit = goalService.hasActiveGoal(user);
+		model.addAttribute("isEdit", isEdit); //修正(true)
+		model.addAttribute("goalSettingForm", form);
+		model.addAttribute("isCustomQualification",true);
+		return "user/goals/setting";
+	}
 	
 	// 目標登録
 	@PostMapping("/confirm")
 	public String create(@ModelAttribute @Validated GoalSettingForm form,
-
+						 @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 						 BindingResult bindingResult,
 						 Model model)
 	{
-
-		
-		
+		User user = userDetailsImpl.getUser();
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("goalSettingForm", form);
 			model.addAttribute("showConfirm",false);
@@ -108,6 +165,10 @@ public class GoalSettingController {
 			model.addAttribute("goalSettingForm",form);
 			model.addAttribute("showConfirm",false);
 		}
+		
+		boolean isEdit = goalService.hasActiveGoal(user);
+		model.addAttribute("isEdit", isEdit); //新規(false)
+		
 		return "user/goals/setting"; //確認画面へ
 	}
 	
@@ -117,19 +178,54 @@ public class GoalSettingController {
 						   @AuthenticationPrincipal UserDetailsImpl userDetails,
 						   RedirectAttributes redirectAttributes) {
 		//ログインユーザーをセット
-		User loginUser = userDetails.getUser();
+		User user = userDetails.getUser();
 		// goal登録用のform,loginUserデータをメソッドに渡す
 		try {
-			goalService.saveGoalWithQualification(form,loginUser); 
-			//ホームに登録成功メッセージを表示する
-			redirectAttributes.addFlashAttribute("successMessage","目標登録に成功しました！");
-			}catch(IllegalStateException e) {
+			if(goalService.hasActiveGoal(user)) {
+				// 修正
+				goalService.updateCurrentGoal(form, user); 
+				//ホームに登録成功メッセージを表示する
+				redirectAttributes.addFlashAttribute("successMessage","目標を修正しました！");
+			}else {
+				// 新規登録
+				goalService.saveGoalWithQualification(form,user); 
+				//ホームに登録成功メッセージを表示する
+				redirectAttributes.addFlashAttribute("successMessage","目標登録に成功しました！");
+			}
+		}catch(IllegalStateException e) {
 			redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
-			return "redirect:/home";
 		}
-		
 		return "redirect:/home";
 	}
+	
+	// 修正保存
+	@PostMapping("/update")
+	public String update(@Validated @ModelAttribute GoalSettingForm form,
+						 BindingResult bindingResult,
+						 @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+						 RedirectAttributes redirectAttributes) {
+		if(bindingResult.hasErrors()) {
+			return "user/goals/edit";
+		}
+		User user = userDetailsImpl.getUser();
+		goalService.updateGoal(form, user);
+		
+		redirectAttributes.addFlashAttribute("successMessage","目標を修正しました");
+		return "redirect:/goals";
+	}
+	
+	//今の目標を終了
+	@PostMapping("/finish")
+	public String finish(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+						 RedirectAttributes redirectAttributes) {
+		User user = userDetailsImpl.getUser();
+//		Integer finishedRootId = goalService.finishCurrentGoal(user);
+//		redirectAttributes.addFlashAttribute("finishedRootId", finishedRootId);
+		goalService.finishCurrentGoal(user);
+		redirectAttributes.addFlashAttribute("successMessage","現在の目標を終了しました。");
+		return "redirect:/goals/setting";
+	}
+	
 	
 }
 

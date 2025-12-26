@@ -12,7 +12,7 @@
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row justify-content-center">
 					<div class="col-xl-5 col-lg-6 col-md-8">
-						<h1 class="mb-4 text-center">目標設定</h1>
+						<h1 th:text="${isEdit} ? '目標を修正' : '目標を新規登録'" class="mb-4 text-center"></h1>
 						
 						<!-- 入力フォーム -->
 						<div th:if="${showConfirm != true}">
@@ -100,7 +100,7 @@
 								<input type="hidden" name="customEstimatedHours" th:value="${goalSettingForm.customEstimatedHours}">
 								 <input type="hidden" name="startDate" th:value="${goalSettingForm.startDate}">
 								<input type="hidden" name="goalDate" th:value="${goalSettingForm.goalDate}">
-								<button type="submit" class="btn btn-primary">目標を登録</button>
+								<button type="submit" th:text="${isEdit} ? '目標を修正する' : '目標を登録する'"  class="btn btn-primary"></button>
 							</form>
 							<a th:href="@{/goals/setting}" class="btn btn-link mt-2">戻る</a>
 						</div>

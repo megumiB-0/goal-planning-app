@@ -20,7 +20,6 @@
 						<div th:if="${errorMessage}" class="justify-content-center alert alert-danger mb-3">
 							<p th:text="${errorMessage}"></p>
 						</div>
-						<pre th:text="${routineForm}"></pre>
 						<form th:action="${isUpdate} ? @{/routines/update} : @{/routines}"
 								  method="post"
 								  th:object="${routineForm}">

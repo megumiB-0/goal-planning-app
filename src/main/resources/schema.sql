@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS qualifications (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	root_qualification_id INT NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	estimated_minutes INT NOT NULL,
 	created_by_user_id INT NULL,

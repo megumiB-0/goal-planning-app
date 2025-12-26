@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+<title>現在の目標</title>
+</head>
+<body>
+	<div class="goalplanningapp-wrapper">
+		<div th:replace="~{fragment :: header}"></div>
+		<main>
+			<div class="container pt-4 pb-5 goalplanningapp-container">
+				<div class="row justify-content-center">
+					<div class="col-lg-6 col-md-8">
+						<h1 class="mb-4 text-center">現在の目標</h1>
+						<div th:if="${successMessage}" class="justify-content-center alert alert-info mb-3">
+							<p th:text="${successMessage}"></p>
+						</div>
+						<div th:if="${errorMessage}" class="justify-content-center alert alert-danger mb-3">
+							<p th:text="${errorMessage}"></p>
+						</div>						
+						<table class="table align-middle mb-3 fs-5 lh-lg">
+							<tr>
+								<th>資格名</th>
+								<td th:text="${goal.qualification.name}"></td> 
+							</tr>
+							<tr>
+								<th>開始日</th>
+								<td th:text="${goal.startDate}"></td>
+							</tr>
+							<tr>
+								<th>目標達成日</th>
+								<td th:text="${goal.goalDate}"></td>	
+							</tr>
+							<tr>
+								<th>必要時間</th>
+								<td th:text="${T(java.lang.Math).round(goal.qualification.estimatedMinutes / 60)} + ' 時間'"></td>	
+							</tr>
+						</table>
+						<div class="d-flex justify-content-center mt-4 gap-3">
+							<a th:if="${isEdit}" th:href="@{/goals/edit}" class="btn btn-secondary btn-md px-4">
+								修正する
+							</a>
+							<a th:unless="${isEdit}" th:href="@{/goals/edit}" class="btn btn-secondary btn-md px-4">
+								新規登録する
+							</a>
+							<a th:href="@{/home}"class="btn btn-outline-secondary">	
+								HOMEに戻る
+							</a>
+							<form th:if="${isEdit}" th:action="@{/goals/finish}" method="post" class="m-0 ms-5">
+								<button type="submit" class="btn btn-outline-danger btn-sm px-4" onclick="return confirm('現在の目標を終了しますか？');">
+									今の目標を終了する
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+	<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div class="goalplanningapp-wrapper">
-		<div th:replace="~{fragment :: header}"></div>
+		<div th:replace ="~{fragment :: header}"></div>
 		<main>
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row">
@@ -35,6 +35,7 @@
 					<div class="card col m-2">
 						<!-- 残り必要時間を表示 -->
 						<h5>計画しましょう</h4>
+						<p>これまで <span th:text="${todaysCumulativeHours}"></span> 時間勉強してきたので、残り<span th:text="${remainingHours}"></span> 時間です。</p>
 						<p>1日あたり　：<span th:text="${estimatedPerDay}"></span> 分</p>	
 						<p>1週間あたり：<span th:text="${estimatedPerWeek}"></span> 分</p>
 						<p>必要です。</p>
@@ -43,6 +44,7 @@
 				<div class="row">
 					<div class="card">
 						<h4 class="text-center mt-3">ルーティン表示 & 計画入力</h5>
+						<p class="text-center mt-3">ドラッグ&ドロップで計画を入力</p>
 						<!-- カレンダー本体 -->
 						<div id="calendar"></div>
 						<!-- エラーメッセージ表示-->
@@ -70,5 +72,6 @@
 		</main>
 		<div th:replace="~{fragment :: footer}"></div>
 	</div>
+		<div th:replace="~{fragment :: scripts}"></div>
 </body>
 </html>

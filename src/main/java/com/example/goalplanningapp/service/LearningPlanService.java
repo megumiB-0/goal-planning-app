@@ -1,5 +1,6 @@
 package com.example.goalplanningapp.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -104,6 +105,23 @@ public class LearningPlanService {
 		learningPlanRepository.delete(plan);
 	}
 	
+	// 毎週月曜日以降に先週まで（日曜日まで）の計画を自動削除する
+	public void deleteOldPlansUntilSunday(User user) {
+		LocalDate today = LocalDate.now();
+		// 今週月曜日
+		LocalDate thisMonday = today.with(DayOfWeek.MONDAY);
+		// 削除基準日は今週の月曜日の前日（日曜日）
+		LocalDate deleteUntil = thisMonday.minusDays(1);
+		List<LearningPlan> plans = getPlans(user);
+		
+		for(LearningPlan plan : plans) {
+			if(plan.getPlanningDay() != null
+					&& !plan.getPlanningDay().isAfter(deleteUntil)) {
+				learningPlanRepository.delete(plan);
+			}
+		}
+	}
+	
 	//日ごとの合計学習予定時間計算
 	public Map<LocalDate, Long> getPlanDailyTotals(User user){
 		List<DailyTotalDTO> dailyTotals = learningPlanRepository.findDailyTotals(user);
@@ -129,7 +147,6 @@ public class LearningPlanService {
 				map.put(date,dailyTotalMap.getOrDefault(date, 0L));
 			}
 		}
-		System.out.println(dailyTotals);
 		return map;
 	}
 	

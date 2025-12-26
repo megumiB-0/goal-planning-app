@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.goalplanningapp.dto.CalendarEventDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.RoutineDayOfWeek;
-import com.example.goalplanningapp.entity.RoutineSchedule;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.RoutineForm;
 import com.example.goalplanningapp.security.UserDetailsImpl;
@@ -41,8 +40,20 @@ public class RoutineController {
 	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
 		// ログインユーザーの取得
 		User user = userDetailsImpl.getUser();
+		
+		// 現在進行中の Goal を取得
+		Goal currentGoal = goalService.getCurrentGoal(user);
+		LocalDate goalDate;
+		if (currentGoal != null) {
+		    // 有効な Goal があればその goalDate まで
+		    goalDate = currentGoal.getGoalDate();
+		} else {
+		    // なければ今日から1ヶ月後まで
+		    goalDate = LocalDate.now().plusMonths(1);
+		}
+		
 		// ユーザーのルーティン一覧を取得	
-		List<RoutineSchedule> routines = routineScheduleService.findByUser(user);
+		List<CalendarEventDTO> routines = routineScheduleService.getRoutineEvents(user,goalDate);
 		model.addAttribute("routines",routines);
 		// ルーティン有無でボタン表示を変える
 		boolean isUpdate = routineScheduleService.existsByUser(user);
