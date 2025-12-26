@@ -28,7 +28,7 @@ public class QualificationService {
 	}
 
 	// 資格を登録する
-	public Qualification save(Qualification qualification){
+	public Qualification saveByUser(Qualification qualification){
 		return qualificationRepository.save(qualification);
 	}
 	

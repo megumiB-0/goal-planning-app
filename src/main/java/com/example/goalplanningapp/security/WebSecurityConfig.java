@@ -25,9 +25,17 @@ public class WebSecurityConfig {
 				.loginProcessingUrl("/login")   // ログインフォームの送信先URL
 				//.defaultSuccessUrl("/home",true) // ログイン成功時のリダイレクト先URL
 				.successHandler((request, response, authentication) ->{
-					//ログイン直後のみメッセージ表示
+					// ログイン直後のみメッセージ表示
 					request.getSession().setAttribute("loginMessage", "ログインしました");
-					response.sendRedirect("/home");
+					// 管理者かどうか判定
+					boolean isAdmin = authentication.getAuthorities().stream()
+													.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+					if(isAdmin) {
+						response.sendRedirect("/admin/home");	// 管理者は /admin/home
+					}else {
+						response.sendRedirect("/home");			// 一般会員は/home
+					}
+
 				})
 				.failureUrl("/login?error") //ログイン失敗時のリダイレクト先URL
 				.permitAll()

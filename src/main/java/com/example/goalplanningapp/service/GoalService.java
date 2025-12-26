@@ -58,9 +58,9 @@ public class GoalService {
 			//ログインユーザーをセット
 			newQualification.setUser(user);
 			// 新しい資格を保存
-			Qualification saved = qualificationService.save(newQualification);
+			Qualification saved = qualificationService.saveByUser(newQualification);
 			saved.setRootQualificationId(saved.getId());
-			qualificationEntity = qualificationService.save(saved);
+			qualificationEntity = qualificationService.saveByUser(saved);
 		}else {
 			//既存資格Idを取得
 			Integer qualificationId = form.getQualificationId();
@@ -111,7 +111,7 @@ public class GoalService {
 		
 		
 		// 新しい資格を保存
-		Qualification savedQ = qualificationService.save(q);
+		Qualification savedQ = qualificationService.saveByUser(q);
 
 		// 追加目標（新規資格）を設定
 		Goal additional = new Goal();
@@ -179,7 +179,7 @@ public class GoalService {
 						form.getCustomEstimatedHours() * 60);
 			}
 			// 保存（更新 & 新規）
-			qualificationService.save(qualification);
+			qualificationService.saveByUser(qualification);
 		}else {
 			//既存資格を選択した場合（時間変更なし）
 			qualification = qualificationService

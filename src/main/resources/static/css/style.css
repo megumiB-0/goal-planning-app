@@ -42,15 +42,38 @@ footer {
 	min-height: 60px;
 }
 
-.goalplanningapp-btn{
-	background-color: #708A8C !important;
-	transition: 0.1s;
+.goalplanningapp-page-link {
+	color: #5196a6;
 }
+
+.goalplanningapp-page-link:hover {
+	color: #407784;
+}
+
+.goalplanningapp-btn{
+	background-color: #708A8C ;
+	transition: background-color 0.2s;
+}
+.goalplanningapp-btn:hover {
+    background-color: #abc3c4; /* 好きな色に変更可能 */
+}
+
 
 .goalplanningapp-btn::-moz-focus-innerhover {
 	opacity: 0.8;
 }
 
+.goalplanningapp-active{
+	background-color: #5196a6 !important; 
+	border-color: #5196a6 !important;
+}
+.goalplanningapp-page-link {
+	color: #5196a6;
+}
+
+.goalplanningapp-page-link:hover {
+	color: #407784;
+}
 #calendar{
 	margin: 20px;
 }
