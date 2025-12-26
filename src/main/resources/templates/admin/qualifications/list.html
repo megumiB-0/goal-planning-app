@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www/thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+	<title>資格管理（管理者）</title>
+</head>
+<body>
+	<div class="goalplanningapp-wrapper">
+		<div th:replace="~{fragment :: header}"></div>
+		<main>
+			<div class="container pt-4 pb-5 goalplanningapp-container">
+				<div class="row justify-content-center">
+					<div class="col-xxl-9 col-xl-10 col-lg-11">
+						<h1 class="mb-4 text-center">資格管理</h1>
+						<div th:if="${successMessage}" class="alert alert-success" role="alert">
+   							 <span th:text="${successMessage}"></span>
+						</div>
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<form th:action="@{/admin/qualifications}" method="get"  class="d-flex align-items-center">
+								<div class="input-group me-2">
+							    	<input type="text" class="form-control" name="keyword" placeholder="資格名で検索" th:value="${keyword}" />
+							   		<button type="submit" class="btn text-white shadow-sm goalplanningapp-btn">検索</button>
+								</div>
+								<a th:href="@{/admin/qualifications}" class="btn btn-outline-secondary text-nowrap">クリア</a>									
+							</form>
+							<a th:href="@{/admin/qualifications/new}" class="btn text-white shadow-sm mb-3 goalplanningapp-btn">
+								+ 新規資格登録
+							</a>
+						</div>
+											
+						<table class="table table-hover align-middle mb-4">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>資格名</th>
+									<th>想定学習時間(時間)</th>
+									<th>rootID</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="q : ${qualificationsPage.content}">
+									<td th:text="${q.id}"></td>
+									<td th:text="${q.name}"></td>				
+									<td th:text="${q.estimatedMinutes / 60}"></td>
+									<td th:text="${q.rootQualificationId}"></td>
+									<td>
+									<!-- 編集 -->
+										<a th:href = "@{/admin/qualifications/{id}/edit(id=${q.id})}"
+								    	   class="btn text-white shadow-sm goalplanningapp-btn">
+											編集
+										</a>
+									<!-- 論理削除 -->
+										<form th:action="@{/admin/qualifications/{id}/delete(id=${q.id})}"
+											  method="post"
+											  style="display:inline;"
+											  onsubmit="return confirm('本当に削除しますか？');">
+											<button type="submit" class="btn btn-outline-danger">削除</button>
+										</form>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div  th:if="${qualificationsPage.totalPages > 1}" class="d-flex justify-content-center">
+							<nav aria-label="資格一覧ページ">
+								<ul class="pagination">
+									<li class="page-item">
+										<span th:if="${qualificationsPage.first}" class="page-link disabled">前</span>
+										<a th:unless="${qualificationsPage.first}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number - 1}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link">前</a>
+									</li>
+									<li th:each="i : ${#numbers.sequence(0, qualificationsPage.totalPages - 1)}" class="page-item">
+										                                          <span th:if="${i == qualificationsPage.number}" class="page-link active goalplanningapp-active" th:text="${i + 1}"></span>
+                                          <a th:unless="${i == qualificationsPage.number}" th:href="@{/admin/qualifications(page = ${i}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link " th:text="${i + 1}"></a>
+									</li>
+									<li class="page-item">
+										<span th:if="${qualificationsPage.last}" class="page-link disabled">次</span>
+										<a th:unless="${qualificationsPage.last}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number + 1}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link">次</a>
+									</li>
+								</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+	<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>
