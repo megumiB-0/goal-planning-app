@@ -15,6 +15,12 @@ import com.example.goalplanningapp.entity.User;
 public interface LearningPlanRepository extends JpaRepository<LearningPlan, Integer> {
 	// ログインユーザーのデータリストを抽出する
 	List<LearningPlan> findByUser(User user);
+	
+	// 削除
+	void deleteByUser(User user);
+	// rootIdに紐づく計画を削除
+	void deleteByUserAndGoalIdNotIn(User user, List<Integer> goalIds);
+	
 		
 		//新規用
 		@Query("""
@@ -60,6 +66,8 @@ public interface LearningPlanRepository extends JpaRepository<LearningPlan, Inte
 			ORDER BY p.planningDay
 			""")
 	List<DailyTotalDTO>findDailyTotals(@Param("user")User user);
+	
+	
 
 		
 }

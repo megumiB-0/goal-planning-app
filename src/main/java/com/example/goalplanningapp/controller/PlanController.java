@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.security.UserDetailsImpl;
+import com.example.goalplanningapp.service.ActiveGoalService;
 import com.example.goalplanningapp.service.GoalService;
 import com.example.goalplanningapp.service.LearningRecordService;
 
@@ -16,11 +17,15 @@ import com.example.goalplanningapp.service.LearningRecordService;
 @RequestMapping("/plans")
 public class PlanController {
 	// DI
+	private final ActiveGoalService activeGoalService;
 	private final LearningRecordService learningRecordService;
 	private final GoalService goalService;
-	public PlanController(LearningRecordService learningRecordService,GoalService goalService) {
+	public PlanController(LearningRecordService learningRecordService,
+						  GoalService goalService,
+						  ActiveGoalService activeGoalService) {
 		this.learningRecordService = learningRecordService;
 		this.goalService = goalService;
+		this.activeGoalService = activeGoalService;
 	}
 	
 	//index
@@ -28,6 +33,11 @@ public class PlanController {
 	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
 		// ログインユーザーの取得
 		User user = userDetailsImpl.getUser();
+		// goalがなければ設定へ
+	    if (!activeGoalService.hasActiveGoal(user)) {
+	        model.addAttribute("hasGoal", false);
+	        return "redirect:/goal/new";		
+	    }
 		Goal goal;
 		// ゴールの取得
 		try {

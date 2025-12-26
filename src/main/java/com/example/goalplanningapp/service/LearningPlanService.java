@@ -28,6 +28,7 @@ public class LearningPlanService {
 	
 	public LearningPlanService(LearningPlanRepository learningPlanRepository) {
 		this.learningPlanRepository = learningPlanRepository;
+
 	}
 	
 	//POST用
