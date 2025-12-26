@@ -3,6 +3,7 @@ package com.example.goalplanningapp.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningRecord;
 import com.example.goalplanningapp.entity.User;
+import com.example.goalplanningapp.repository.GoalRepository;
 import com.example.goalplanningapp.repository.LearningRecordRepository;
 
 import jakarta.transaction.Transactional;
@@ -25,9 +27,15 @@ import jakarta.transaction.Transactional;
 public class LearningRecordService {
 	// DI
 	private final LearningRecordRepository learningRecordRepository;
+	private final GoalRepository goalRepository;
+	private final GoalService goalService;
 	
-	public LearningRecordService(LearningRecordRepository learningRecordRepository) {
+	public LearningRecordService(LearningRecordRepository learningRecordRepository,
+								 GoalRepository goalRepository,
+								 GoalService goalService) {
 		this.learningRecordRepository = learningRecordRepository;
+		this.goalRepository = goalRepository;
+		this.goalService = goalService;
 	}
 	
 	//POST用
@@ -41,8 +49,7 @@ public class LearningRecordService {
 			throw new IllegalStateException("この時間帯はすでに登録されています。");
 		}
 		//未来の日付チェック
-		validateNotFuture(learningDay); 
-		
+		validateNotFuture(learningDay);
 		// 学習時間を分で計算
 		int learningMinutes = calculateMinutes(startTime,endTime);
 		
@@ -106,7 +113,52 @@ public class LearningRecordService {
 		learningRecordRepository.delete(record);
 	}
 	
-	//共通メソッド（POSTとPUT）時間計算
+	// カレンダー用の学習記録を取得（現在進行中のrootに紐づくGoalの学習記録）
+	 public List<LearningRecord> getCalendarEventsForActiveRoots(User user) {
+	        // 1. endedAt が null の Goal を取得（現在進行中の root の判定）
+	        Goal activeGoal = goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(user)
+	                .orElse(null);
+	        if (activeGoal == null) {
+	            return Collections.emptyList();
+	        }
+
+	        Integer rootId = activeGoal.getQualification().getRootQualificationId();
+	        // 2. root に紐づく全 Goal を取得（終了済みも含む）
+	        List<Goal> goalsInRoot = goalRepository.findAllByUserAndQualification_RootQualificationId(user, rootId);
+	        List<Integer> goalIds = goalsInRoot.stream()
+	                                           .map(Goal::getId)
+	                                           .collect(Collectors.toList());
+
+	        if (goalIds.isEmpty()) {
+	            return Collections.emptyList();
+	        }
+
+	     // 3. LearningRecord を GoalId で取得
+	        return learningRecordRepository.findByUserAndGoalIdInOrderByLearningDayAscStartTimeAsc(user, goalIds);
+	 }
+
+
+	
+	
+	
+//	// 進行中のrootQualificationId に紐づくgoalのidを取得
+//	private List<Integer> getActiveGoalIds(User user){
+//		// 進行中のGoalを１件取得（EndedAtがnull）
+//		Optional<Goal> activeGoalOpt = goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(user);
+//		if(activeGoalOpt.isEmpty()) {
+//			return List.of();
+//		}
+//		Integer rootId = activeGoalOpt.get().getQualification().getRootQualificationId();
+//		
+//		List<Goal> goals = goalRepository.findAllByUserAndQualification_RootQualificationId(user, rootId);
+//		List<Integer> goalIds = goals.stream()
+//									 .map(Goal::getId)
+//									 .collect(Collectors.toList());
+//		return goalIds;
+//	}
+	
+	
+	// 共通メソッド（POSTとPUT）時間計算
 	public int calculateMinutes(LocalTime startTime, LocalTime endTime) {
 		int startTotalMinutes = startTime.getHour() * 60 + startTime.getMinute();
 		int endTotalMinutes;
@@ -127,75 +179,55 @@ public class LearningRecordService {
 			throw new IllegalStateException("未来の日付には登録できません。");
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
+
 	
 	//日ごとの合計学習時間計算
 	public Map<LocalDate, Long> getDailyTotals(User user){
-		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
+		List<Integer> activeGoalIds = goalService.getActiveGoalIds(user);
 		//結果を日付順で返したいのでLinkesHashMapを使う
 		Map<LocalDate, Long> map = new LinkedHashMap<>();
 		LocalDate today =LocalDate.now();
 		//データが0件の時は今日だけ0で返す
-		if(dailyTotals.isEmpty()) {
+		if(activeGoalIds.isEmpty()) {
 			map.put(today,0L);
 			return map;
 		}
+		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotalsByGoalIds(user,activeGoalIds);
+				
+		if(dailyTotals.isEmpty()) {
+			map.put(today, 0L);
+			return map;	
+			}
+		
 		//日付順にソートをかける
 		dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));		
 		//学習開始日と今日の日付を取得
 		LocalDate start = dailyTotals.get(0).getLearningDay();
 		//List(dailyTotals)をマップにする
-		Map<LocalDate,Long>dailyTotalMap = dailyTotals.stream().collect(Collectors.toMap(
+		Map<LocalDate,Long>dailyMap = dailyTotals.stream().collect(Collectors.toMap(
 				DailyTotalDTO::getLearningDay,
 				DailyTotalDTO::getTotalMinutes));
 		//学習開始日と今日まで1日ずつマップを埋める
 		for(LocalDate date = start; !date.isAfter(today);date = date.plusDays(1)) {
 			//データがある場合はその値、ない場合は0
-			Long minutes = dailyTotalMap.getOrDefault(date, 0L);
-			map.put(date, minutes);
+			map.put(date, dailyMap.getOrDefault(date, 0L));
 		}
 		return map;
 	}
 	
 	//日ごとの累積学習時間(分)を計算
 	public Map<LocalDate,Long> getDailyCumulativeTotals(User user){
-		List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotals(user);
+		Map<LocalDate,Long> dailyTotals = getDailyTotals(user);
+		Map<LocalDate,Long> cumulativeMap = new LinkedHashMap<>();
+		// 累積　初期は0
+		long cumulative = 0L;
+		for(Map.Entry<LocalDate, Long> entry : dailyTotals.entrySet()) {
+			cumulative += entry.getValue();
+			cumulativeMap.put(entry.getKey(), cumulative);
+		}
+		return cumulativeMap;
+	}
 		
-		//データが0件の場合、空のマップを返す
-		if(dailyTotals.isEmpty()) {
-			 return new LinkedHashMap<>();
-		}
-		//ソートをかける
-		dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));
-		//get(0)が安全に呼べるようにする
-		Map<LocalDate, Long> map = new LinkedHashMap<>();
-		Map<LocalDate, Long> dailyMap = dailyTotals.stream().collect(Collectors.toMap(
-				DailyTotalDTO::getLearningDay,
-				DailyTotalDTO::getTotalMinutes
-			));
-		//累積学習時間の初期値0
-		Long cumulativeMinutes = 0L;
-		//学習開始日と今日の日付を取得
-		LocalDate start = dailyTotals.get(0).getLearningDay();
-		LocalDate today = LocalDate.now();
-		// 学習開始日から直近学習した日までをfor文で回す
-		for(LocalDate date = start; !date.isAfter(today);date = date.plusDays(1)) {
-			//データがある場合は累積に加算
-			if(dailyMap.containsKey(date)) {
-				cumulativeMinutes += dailyMap.get(date);
-			}
-			//データがない日は　cumulativeMinutesのまま（=直前の値）
-			map.put(date, cumulativeMinutes);
-		}
-
-		return map;
-		}
 	
 	//今日時点での累計学習時間(分)を計算
 	public Long getTodaysCumulative(User user) {
@@ -221,11 +253,12 @@ public class LearningRecordService {
 	// 今日時点での目標達成度(%)
 	public Long getAchievementRate(User user, Goal goal) {
 		Map<String, Long> v = getProgressValues(user, goal);
-		double rate = (double)v.get("todaysCumulativeMinutes")/v.get("estimatedMinutes");
+		double rate = (double)v.get("todaysCumulativeMinutes") / v.get("estimatedMinutes");
 		Long achievementRate = Math.round(rate * 100);
 		return achievementRate;
 	}	
 
+	
 	//今日時点での残りの学習時間(時間)を計算
 	public Long getTodaysRemaining(User user, Goal goal) {
 		Map<String, Long> v = getProgressValues(user, goal);

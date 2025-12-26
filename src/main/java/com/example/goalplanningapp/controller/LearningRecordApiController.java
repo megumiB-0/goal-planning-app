@@ -51,10 +51,14 @@ public class LearningRecordApiController {
 			// 保存して返ってくる
 			LearningRecord saved =learningRecordService.createRecord(dto, userDetailsImpl.getUser(), goal);
 			//保存した内容をDTOに詰めて返す
+			Map<String,Object> props = Map.of("type", "record");
 			EventDTO event = new EventDTO(
 					saved.getId(),
+					saved.getLearningMinutes().toString() + "分",
 					saved.getLearningDay().toString() + "T" + saved.getStartTime().toString(),
-					saved.getLearningDay().toString() + "T" + saved.getEndTime().toString());
+					saved.getLearningDay().toString() + "T" + saved.getEndTime().toString(),
+					props
+					);
 			return ResponseEntity.ok(event);			
 		}catch(IllegalStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -65,14 +69,18 @@ public class LearningRecordApiController {
 	//取得
 	@GetMapping("/events")
 	public ResponseEntity<?> getEvents(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-		//ユーザーの全学習記録を取得
-		List<LearningRecord> records = learningRecordService.getRecords(userDetailsImpl.getUser());
+//		//ユーザーの全学習記録を取得
+//		List<LearningRecord> records = learningRecordService.getRecords(userDetailsImpl.getUser());
+		List<LearningRecord> records = learningRecordService.getCalendarEventsForActiveRoots(userDetailsImpl.getUser());
+		
 		//FullCalendarのJSON形式に変換
 		List<EventDTO> events = records.stream().map(record -> {
 			return new EventDTO(
 					record.getId(),
+					record.getLearningMinutes().toString() + "分",
 					record.getLearningDay().toString()+"T"+ record.getStartTime().toString(),
-					record.getLearningDay().toString()+"T"+ record.getEndTime().toString()
+					record.getLearningDay().toString()+"T"+ record.getEndTime().toString(),
+					Map.of("type","record")
 					);
 		}).toList();
 		return ResponseEntity.ok(events);

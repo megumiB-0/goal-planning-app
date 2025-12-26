@@ -46,11 +46,14 @@ public class LearningPlanApiController {
 		try {
 			LearningPlan saved =
 					learningPlanService.createPlan(dto, userDetailsImpl.getUser(), goal);
+			Map<String,Object> props = Map.of("type", "plan");
 			EventDTO event = new EventDTO(
 					saved.getId(),
+					saved.getPlanningMinutes().toString() + "分",
 					saved.getPlanningDay().toString() + "T" + saved.getStartTime().toString(),
-					saved.getPlanningDay().toString() + "T" + saved.getEndTime().toString());
-	System.out.println("event"+event);
+					saved.getPlanningDay().toString() + "T" + saved.getEndTime().toString(),
+					props
+					);
 			return ResponseEntity.ok(event);
 
 		}catch(IllegalStateException e) {
@@ -67,8 +70,10 @@ public class LearningPlanApiController {
 		List<EventDTO> events = plans.stream().map(plan -> {
 			return new EventDTO(
 					plan.getId(),
+					plan.getPlanningMinutes().toString() + "分",
 					plan.getPlanningDay().toString()+"T"+ plan.getStartTime().toString(),
-					plan.getPlanningDay().toString()+"T"+ plan.getEndTime().toString()
+					plan.getPlanningDay().toString()+"T"+ plan.getEndTime().toString(),
+					Map.of("type","plan")
 					);
 		}).toList();
 		return ResponseEntity.ok(events);

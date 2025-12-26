@@ -1,6 +1,7 @@
 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
+
 // カレンダー共通部分（初期化）
 async function initLearningCalendar({
 	calendarEl,
@@ -33,7 +34,7 @@ async function initLearningCalendar({
 	if(showPlans){
 		eventSources.push({
 			url: '/api/learning-plans/events',
-			editable: crudTarget === 'plans'
+			editable: crudTarget === 'plans',	// /plan のみ編集可
 		})
 	}
 	
@@ -41,7 +42,7 @@ async function initLearningCalendar({
 	if(showRecords){
 		eventSources.push({
 			url: '/api/learning-records/events',
-			editable: crudTarget === 'records'
+			editable: crudTarget === 'records',	// /home のみ編集可
 		})
 	}
 	
@@ -108,54 +109,44 @@ if (crudTarget !== null) {
         info.el.appendChild(totalDiv);
     }
 }
-
-
-
-
-
-//			if(crudTarget !== null && dailyTotals){
-//				const year = info.date.getFullYear();
-//				const month = info.date.getMonth() + 1;
-//				const day1 = info.date.getDate();
-//				const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day1).padStart(2,'0')}`;
-	
-//				const totalMin = dailyTotals.get(dateStr);
-//				if(totalMin != null){
-//					const totalDiv = document.createElement('div')
-//					totalDiv.style.fontSize = "0.8rem";
-//					totalDiv.style.marginTop = "2px";
-//					totalDiv.style.color = "#778899";
-//					totalDiv.innerText = `${totalMin}分`;
-//					info.el.appendChild(totalDiv);
-//				}
-//			}
 		},
+       // --- 色分け ---
+        eventDidMount: function(info){
+            const type = info.event.extendedProps?.type;
 
-    eventDidMount: function(info){
-      switch(info.event.title){
-        case '睡眠':
-          info.el.style.backgroundColor = '#A3D2CA';  // 背景
-          info.el.style.borderColor = '#273C75';      // 枠線
-          break;
-        case '朝食':
-		case '昼食':
-		case '夕食':
-          info.el.style.backgroundColor = '#d6ceeb';
-          info.el.style.borderColor = '#273C75';
-          break;
-		case '入浴':
-          info.el.style.backgroundColor = '#F28C8C';
-          info.el.style.borderColor = '#273C75';
-          break;
-        case '仕事':
-          info.el.style.backgroundColor = '#8FA998';
-          info.el.style.borderColor = '#273C75';
-          break;
-        default:
-          info.el.style.backgroundColor = '#E4B363';
-          info.el.style.borderColor = '#273C75';
-      }
-    },
+            if(type === 'plan'){
+                info.el.style.backgroundColor = '#FFD700'; // 黄色
+                info.el.style.borderColor = '#B8860B';
+            } else if(type === 'record'){
+                info.el.style.backgroundColor = '#87CEFA'; // 水色
+                info.el.style.borderColor = '#4682B4';
+            } else {
+                // ルーティンは従来のタイトルで色分け
+                switch(info.event.title){
+                    case '睡眠':
+                        info.el.style.backgroundColor = '#A3D2CA';
+                        info.el.style.borderColor = '#273C75';
+                        break;
+                    case '朝食':
+                    case '昼食':
+                    case '夕食':
+                        info.el.style.backgroundColor = '#d6ceeb';
+                        info.el.style.borderColor = '#273C75';
+                        break;
+                    case '入浴':
+                        info.el.style.backgroundColor = '#F28C8C';
+                        info.el.style.borderColor = '#273C75';
+                        break;
+                    case '仕事':
+                        info.el.style.backgroundColor = '#8FA998';
+                        info.el.style.borderColor = '#273C75';
+                        break;
+                    default:
+                        info.el.style.backgroundColor = '#E4B363';
+                        info.el.style.borderColor = '#273C75';
+                }
+            }
+        },
 	
 	// 新規作成
 		// クリックで新規作成（POST）編集可のみ有効
@@ -196,38 +187,21 @@ if (crudTarget !== null) {
 			// カレンダーに即時反映（これにより複数登録可能）
 			calendar.addEvent({
 				id: saved.id,
-				title: body.minutes + "分",
+				title: saved.title,
 				start: saved.start,
-				end: saved.end
+				end: saved.end,
+				extendedProps: saved.extendedProps 
 			});
-		} : undefined,
-
-		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止) 編集可のみ有効
-		eventClick: crudEnabled ?　async function(info){
-			if(!confirm("この記録を削除しますか?")) return;
-			
-			const apiBase =
-				crudTarget === 'plans'
-				? '/api/learning-plans'
-				: '/api/learning-records';	
-
-			const res = await fetch(`/api/learning-records/${info.event.id}`,{
-				method:'DELETE',
-				headers:{[csrfHeader]: csrfToken}
-			});
-			if(res.ok){
-				info.event.remove();
-			}else{
-				alert("削除に失敗しました。");
-			}
 		} : undefined,
 		
+	//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止) crudEnabled = 'records' または 'plans' の場合のみ削除可能
+		eventClick: crudEnabled ? eventClickForPlansOrRecords : undefined,
 	//ドラッグで時間変更（PUT）	 編集可のみ
 	 	eventDrop: crudEnabled ? updateEvent : undefined,
 		eventResize: crudEnabled ? updateEvent : undefined,
 	});
-	
-	calendar.render();
+	return calendar;
+//	calendar.render();
 	
 	// 共通の　PUT処理
 	async function updateEvent(info){
@@ -260,11 +234,37 @@ if (crudTarget !== null) {
 
 	}
 	
+		//イベントクリックで削除(DELETE)(イベントクリックの誤動作防止) crudEnabled = 'records' または 'plans' の場合のみ削除可能
+		async function eventClickForPlansOrRecords(info){
+		
+//			if(!confirm("この記録を削除しますか?")) return;
+			//routineは操作不可
+			if(info.event.extendedProps.type === 'routine')return;
+			if(!confirm("この記録を削除しますか?")) return;
+			
+			const apiBase =
+				crudTarget === 'plans'
+				? '/api/learning-plans'
+				: '/api/learning-records';	
+
+			const res = await fetch(`${apiBase}/${info.event.id}`,{
+				method:'DELETE',
+				headers:{[csrfHeader]: csrfToken}
+			});
+			if(res.ok){
+				info.event.remove();
+			}else{
+				alert("削除に失敗しました。");
+			}
+	}
+	
 	//日ごとの合計学習時間を取得
 	async function fetchDailyTotals(){
 		const res = await fetch('/api/learning-records/daily-totals');
+		console.log('Response status:', res.status);
 		if(!res.ok)return new Map();
 		const jsonData = await res.json();
+		console.log('Planned totals:', jsonData); 
 //		const map = new Map();
 //		Object.entries(jsonData).forEach(([day,totalMinutes]) => {map.set(day, totalMinutes)});
 //		return map;
@@ -274,7 +274,9 @@ if (crudTarget !== null) {
 	async function fetchPlannedTotals(){
 		const res = await fetch('/api/learning-plans/planned-totals');
 		if(!res.ok)return new Map();
+		console.log('Response status:', res.status);
 		const jsonData = await res.json();
+		console.log('Planned totals:', jsonData); 
 		return jsonData
 	}
 }

@@ -22,6 +22,8 @@ public class Qualification {
 	@Column(name = "id")
 	private Integer id;
 	
+	@Column(name = "root_qualification_id", nullable = false)
+	private Integer rootQualificationId;
 	@Column(name = "name", nullable = false)
 	private String name;
 	

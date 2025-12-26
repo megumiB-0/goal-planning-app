@@ -18,6 +18,7 @@ import com.example.goalplanningapp.entity.User;
 public interface LearningRecordRepository extends JpaRepository<LearningRecord, Integer> {
 	// ログインユーザーのデータリストを抽出する
 	List<LearningRecord> findByUser(User user);
+	
 		
 		//新規用
 		@Query("""
@@ -63,5 +64,22 @@ public interface LearningRecordRepository extends JpaRepository<LearningRecord, 
 			ORDER BY r.learningDay
 			""")
 	List<DailyTotalDTO>findDailyTotals(@Param("user")User user);
+	
+	// GoalIdリスト(同一rootを持つもの)に紐づく日ごとの合計学習時間
+	@Query("""
+			SELECT new com.example.goalplanningapp.dto.DailyTotalDTO(
+				l.learningDay,
+				SUM(l.learningMinutes)	
+			)
+			FROM LearningRecord l 
+			WHERE l.user = :user AND l.goal.id IN :goalIds
+			GROUP BY l.learningDay
+			ORDER BY l.learningDay ASC
+			""")
+	List<DailyTotalDTO> findDailyTotalsByGoalIds(@Param("user") User user,
+												 @Param("goalIds") List<Integer> goalIds);
+	
+	// goalId リストに紐づく学習記録を取得
+	List<LearningRecord> findByUserAndGoalIdInOrderByLearningDayAscStartTimeAsc(User user, List<Integer> goalIds);
 		
 }

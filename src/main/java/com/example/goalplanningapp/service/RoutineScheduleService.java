@@ -314,19 +314,13 @@ public class RoutineScheduleService {
 
         for (RoutineSchedule schedule : schedules) {
         	
-        	LocalDate effectiveFrom = schedule.getEffectiveFrom();
-        	LocalDate effectiveTo = schedule.getEffectiveTo() !=null
-        							? schedule.getEffectiveTo()
-        							: periodEnd; //nullなら目標達成日まで
+        	LocalDate effectiveFrom = schedule.getEffectiveFrom() != null ? schedule.getEffectiveFrom() : periodStart; 
+        	LocalDate effectiveTo = schedule.getEffectiveTo() 	  != null ? schedule.getEffectiveTo()   : periodEnd; //nullなら目標達成日まで
         	
-        	
-        	LocalDate start = periodStart.isAfter(effectiveFrom)
-        					  ? periodStart
-        					  : effectiveFrom;
-        	LocalDate end = periodStart.isAfter(effectiveTo)
-        				   	  ? periodEnd
-        					  : effectiveTo;
-        	if(start.isAfter(end)) continue;
+        	// goal期間内に納める
+        	LocalDate start = effectiveFrom.isAfter(periodStart) ? effectiveFrom : periodStart;
+        	LocalDate end = effectiveTo.isBefore(periodEnd)     ? effectiveTo   : periodEnd;
+        	if(start.isAfter(end)) continue; // 範囲外をスキップ
         		// 全日程チェック
         		for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
         			DayOfWeek dow = date.getDayOfWeek();
@@ -349,7 +343,6 @@ public class RoutineScheduleService {
  // 最新ルーティン取得後フォームへ戻す
  	public RoutineForm getCurrentRoutineForm(User user) {
  		List<RoutineSchedule> schedules = routineScheduleRepository.findCurrentByUser(user);
- 		System.out.println("service:"+ schedules);
  		return routineFormMapper.toForm(schedules);
  		
  	}

@@ -45,10 +45,26 @@ public class PlanController {
 		Double estimatedPerDay = learningRecordService.getEstimatedPerDay(user, goal);
 		// 週間目標時間を表示(分)
 		Double estimatedPerWeek = estimatedPerDay * 7;
+		// 合計学習時間
+		Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(user) / 60;
+		model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
+		//右２段目　（残りの学習時間）
+		Long remainingHours = learningRecordService.getTodaysRemaining(user,goal);
+		model.addAttribute("remainingHours", remainingHours);
+		// 残りの学習必要時間
+		Double hours = learningRecordService.getEstimatedPerDay(user, goal) / 60.0;
+		Double estimatedPerDayHours = Math.round(hours * 10) / 10.0;
+		Double hoursPerWeek = estimatedPerDay * 7;
+		Double estimatedPerWeekHours = Math.round(hoursPerWeek * 10) / 10.0;
+
+		model.addAttribute("estimatedperday", estimatedPerDay);
+		model.addAttribute("estimatedperWeek", estimatedPerWeek);
+		
 		model.addAttribute("estimatedPerDay", estimatedPerDay);
 		model.addAttribute("estimatedPerWeek", estimatedPerWeek);
 		model.addAttribute("qualigicationName", qualigicationName);
-		
+		model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
+		model.addAttribute("remainingHours", remainingHours);
 		
 		return "user/plans/index";
 	}

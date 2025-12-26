@@ -2,6 +2,7 @@ package com.example.goalplanningapp.entity;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,5 +45,5 @@ public class Goal {
 	private Timestamp updatedAt;
 	
 	@Column(name = "ended_at")
-	private LocalDate endedAt;
+	private LocalDateTime endedAt;
 	}

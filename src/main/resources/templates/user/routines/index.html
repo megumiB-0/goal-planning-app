@@ -35,9 +35,17 @@
 						<!-- カレンダー用js -->
 						<script src="/js/calendar.js"></script>
 						<script>
-							const calendarEl = document.getElementById('calendar');
-							const calendar = initLearningCalendar({calendarEl, editable:false});
-							calendar.render();
+							(async () => {
+								const calendarEl = document.getElementById('calendar');
+								const calendar = await initLearningCalendar({
+								calendarEl,
+								showRoutines: true,
+								showPlans: false,
+								showRecords: false
+							});
+								calendar.render();
+							})();							
+
 						</script>
 					</div>
 				</div>

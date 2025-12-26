@@ -26,12 +26,11 @@ public class QualificationService {
 	public Optional<Qualification> findQualificationById(Integer id){
 		return qualificationRepository.findById(id);
 	}
-/*
+
 	// 資格を登録する
-	@Transactional
 	public Qualification save(Qualification qualification){
 		return qualificationRepository.save(qualification);
 	}
-*/	
+	
 
 }
