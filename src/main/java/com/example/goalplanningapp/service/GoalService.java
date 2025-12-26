@@ -14,6 +14,7 @@ import com.example.goalplanningapp.entity.Qualification;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.GoalSettingForm;
 import com.example.goalplanningapp.repository.GoalRepository;
+import com.example.goalplanningapp.repository.LearningPlanRepository;
 import com.example.goalplanningapp.repository.QualificationRepository;
 
 
@@ -22,14 +23,17 @@ public class GoalService {
 	//DI
 	private final GoalRepository goalRepository;
 	private final QualificationRepository qualificationRepository;
+	private final LearningPlanRepository learningPlanRepository;
 	private final QualificationService qualificationService;
 	
 	public GoalService(GoalRepository goalRepository,
 					   QualificationRepository qualificationRepository,
+					   LearningPlanRepository learningPlanRepository,
 					   QualificationService qualificationService) {
 		this.goalRepository = goalRepository;
 		this.qualificationRepository = qualificationRepository;
 		this.qualificationService = qualificationService;
+		this.learningPlanRepository = learningPlanRepository;
 	}
 	
 	
@@ -189,17 +193,19 @@ public class GoalService {
 		goalRepository.save(goal);
 	}
 
-
+	// 目標終了時のgoal,planの処理
+	@Transactional
 	public void finishCurrentGoal(User user) {
 		Goal current = getCurrentGoal(user);
 		if(current == null) {
 			throw new IllegalStateException("有効な目標がありません。");
 		}
-		//goalを終了
+		//goalを終了（EndedAtを入力）
 		current.setEndedAt(LocalDateTime.now());
 		goalRepository.save(current);
-		// この時点で画面上非表示にするためのroot_idを保持しておく
-//		Integer finishedRootId = current.getQualification().getRootQualificationId();
+		// このroot以外の計画を削除（計画物理削除）
+		deletePlansNotInActiveRoot(user);
+		
 		return;
 	}
 	
@@ -217,6 +223,18 @@ public class GoalService {
 									 .map(Goal::getId)
 									 .collect(Collectors.toList());
 		return goalIds;
+	}
+	// 終了したrootに紐づく計画を削除する
+	 public void deletePlansNotInActiveRoot(User user) {
+		List<Integer> activeGoalIds = getActiveGoalIds(user);
+		if(activeGoalIds.isEmpty()) {
+			// 進行中Goalがない　＝　全削除
+			learningPlanRepository.deleteByUser(user);
+			return;
+		}
+		//activeGoalIdsに含まれない計画を削除
+		learningPlanRepository
+				.deleteByUserAndGoalIdNotIn(user, activeGoalIds);
 	}
 	
 	

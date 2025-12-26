@@ -19,6 +19,7 @@ import com.example.goalplanningapp.entity.RoutineDayOfWeek;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.RoutineForm;
 import com.example.goalplanningapp.security.UserDetailsImpl;
+import com.example.goalplanningapp.service.ActiveGoalService;
 import com.example.goalplanningapp.service.GoalService;
 import com.example.goalplanningapp.service.RoutineScheduleService;
 
@@ -27,12 +28,15 @@ import com.example.goalplanningapp.service.RoutineScheduleService;
 @RequestMapping("/routines")
 public class RoutineController {
 	//DI
+	private final ActiveGoalService activeGoalService;
 	private final RoutineScheduleService routineScheduleService;
 	private final GoalService goalService;
 	public RoutineController(RoutineScheduleService routineScheduleService,
-							 GoalService goalService) {
+							 GoalService goalService,
+							 ActiveGoalService activeGoalService) {
 		this.routineScheduleService = routineScheduleService;
 		this.goalService = goalService;
+		this.activeGoalService = activeGoalService;
 	}
 	
 	// index
@@ -40,6 +44,12 @@ public class RoutineController {
 	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
 		// ログインユーザーの取得
 		User user = userDetailsImpl.getUser();
+		// goalがなければ設定へ
+	    if (!activeGoalService.hasActiveGoal(user)) {
+	        model.addAttribute("hasGoal", false);
+	        return "redirect:/goal/new";		
+	    }
+		
 		
 		// 現在進行中の Goal を取得
 		Goal currentGoal = goalService.getCurrentGoal(user);
