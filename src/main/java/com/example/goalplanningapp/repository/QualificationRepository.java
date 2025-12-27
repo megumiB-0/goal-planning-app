@@ -19,5 +19,9 @@ public interface QualificationRepository extends JpaRepository<Qualification, In
 	
 	// 資格名検索（部分一致・管理者資格のみ）
 	Page<Qualification> findByUserIsNullAndDeletedAtIsNullAndNameContaining(String name, Pageable pageable);
+	
+	// 管理者または自分が作成した資格だけ取得
+	List<Qualification> findByUserIsNullOrUser(User user);
+	
 
 }

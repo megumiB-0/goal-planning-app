@@ -3,6 +3,7 @@ package com.example.goalplanningapp.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,16 +23,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 	
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
-		try {
-			User user = userRepository.findByEmail(email);
-			String userRoleName = user.getRole().getName();
+	public UserDetails loadUserByUsername(String email) 
+			throws UsernameNotFoundException{
+		
+		// 退会済み（deleted_at != null）を除外
+		User user = userRepository.findByEmailAndDeletedAtIsNull(email)
+				.orElseThrow(()->
+					new UsernameNotFoundException("ユーザーが見つかりませんでした。"));
+		// enabled=false はログイン不可
+		if(!user.getEnabled()) {
+			throw new DisabledException("このアカウントは無効化されています。");
+		}
+		
+		
+		// 権限設定
+		String userRoleName = user.getRole().getName();
 			Collection<GrantedAuthority> authorities = new ArrayList<>();
 			authorities.add(new SimpleGrantedAuthority(userRoleName));
 			return new UserDetailsImpl(user, authorities);
-		} catch(Exception e) {
-			throw new UsernameNotFoundException("ユーザーが見つかりませんでした。");
 		}
 	}
-
-}

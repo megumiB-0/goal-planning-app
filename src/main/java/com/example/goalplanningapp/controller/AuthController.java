@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.goalplanningapp.form.SignupForm;
@@ -21,7 +22,13 @@ public class AuthController {
 	}
 	
 	@GetMapping("/login")
-	public String login() {
+	public String login(
+			@RequestParam(value = "withdraw", required = false) String withdraw,
+			Model model
+	) {
+		if(withdraw != null) {
+			model.addAttribute("successMessage","退会しました。これまでありがとうございました。");
+		}
 		return "auth/login";
 	}
 	

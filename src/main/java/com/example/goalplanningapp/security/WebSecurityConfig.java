@@ -18,8 +18,10 @@ public class WebSecurityConfig {
 		http
 			.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/css/**","/images/**","/js/**","/storage/**","/","/login","/signup").permitAll()
+				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
+			
 			.formLogin((form) -> form
 				.loginPage("/login")  // ログインページのURL
 				.loginProcessingUrl("/login")   // ログインフォームの送信先URL
