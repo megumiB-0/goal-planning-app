@@ -261,22 +261,19 @@ if (crudTarget !== null) {
 	//日ごとの合計学習時間を取得
 	async function fetchDailyTotals(){
 		const res = await fetch('/api/learning-records/daily-totals');
-		console.log('Response status:', res.status);
+
 		if(!res.ok)return new Map();
 		const jsonData = await res.json();
-		console.log('Planned totals:', jsonData); 
-//		const map = new Map();
-//		Object.entries(jsonData).forEach(([day,totalMinutes]) => {map.set(day, totalMinutes)});
-//		return map;
+
 		return jsonData
 	}
 	//日ごとの合計学習計画を取得
 	async function fetchPlannedTotals(){
 		const res = await fetch('/api/learning-plans/planned-totals');
+
 		if(!res.ok)return new Map();
-		console.log('Response status:', res.status);
 		const jsonData = await res.json();
-		console.log('Planned totals:', jsonData); 
+
 		return jsonData
 	}
 }

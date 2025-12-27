@@ -72,13 +72,14 @@ public class GoalSettingController {
 		}
 		
 		GoalSettingForm form = new GoalSettingForm();
+		form.setStartDate(LocalDate.now()); // 登録日＝今日
 		model.addAttribute("goalSettingForm", form);
 		
 		boolean isEdit = goalService.hasActiveGoal(user);
 		model.addAttribute("isEdit", isEdit); //新規(false)
 		
 		// 資格一覧
-		List<Qualification> qualifications = qualificationService.findAllQualifications();
+		List<Qualification> qualifications = qualificationService.findSelectableQualifications(user);
 		model.addAttribute("qualifications",qualifications);
 		
 		return "user/goals/setting";

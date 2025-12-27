@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.goalplanningapp.entity.Qualification;
+import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.repository.QualificationRepository;
 
 
@@ -32,5 +33,9 @@ public class QualificationService {
 		return qualificationRepository.save(qualification);
 	}
 	
+	// 管理者または自分が作成した資格だけ取得する
+	public List<Qualification> findSelectableQualifications(User user){
+		return qualificationRepository.findByUserIsNullOrUser(user);
+	}	
 
 }

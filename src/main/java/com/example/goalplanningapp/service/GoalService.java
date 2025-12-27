@@ -57,6 +57,9 @@ public class GoalService {
 			}
 			//ログインユーザーをセット
 			newQualification.setUser(user);
+			// 新規登録のNot Null対策
+			newQualification.setRootQualificationId(0);
+			
 			// 新しい資格を保存
 			Qualification saved = qualificationService.saveByUser(newQualification);
 			saved.setRootQualificationId(saved.getId());

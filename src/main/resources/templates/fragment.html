@@ -29,7 +29,15 @@
 		<header>
 			<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm goalplanningapp-navbar">
 				<div class="container goalplanningapp-container">
-					<a class="navbar-brand" th:href="@{/home}">
+					<a class="navbar-brand" 
+					   th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+   					   th:href="@{/admin/home}">
+						<img class="goalplanningapp-logo me-1" th:src="@{/images/app_logo.png}" alt="Goal Planning App">
+						<span>Goal Planning App</span>
+					</a>
+					<a class="navbar-brand" 
+					   th:unless="${#authorization.expression('hasRole(''ADMIN'')')}" 
+   					   th:href="@{/home}">
 						<img class="goalplanningapp-logo me-1" th:src="@{/images/app_logo.png}" alt="Goal Planning App">
 						<span>Goal Planning App</span>
 					</a>
@@ -67,7 +75,7 @@
 									<form id="logout-form" class="d-none" th:action="@{/logout}" method="post"></form>
 								</li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item goalplannungapp-dropdown-item" href="#">退会</a></li>
+								<li><a class="dropdown-item goalplannungapp-dropdown-item" th:href="@{/user/withdraw}">退会</a></li>
 							</ul>
 						</li>
 						<!-- ログイン済みの管理者であれば表示する-->
@@ -76,7 +84,7 @@
 								管理者メニュー
 							</a>
 							<ul class="dropdown-menu">
-								<li><a class="dropdown-item goalplanning-dropdown-item" href="#">会員一覧</a></li>
+								<li><a class="dropdown-item goalplanning-dropdown-item" th:href="@{/admin/users}">会員一覧</a></li>
 								<li><a class="dropdown-item goalplanning-dropdown-item" th:href="@{/admin/qualifications}">資格一覧</a></li>
 								<li><hr class="dropdown-divider"></li>
 								<li>
