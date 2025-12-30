@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.example.goalplanningapp.entity.Role;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.SignupForm;
+import com.example.goalplanningapp.form.UserEditForm;
 import com.example.goalplanningapp.repository.RoleRepository;
 import com.example.goalplanningapp.repository.UserRepository;
 
@@ -49,5 +50,29 @@ public class UserService {
 	public boolean isSamePassword(String password, String passwordCongirmation) {
 		return password.equals(passwordCongirmation);
 	}
+	
+	// 編集・セーブ
+	@Transactional
+	public void updateUser(User user, UserEditForm form) {
+		
+		// 自分以外で同じメールを使っているかチェック
+		if(userRepository.existsByEmailAndIdNot(form.getEmail(), user.getId())) {
+			throw new IllegalArgumentException("そのメールアドレスは既に使用されています。");
+		}
+		user.setName(form.getName());
+		user.setDateOfBirth(form.getDateOfBirth());
+		user.setGender(form.getGender());
+		user.setEmail(form.getEmail());
+		
+		userRepository.save(user);
+		
+	}
+	
+	// 自分以外の誰かがそのメールアドレスを使っていないか？
+	public boolean isEmailDuplicateForEdit(String email, Integer userId) {
+	    return userRepository.existsByEmailAndIdNot(email, userId);
+	}
+	
+	
 
 }

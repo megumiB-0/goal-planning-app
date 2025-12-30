@@ -34,5 +34,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 全件（状態指定なし）でキーワード検索
     Page<User> findByNameContainingOrEmailContaining(String nameKeyword, String emailKeyword, Pageable pageable);
-
+    
+    // 自分以外で同じメールを使っているかチェック
+    boolean existsByEmailAndIdNot(String email, int id);
+    
 }
