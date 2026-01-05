@@ -43,19 +43,22 @@ public class GoalSettingController {
 	@GetMapping
 	public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, Model model) {
 		User user = userDetailsImpl.getUser();
-		Goal currentGoal = goalService.getCurrentGoal(user);
 		
 		boolean isEdit = goalService.hasActiveGoal(user);
 		model.addAttribute("isEdit", isEdit); //修正(true)新規（false）
 		
-		// 有効な目標がない
-		if(currentGoal == null) {
-			// 新規登録
+		try {
+			Goal currentGoal = goalService.getCurrentGoal(user);
+		// 有効な目標がある → 表示
+			model.addAttribute("goal", currentGoal);
+			return "user/goals/index";
+		}catch (IllegalStateException e) {
+		
+		// 有効な目標がない → 新規登録
 			return "redirect:/goals/setting";
 		}
-		// 有効な目標がある
-		model.addAttribute("goal", currentGoal);
-		return "user/goals/index";
+
+		
 		
 	}
 	
@@ -118,6 +121,26 @@ public class GoalSettingController {
 						 Model model)
 	{
 		User user = userDetailsImpl.getUser();
+		List<Qualification> qualifications = qualificationService.findSelectableQualifications(user);
+		model.addAttribute("qualifications", qualifications);
+		// 手動入力の資格名チェック
+		if(form.getQualificationId() != null && form.getQualificationId() == -1) {
+			if(form.getCustomQualificationName() == null || form.getCustomQualificationName().trim().isEmpty()) {
+				bindingResult.rejectValue(
+					"customQualificationName",
+					"NotBlank",
+					"資格名を入力してください。"
+					);
+			}
+			if(form.getCustomEstimatedHours() == null) {
+				bindingResult.rejectValue(
+					"customEstimatedHours",
+					"NotNull",
+					"必要時間を入力してください。"
+					);
+			}			
+		}
+		// バリデーションエラーがあればフォームに返す
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("goalSettingForm", form);
 			model.addAttribute("showConfirm",false);

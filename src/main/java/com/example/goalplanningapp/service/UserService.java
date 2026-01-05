@@ -46,6 +46,12 @@ public class UserService {
 		User user = userRepository.findByEmail(email);
 		return user !=null;
 	}
+	
+	// 自分以外の誰かがそのメールアドレスを使っていないか？
+	public boolean isEmailDuplicateForEdit(String email, Integer userId) {
+	    return userRepository.existsByEmailAndIdNot(email, userId);
+	}
+	
 	// パスワードとパスワード（確認用）が一致するかチェックする
 	public boolean isSamePassword(String password, String passwordCongirmation) {
 		return password.equals(passwordCongirmation);
@@ -68,11 +74,17 @@ public class UserService {
 		
 	}
 	
-	// 自分以外の誰かがそのメールアドレスを使っていないか？
-	public boolean isEmailDuplicateForEdit(String email, Integer userId) {
-	    return userRepository.existsByEmailAndIdNot(email, userId);
+	// パスワードチェック
+	public boolean checkPassword(User user, String rawPassword) {
+	    return passwordEncoder.matches(rawPassword, user.getPassword());
 	}
 	
-	
+	// パスワード変更
+	@Transactional
+	public void updatePassword(User user, String newPassword) {
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
+	}
+
 
 }

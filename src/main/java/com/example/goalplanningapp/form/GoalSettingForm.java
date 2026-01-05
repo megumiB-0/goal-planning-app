@@ -31,7 +31,5 @@ public class GoalSettingForm {
 	@Future(message = "目標達成日は未来の日付である必要があります。")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate goalDate;
-	
-	
 
 }

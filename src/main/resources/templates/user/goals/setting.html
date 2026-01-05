@@ -29,7 +29,7 @@
 								</div>
 								<div class="col-md-7">
 									<select th:field="*{qualificationId}" class="form-select" id="qualificationSelect">
-										<option value="">--- 選択してください ---</option>
+										<option value="" th:text="'--- 選択してください ---'"></option>
 										<option th:each="q : ${qualifications}"
 												th:value="${q.id}"
 												th:text="${q.name}"
@@ -38,22 +38,37 @@
 										<!--手動入力-->
 										<option value="-1">その他（手動入力）</option>
 									</select>
+									<!-- フィールドエラー表示 -->
+									<div th:if="${#fields.hasErrors('qualificationId')}"
+										 class="text-danger small mb-2"
+										 th:errors="*{qualificationId}">
+									</div>
 								</div>
 							</div>
 							<!--手動入力欄（資格名）-->
 							
-							<div class="col-md-7" id="manualNameArea">
+							<div class="col-md-7 mb-3" id="manualNameArea">
 								<label class="form-label">資格名（手動入力）</label>
+								<!-- フィールドエラー表示 -->
+								<div th:if="${#fields.hasErrors('customQualificationName')}"
+									 class="text-danger small mb-2"
+									 th:errors="*{customQualificationName}">
+								</div>
 								<input type="text" th:field="*{customQualificationName}" th:attr="readonly=${isEdit}" class="form-control">
 							</div>
 							<!-- 必要時間 -->
-							<div class="col-md-7" id="manualHoursArea">
+							<div class="col-md-7 mb-3" id="manualHoursArea">
 								<label for="estimatedMinutes" class="form-label">
 										<div class="d-flex align-items-center">
 											<span class="me-1">必要学習時間(時間)</span>
 											<span class="badge bg-success" th:if="${isEdit}">修正可能</span> 
 										</div>
 								</label>
+								<!-- フィールドエラー表示 -->
+								<div th:if="${#fields.hasErrors('customEstimatedHours')}"
+									 class="text-danger small mb-2"
+									 th:errors="*{customEstimatedHours}">
+								</div>
 								<input type="number" class="form-control" th:field="*{customEstimatedHours}" id="customEstimatedHours">
 							</div>
 							<!--開始日-->
@@ -77,7 +92,7 @@
 										<span class="badge bg-success" th:if="${isEdit}">修正可能</span> 
 									</div>	
 								</label>
-								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate">
+								<input type="date" th:field="*{goalDate}" class="form-control" id="goalDate" required>
 							</div>
 							<!-- 計算・送信 -->
 							<div class="d-flex justify-content-center my-4">
@@ -91,20 +106,31 @@
 						</div>
 
 						<!-- 確認画面 -->
-						<div th:if="${showConfirm == true}">
-							<h1>目標確認</h1>
-							<p>資格名：<span th:text="${qualificationName}"></span></p>
-							<p>1日あたり必要学習時間：<span th:text="${hoursPerDay}"></span></p>
-							<p>1週間あたり必要学習時間：<span th:text="${hoursPerWeek}"></span></p>
-							<form th:action="@{/goals/save}" method="post" class="d-flex justify-content-center my-4">
-								<input type="hidden" name="qualificationId" th:value="${goalSettingForm.qualificationId}">
-  								<input type="hidden" name="customQualificationName" th:value="${goalSettingForm.customQualificationName}">
-								<input type="hidden" name="customEstimatedHours" th:value="${goalSettingForm.customEstimatedHours}">
-								 <input type="hidden" name="startDate" th:value="${goalSettingForm.startDate}">
-								<input type="hidden" name="goalDate" th:value="${goalSettingForm.goalDate}">
-								<button type="submit" th:text="${isEdit} ? '目標を修正する' : '目標を登録する'"  class="btn btn-primary"></button>
-							</form>
-							<a th:href="@{/goals/setting}" class="btn btn-link mt-2">戻る</a>
+						<div th:if="${showConfirm == true}" class="card shadow-sm p-4">
+							<h4 class="mb-4 text-center">目標確認</h4>
+								<div class="row mb-3">
+									<div class="col-6 fw-bold text-end">資格名：</div>	
+									<div class="col-6" th:text="${qualificationName}"></div>
+								</div>	
+								<div class="row mb-3">
+									<div class="col-6 fw-bold text-end">1日あたり必要学習時間：</div>	
+									<div class="col-6" th:text="${hoursPerDay}"></div>
+								</div>
+								<div class="row mb-3">
+									<div class="col-6 fw-bold text-end">1週間あたり必要学習時間：</div>	
+									<div class="col-6" th:text="${hoursPerWeek}"></div>
+								</div>
+								<form th:action="@{/goals/save}" method="post" class="d-flex justify-content-center my-4">
+									<input type="hidden" name="qualificationId" th:value="${goalSettingForm.qualificationId}">
+  									<input type="hidden" name="customQualificationName" th:value="${goalSettingForm.customQualificationName}">
+									<input type="hidden" name="customEstimatedHours" th:value="${goalSettingForm.customEstimatedHours}">
+									<input type="hidden" name="startDate" th:value="${goalSettingForm.startDate}">
+									<input type="hidden" name="goalDate" th:value="${goalSettingForm.goalDate}">
+									<button type="submit" th:text="${isEdit} ? '目標を修正する' : '目標を登録する'"  class="btn text-white shadow-sm w-30 goalplanningapp-btn"></button>
+								</form>
+								<div class="text-center">
+									<a th:href="@{/goals/setting}" class="btn btn-outline-secondary">戻る</a>
+								</div>
 						</div>
 					</div>
 				</div>
