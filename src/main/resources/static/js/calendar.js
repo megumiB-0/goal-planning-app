@@ -102,9 +102,9 @@ if (crudTarget !== null) {
 
     if (totalMin > 0) {
         const totalDiv = document.createElement('div');
-        totalDiv.style.fontSize = "0.8rem";
+        totalDiv.style.fontSize = "1rem";
         totalDiv.style.marginTop = "2px";
-        totalDiv.style.color = "#778899";
+        totalDiv.style.color = "#2C363F";
         totalDiv.innerText = `${totalMin}分`;
         info.el.appendChild(totalDiv);
     }
@@ -115,34 +115,34 @@ if (crudTarget !== null) {
             const type = info.event.extendedProps?.type;
 
             if(type === 'plan'){
-                info.el.style.backgroundColor = '#FFD700'; // 黄色
+                info.el.style.backgroundColor = '#FFC857'; // 黄色
                 info.el.style.borderColor = '#B8860B';
             } else if(type === 'record'){
-                info.el.style.backgroundColor = '#87CEFA'; // 水色
-                info.el.style.borderColor = '#4682B4';
+                info.el.style.backgroundColor = '#2C363F'; // 水色
+                info.el.style.borderColor = '#2C363F';
             } else {
                 // ルーティンは従来のタイトルで色分け
                 switch(info.event.title){
                     case '睡眠':
-                        info.el.style.backgroundColor = '#A3D2CA';
+                        info.el.style.backgroundColor = '#C6C2B7';
                         info.el.style.borderColor = '#273C75';
                         break;
                     case '朝食':
                     case '昼食':
                     case '夕食':
-                        info.el.style.backgroundColor = '#d6ceeb';
+                        info.el.style.backgroundColor = '#C5D0CF';
                         info.el.style.borderColor = '#273C75';
                         break;
                     case '入浴':
-                        info.el.style.backgroundColor = '#F28C8C';
+                        info.el.style.backgroundColor = '#7C7E69';
                         info.el.style.borderColor = '#273C75';
                         break;
                     case '仕事':
-                        info.el.style.backgroundColor = '#8FA998';
+                        info.el.style.backgroundColor = '#B4D0DE';
                         info.el.style.borderColor = '#273C75';
                         break;
                     default:
-                        info.el.style.backgroundColor = '#E4B363';
+                        info.el.style.backgroundColor = '#5F7A8B';
                         info.el.style.borderColor = '#273C75';
                 }
             }

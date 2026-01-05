@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 							labels: labels,
 							datasets:
 							[{
-								label:'学習時間(実績)',
+								label:'学習実績',
 								data: dataValues,
 								borderWidth: 2,
 								borderColor: '#F28C8C',	
@@ -23,17 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
 									{x:goalDate,y:estimatedHours}
 								],
 								borderWidth: 2,
-								borderColor: '#273C75',	
+								borderColor: '#2C363F',	
 								spanGaps: true,
 								tension: 0	
 							}]
 						},
 					options: {
 					responsive:true,
+					locale: 'en-US',
 					scales:{
 					x:{
 						type:'time',
-						time:{unit:'day'},
+						time:{
+							unit:'day',
+							displayFormats: {
+          						day: 'M/dd'
+        					}
+        				},
 						title: { display: true, text: '日付' }
 						},
 					y:{
@@ -42,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			},
 			plugins:{
-				legend: {display: true}
+				legend: {display: true, position:'chartArea'}
 			}
 		}
 	});	

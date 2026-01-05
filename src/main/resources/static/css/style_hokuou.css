@@ -1,0 +1,137 @@
+html{
+	font-size: 14px;
+	
+	/*#dbd024,#103390,#559831,#955129,#e2a9f1*/
+}
+
+/* ========================
+   Goal Planning App 北欧風カスタムCSS
+======================== */
+
+/* ページ全体 */
+body {
+    background-color: #f2f2f2; /* 北欧風淡いグレー */
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ヘッダー・フッター */
+header, footer {
+    background-color: #ffffff; /* すっきり白背景 */
+    color: #708a8c; /* メインカラーを文字に */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* カード共通 */
+.card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.goalplanningapp-logo{
+	width: 30%;
+	height: auto;
+}
+/* 見出し */
+h1, h2, h3, h4, h5 {
+    color: #708a8c; /* メインカラー */
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* ボタン */
+.btn, .goalplanningapp-btn {
+    background-color: #d9a67a; /* 北欧アクセントカラー */
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.btn:hover, .goalplanningapp-btn:hover {
+    background-color: #c48b67;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* アラート */
+.alert-info {
+    background-color: #eaf2f3; /* メインカラー淡め */
+    color: #708a8c;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+.alert-danger {
+    background-color: #fdf2e9; /* アクセント淡め */
+    color: #d9a67a;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+/* 強調テキスト */
+.card p span, .progress-text {
+    font-weight: 700;
+    color: #708a8c; /* 数値や進捗の強調 */
+}
+
+/* グラフキャンバス */
+#myChart {
+    max-height: 300px;
+}
+
+/* グラフ用カラー設定 */
+.chart-line {
+    border-color: #708a8c; /* メインカラー */
+}
+.chart-bar {
+    background-color: #d9a67a; /* アクセントカラー */
+}
+
+/* カレンダー */
+#calendar {
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+}
+.fc-event {
+    border-radius: 6px;
+    padding: 2px 4px;
+    font-size: 0.85rem;
+    color: #fff;
+}
+.fc-event-main {
+    background-color: #708a8c; /* メインカラーイベント */
+}
+.fc-event-alt {
+    background-color: #d9a67a; /* アクセントイベント */
+}
+
+/* フレックス・余白調整 */
+.d-flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.row > .col-md-5, .row > .col-md-7 {
+    margin-bottom: 1.5rem;
+}
+
+/* モバイル調整 */
+@media (max-width: 768px) {
+    #myChart {
+        max-height: 250px;
+    }
+    .card {
+        padding: 1rem;
+    }
+}
