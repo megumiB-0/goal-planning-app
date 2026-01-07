@@ -75,6 +75,8 @@ async function initLearningCalendar({
 			const day = info.date.getDay(); //0=日,6=土
 			const headerEl = info.el.querySelector('a');
 			if(!headerEl) return;
+			// 平日（デフォルト）
+			headerEl.style.color = "#6c757d";
 			if(day === 0) headerEl.style.color ="#E8B4B4";
 			if(day === 6) headerEl.style.color="#A4C0C9";
 			

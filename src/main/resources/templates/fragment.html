@@ -27,7 +27,7 @@
 </head>
 	<div th:fragment="header" th:remove="tag">
 		<header>
-			<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm goalplanningapp-navbar">
+			<nav class="navbar navbar-expand-md navbar-light shadow-sm goalplanningapp-navbar">
 				<div class="container goalplanningapp-container">
 					<a class="navbar-brand" 
 					   th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
@@ -102,7 +102,7 @@
 		</header>
 	</div>
 	<div th:fragment="footer" th:remove="tag">
-		<footer>
+		<footer class="mt-auto">
 			<div class="d-flex justify-content-center align-items-center h-100">
 				<p class="text-center text-muted small mb-0">&copy;2025 Goal Planning App All rights reserved.</p>
 			</div>

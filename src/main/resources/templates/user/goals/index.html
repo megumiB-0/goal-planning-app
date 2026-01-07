@@ -5,10 +5,10 @@
 	<div th:replace="~{fragment :: styles}"></div>
 <title>現在の目標</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div class="goalplanningapp-wrapper">
 		<div th:replace="~{fragment :: header}"></div>
-		<main>
+		<main class="flex-grow-1">
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row justify-content-center">
 					<div class="col-lg-6 col-md-8">
@@ -38,13 +38,13 @@
 							</tr>
 						</table>
 						<div class="d-flex justify-content-center mt-4 gap-3">
-							<a th:if="${isEdit}" th:href="@{/goals/edit}" class="btn btn-secondary btn-md px-4">
+							<a th:if="${isEdit}" th:href="@{/goals/edit}" class="btn btn-primary btn-md px-4">
 								修正する
 							</a>
-							<a th:unless="${isEdit}" th:href="@{/goals/edit}" class="btn btn-secondary btn-md px-4">
+							<a th:unless="${isEdit}" th:href="@{/goals/edit}" class="btn btn-primary btn-md px-4">
 								新規登録する
 							</a>
-							<a th:href="@{/home}"class="btn btn-outline-secondary">	
+							<a th:href="@{/home}"class="btn btn-outline-primary">	
 								HOMEに戻る
 							</a>
 							<form th:if="${isEdit}" th:action="@{/goals/finish}" method="post" class="m-0 ms-5">
@@ -58,7 +58,7 @@
 			</div>
 		</main>
 		<div th:replace="~{fragment :: footer}"></div>
+		<div th:replace="~{fragment :: scripts}"></div>
 	</div>
-	<div th:replace="~{fragment :: scripts}"></div>
 </body>
 </html>

@@ -15,10 +15,10 @@
 
 <title>Goal Planning App</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div class="goalplanningapp-wrapper">
 		<div th:replace ="~{fragment :: header}"></div>
-			<main>
+			<main class="flex-grow-1">
 				<div class="container pt-4 pb-5 goalplanningapp-container">
 					<div class="row mb-4">
 						<div class="col-12">
@@ -38,14 +38,16 @@
 					<!-- 目標設定済み -->
 					<div th:if="${hasGoal}">
 						<div class="row d-flex mb-4">
-							 <div class="col-9">
-								<h1 class="alert alert-light d-flex align-items-center gap-2">
-									<i class="bi bi-flag-fill page-title-icon pe-3"></i>
-									<span th:text="${message}"></span>
-								</h1>
+							 <div class="col-10">
+								<div class="card goal-card">
+									<h1>
+										<i class="bi bi-flag-fill page-title-icon pe-3"></i>
+										<span th:text="${message}"></span>
+									</h1>
+								</div>
 							 </div>
-							 <div class="col-3 d-flex align-items-center justify-content-center">
-								<a th:href="@{/plans}" class="btn btn-lg text-white shadow-sm goalplanningapp-btn px-4 py-2">
+							 <div class="col-2 d-flex align-items-center justify-content-end">
+								<a th:href="@{/plans}" class="btn btn-primary btn-lg text-white shadow-sm  px-4 py-2">
 									学習予定を確認
 								</a>
 							 </div>
@@ -80,7 +82,22 @@
 											<span class="achievement-number" th:text="${achievementRate}"></span>
 											<p class="achievement-percent">%</p>
 										</div>
-										<p>進捗評価：</p>
+										<div class="d-flex align-items-center gap-2">
+											<p>進捗評価：</p>
+											<!-- ヘルプアイコン -->
+											<i class="bi bi-info-circle text-secondary help-icon"
+											   data-bs-toggle="popover"
+											   data-bs-toggler="focus"
+											   data-bs-html="true"
+											   data-bs-placement="right"
+											   data-bs-content="
+											   <div><i class='bi bi-fire'></i> <strong>順調</strong>：予定を10%以上上回るペース</div>
+											   <div><i class='bi bi-sun-fill'></i> <strong>標準</strong>：予定通りのペース</div>
+											   <div><i class='bi bi-cloud-fill'></i> <strong>注意</strong>：予定を若干下回るペース</div>
+											   <div><i class='bi bi-umbrella-fill'></i> <strong>遅延</strong>：予定を10%以上下回るペース</div>
+											   ">
+											</i>
+										</div>
 										<div class="d-flex justify-content-center mt-3">
 											<i th:class="${evalIcon}"></i>
 										</div>
@@ -108,9 +125,11 @@
 						<div class="row">
 							<div class="col-12">
 								<div class="card p-3 position-relative">
-									    <div class="d-flex justify-content-center align-items-center mb-3">
+									    <div class="d-flex justify-content-center align-items-center my-3">
       										<h4 class="mb-0  me-3">スケジュール & 実績入力</h4>
-    										<a th:href="@{/home}" class="btn text-white shadow-sm goalplanningapp-btn">更新</a>
+    									</div>
+									    <div class="d-flex justify-content-end mb-3 me-4">
+    										<a th:href="@{/home}" class="btn btn-primary btn-lg text-white shadow-sm ">グラフに反映</a>
     									</div>
 									<!-- カレンダー本体 -->
 									<div id="calendar"></div>
@@ -142,6 +161,65 @@
 					</div>
 				</div>
 			</main>
+			<!-- 目標達成時のポップアップ表示 -->
+			<div class="modal fade" id="goalAchievedModal" tabindex="-1"
+				 aria-labelledby="goalAchievedModalLabel"
+				 aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="goalAchievedModalLabel">
+								目標時間に到達しました！
+							</h5>
+						</div>
+						<div class="modal-body text-center">
+							<div id="goalChoice">
+								<p><strong>完了</strong>しますか？</p>
+								<p><strong>延長</strong>してもう少し学習を続けますか？</p>
+								<div class="d-flex justify-content-center gap-3 mt-3">
+									<!-- 完了 -->
+									<form th:action="@{/goals/complete}" method="post" onsubmit="showCongrats()">
+										<button type="submit" class="btn btn-primary">
+											完了する
+										</button>
+									</form>
+									<!-- 延長 -->
+									<a th:href="@{/goals/edit}" class="btn btn-outline-primary">延長する</a>
+								</div>
+							</div>
+							<!-- 目標達成のみお祝い表示 -->
+							<div id="congratulation" class="text-center d-none mt-4">
+								<img src="/images/trophy_logo.png" alt="congrats" width="200">
+								<p class="mt-3 fs-5">目標を達成しました！</p>
+							</div>
+						</div>
+					</div>
+				</div>	 
+			</div> 
+			<script>
+				document.addEventListener('DOMContentLoaded', () => {
+					document
+						.querySelectorAll('[data-bs-toggle="popover"]')
+						.forEach(el => new bootstrap.Popover(el));
+				})
+			</script>
+			<script th:if="${showGoalModal}">
+				document.addEventListener('DOMContentLoaded', function(){
+					// モーダル表示
+					const modal = new bootstrap.Modal(
+						document.getElementById('goalAchievedModal')
+					);
+					modal.show();
+				});
+				function showCongrats() {
+					document.getElementById('goalChoice').classList.add('d-none');
+					document.getElementById('congratulation').classList.remove('d-none');
+					setTimeout(() => {
+						form.submit();
+					},1000);
+					return false;
+				}
+			</script>
 		<div th:replace="~{fragment :: footer}"></div>
 		<div th:replace="~{fragment :: scripts}"></div>
 	</div>	

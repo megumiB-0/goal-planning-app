@@ -2,19 +2,26 @@ package com.example.goalplanningapp.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.goalplanningapp.dto.DailyTotalDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.Qualification;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.form.GoalSettingForm;
 import com.example.goalplanningapp.repository.GoalRepository;
 import com.example.goalplanningapp.repository.LearningPlanRepository;
+import com.example.goalplanningapp.repository.LearningRecordRepository;
 import com.example.goalplanningapp.repository.QualificationRepository;
 
 
@@ -24,16 +31,22 @@ public class GoalService {
 	private final GoalRepository goalRepository;
 	private final QualificationRepository qualificationRepository;
 	private final LearningPlanRepository learningPlanRepository;
+	private final LearningRecordRepository learningRecordRepository;
 	private final QualificationService qualificationService;
+
 	
 	public GoalService(GoalRepository goalRepository,
 					   QualificationRepository qualificationRepository,
 					   LearningPlanRepository learningPlanRepository,
-					   QualificationService qualificationService) {
+					   LearningRecordRepository learningRecordRepository,
+					   QualificationService qualificationService,
+					   LearningRecordService learningRecordService) {
 		this.goalRepository = goalRepository;
 		this.qualificationRepository = qualificationRepository;
 		this.qualificationService = qualificationService;
 		this.learningPlanRepository = learningPlanRepository;
+		this.learningRecordRepository = learningRecordRepository;
+		
 	}
 	
 	
@@ -238,6 +251,135 @@ public class GoalService {
 		//activeGoalIdsに含まれない計画を削除
 		learningPlanRepository
 				.deleteByUserAndGoalIdNotIn(user, activeGoalIds);
+	}
+	
+		//日ごとの合計学習時間計算
+		public Map<LocalDate, Long> getDailyTotals(User user){
+			List<Integer> activeGoalIds = getActiveGoalIds(user);
+			//結果を日付順で返したいのでLinkesHashMapを使う
+			Map<LocalDate, Long> map = new LinkedHashMap<>();
+			LocalDate today =LocalDate.now();
+			//データが0件の時は今日だけ0で返す
+			if(activeGoalIds.isEmpty()) {
+				map.put(today,0L);
+				return map;
+			}
+			List<DailyTotalDTO> dailyTotals = learningRecordRepository.findDailyTotalsByGoalIds(user,activeGoalIds);
+					
+			if(dailyTotals.isEmpty()) {
+				map.put(today, 0L);
+				return map;	
+				}
+			
+			//日付順にソートをかける
+			dailyTotals.sort(Comparator.comparing(DailyTotalDTO::getLearningDay));		
+			//学習開始日と今日の日付を取得
+			LocalDate start = dailyTotals.get(0).getLearningDay();
+			//List(dailyTotals)をマップにする
+			Map<LocalDate,Long>dailyMap = dailyTotals.stream().collect(Collectors.toMap(
+					DailyTotalDTO::getLearningDay,
+					DailyTotalDTO::getTotalMinutes));
+			//学習開始日と今日まで1日ずつマップを埋める
+			for(LocalDate date = start; !date.isAfter(today);date = date.plusDays(1)) {
+				//データがある場合はその値、ない場合は0
+				map.put(date, dailyMap.getOrDefault(date, 0L));
+			}
+			return map;
+		}
+		//日ごとの累積学習時間(分)を計算
+		public Map<LocalDate,Long> getDailyCumulativeTotals(User user){
+			Map<LocalDate,Long> dailyTotals = getDailyTotals(user);
+			Map<LocalDate,Long> cumulativeMap = new LinkedHashMap<>();
+			// 累積　初期は0
+			long cumulative = 0L;
+			for(Map.Entry<LocalDate, Long> entry : dailyTotals.entrySet()) {
+				cumulative += entry.getValue();
+				cumulativeMap.put(entry.getKey(), cumulative);
+			}
+			return cumulativeMap;
+		}
+		//今日時点での累計学習時間(分)を計算
+		public Long getTodaysCumulative(User user) {
+			Map<LocalDate, Long> map = getDailyCumulativeTotals(user);
+			LocalDate today = LocalDate.now();
+			Long todaysCumulativeMinutes = map.getOrDefault(today,0L);
+			return todaysCumulativeMinutes;
+		}
+		//--進捗計算--
+		//共通部分
+		private Map<String, Long> getProgressValues(User user,Goal goal){
+			Long estimatedMinutes =  Math.round(goal.getQualification().getEstimatedMinutes());
+			Long todaysCumulativeMinutes = getTodaysCumulative(user);
+			Long remainingDays = ChronoUnit.DAYS.between(LocalDate.now().plusDays(1), goal.getGoalDate());
+			Map<String, Long> map =new LinkedHashMap<>();
+			map.put("estimatedMinutes", estimatedMinutes);
+			map.put("todaysCumulativeMinutes",todaysCumulativeMinutes);
+			map.put("remainingDays", remainingDays);
+			return map;
+		}
+		
+		// 今日時点での目標達成度(%)
+		public Long getAchievementRate(User user, Goal goal) {
+			Map<String, Long> v = getProgressValues(user, goal);
+			double rate = (double)v.get("todaysCumulativeMinutes") / v.get("estimatedMinutes");
+			Long achievementRate = Math.round(rate * 100);
+			return achievementRate;
+		}	
+
+		
+		//今日時点での残りの学習時間(時間)を計算
+		public Long getTodaysRemaining(User user, Goal goal) {
+			Map<String, Long> v = getProgressValues(user, goal);
+			Long remainingHours = v.get("estimatedMinutes")/60 - v.get("todaysCumulativeMinutes")/60;
+			return remainingHours;
+		}
+
+		// 目標達成日までの1日あたりの必要学習時間(分)	
+		public Double getEstimatedPerDay(@AuthenticationPrincipal User user,Goal goal) {
+			Map<String, Long> v = getProgressValues(user, goal);
+			Long remainingMinutes = v.get("estimatedMinutes") - v.get("todaysCumulativeMinutes");
+			Double estimatedPerDay = (double) (remainingMinutes/v.get("remainingDays"));
+			return estimatedPerDay;
+		}
+		
+		//進捗評価
+		public String evaluateProgress(User user,Goal goal) {
+			Map<String, Long> v = getProgressValues(user, goal);
+			
+			LocalDate start = goal.getStartDate();
+			LocalDate end = goal.getGoalDate();
+			LocalDate today = LocalDate.now();
+			long totalDays = ChronoUnit.DAYS.between(start, end);
+			long passedDays = ChronoUnit.DAYS.between(start, today);
+			//期間の経過（％）		
+			double dayProgress = (double) passedDays / totalDays * 100;
+			//学習時間の進捗率(%)		
+			double studyProgress = (double) v.get("todaysCumulativeMinutes")/v.get("estimatedMinutes") * 100;
+			//評価
+			double diff = studyProgress / dayProgress;
+			if(diff >=1.1) {	//二重まる
+				return "bi bi-fire";
+			}else if(diff >= 1) {	//まる
+				return "bi bi-sun-fill︎";
+			}else if(diff > 0.9) {	//さんかく
+				return "bi bi-cloud-fill";
+			}else {					//ばつ
+				return "bi bi-umbrella-fill";
+			}
+		}	
+		
+		
+	// 目標達成判定
+	public boolean isGoalAchieved(User user, Goal goal) {
+		Long cumulative = getTodaysCumulative(user);
+		Long estimated = Math.round(goal.getQualification().getEstimatedMinutes());
+		return cumulative >= estimated;
+	}
+	 
+	// 目標達成時の処理
+	@Transactional
+	public void completeGoal(User user) {
+		finishCurrentGoal(user);
 	}
 	
 	

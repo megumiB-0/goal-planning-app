@@ -13,10 +13,11 @@
 				<div class="row justify-content-center">
 					<div class="col-xl-5 col-lg-6 col-md-8">
 						<h1 th:text="${isEdit} ? '目標を修正' : '目標を新規登録'" class="mb-4 text-center"></h1>
-						
+						<div th:if="${message}" class="alert alert-info">
+							<span th:text="${message}"></span>
+						</div>
 						<!-- 入力フォーム -->
 						<div th:if="${showConfirm != true}">
-
 						<form th:action="@{/goals/confirm}" th:object="${goalSettingForm}" method="post">
 							<div class="form-group row mb-3">
 								<div class="col-md-5">
@@ -126,10 +127,10 @@
 									<input type="hidden" name="customEstimatedHours" th:value="${goalSettingForm.customEstimatedHours}">
 									<input type="hidden" name="startDate" th:value="${goalSettingForm.startDate}">
 									<input type="hidden" name="goalDate" th:value="${goalSettingForm.goalDate}">
-									<button type="submit" th:text="${isEdit} ? '目標を修正する' : '目標を登録する'"  class="btn text-white shadow-sm w-30 goalplanningapp-btn"></button>
+									<button type="submit" th:text="${isEdit} ? '目標を修正する' : '目標を登録する'"  class="btn text-white shadow-sm w-30 btn-primary"></button>
 								</form>
 								<div class="text-center">
-									<a th:href="@{/goals/setting}" class="btn btn-outline-secondary">戻る</a>
+									<a th:href="@{/goals/setting}" class="btn btn-outline-primary">戻る</a>
 								</div>
 						</div>
 					</div>

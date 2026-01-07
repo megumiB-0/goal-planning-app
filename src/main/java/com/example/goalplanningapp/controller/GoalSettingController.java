@@ -250,6 +250,15 @@ public class GoalSettingController {
 		return "redirect:/goals/setting";
 	}
 	
+	// 目標時間達成し完了
+	@PostMapping("/complete")
+	public String completeGoal(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+								RedirectAttributes redirectAttributes) {
+		User user = userDetailsImpl.getUser();
+		goalService.completeGoal(user);
+		redirectAttributes.addFlashAttribute("message","目標を達成しました！");
+		return "redirect:/goals/setting";
+	}
 	
 }
 

@@ -1,37 +1,157 @@
+/* 北欧テーマカラー */
+:root {
+	--bg-main: #f6f7f4;		/* 全体背景：生成り */
+	--card-bg: #ffffff;		/* カード */
+	--primary: #7aa8a6;		/* くすみティール */
+	--secondary: #c1c9c7;		/* グレー */
+	--accent: #e8b4b8;		/* くすみピンク */
+	--text-main: #4a4a4a;		/* 文字 */
+	--border-soft: #e2e2de;	/* 枠線 */
+	--header-bg: var(--secondary);
+	--header-text: var(--text-main);
+	--header-border: var(--accent);
+
+/* Bootstrap　カラー上書き */
+	--bs-primary: var(--primary);
+	--bs-secondary: var(--secondary);
+	--bs-success: #9bbfad;	/* 淡いグリーン */
+	--bs-info: #a8c7d8;		/* 淡いブルー */
+	--bs-warning: #FFC857;	/* 淡いイエロー */
+	--bs-danger: #e6a6a6;		/* 淡い赤 */
+	--bs-light: #e6d9c8;		/* ベージュ */
+	--bs-dark: #4a4a4a;		/* 淡い黒 */
+
+/* Bootstrap カラー RGB（必須） */
+	--bs-primary-rgb: 122,168,166;
+	--bs-secondary-rgb: 230,217,200;
+	--bs-success-rgb: 155,191,173;
+	--bs-info-rgb: 168,199,216;
+	--bs-warning-rgb: 241,214,163;
+	--bs-danger-rgb: 230,166,166;
+	--bs-light-rgb: 250,250,250;
+	--bs-dark-rgb: 74,74,74;
+
+/* Bootstrap　背景・文字 */
+	--bs-body-bg: var(--bg-main);
+	--bs-body-color: var(--text-main);
+	--bs-secondary-bg: var(--secondary);
+	--bs-tertiary-bg: #f0f1ec;	/* 淡いベージュ */
+  
+/* Bootstrap　border */
+	--bs-border-color: var(--border-soft);
+	--bs-border-radius: 0.75rem;	/* 12px */
+	--bs-border-radius-sm: 0.5rem;
+	--bs-border-radius-lg: 1rem;
+
+/* Bootstrap　card */
+	--bs-card-bg: var(--card-bg);
+	--bs-card-border-color: var(--border-soft);
+	--bs-card-cap-bg: transparent;
+	
+/* Bootstrap　フォント */
+	--bs-font-sans-serif:
+	"Zen Maru Gothic",
+	"Noto Sans JP",
+	system-ui,
+	-apple-system,
+	sans-serif;
+
+/* Bootstrap　Link */
+	--bs-link-color: var(--primary);
+	--bs-link-hover-color: var(--bs-info);
+	
+/* Bootstrap　focus */
+	--bs-focus-ring-color: rgba(122,168,166,0.25);
+}	
+
 html{
 	font-size: 14px;
-	
-	/*#dbd024,#103390,#559831,#955129,#e2a9f1*/
+	margin: 0;
+	padding: 0;
 }
 
 body{
-	font-family: 'Noto Sans JP', sans-serif;
 	display: flex;
   	flex-direction: column;
+  	margin: 0;
+  	padding: 0;
+  	overflow-x: hidden;
 }
 main {
   flex: 1;
 }
+header, footer {
+    background-color: var(--header-bg);				/*旧#B2BEC3;*/
+    color: var(--header-text) !important;						/*旧#636E72;*/
+} 
 header {
-    background-color: #B2BEC3;
-    color: #636E72; 
-    border-bottom: 5px solid #FFC857
+    border-bottom: 5px solid var(--header-border); 	/*旧#FFC857*/
 }
 
 footer {
  width: 100%;
  height: 60px;
  position: static;
- bottom: 0;
- border-top: 1px solid #FFC857;
- background-color: #B2BEC3;
- color:#636E72;
+ margin-bottom: 0 !important;
+ border-top: 2px solid var(--header-border);		/*旧#FFC857*/
  }
  
  header .goalplanningapp-navbar {
-    background-color: #B2BEC3!important;
-    color: #636E72 !important;
+	font-size: 1.2rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Navbar の文字色 */
+.navbar .nav-link {
+  color: var(--text-main);
+  font-size: 1.2rem;
+}
+
+/* hover */
+.navbar .nav-link:hover {
+  color: var(--primary);
+}
+
+.navbar .navbar-brand {
+  color: var(--text-main);
+}
+
+.navbar-brand:hover {
+  color: var(--primary);
+}
+
+/* table の見出しリンク */
+.table thead a {
+  color: var(--bs-link-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+.table thead a:hover {
+  color: var(--bs-link-hover-color);
+  text-decoration: underline;
+}
+
+/* カード全般 */
+.card {
+	background: var(--card-bg);
+	border-radius: 16px;
+	border: 1px solid var(--border-soft);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+}
+
+/* GoalCard(目標) */
+.goal-card {
+  background: var(--bs-light);
+  border-radius: 18px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-card i {
+	color: var(--primary);
+	font-size: 30px;
 }
 
 /* 左右カラムの高さ揃え（カード単位） */
@@ -54,44 +174,49 @@ footer {
 /* 右カラムの進捗アイコンを大きく */
 .right-cards i {
     font-size: 3rem;
-    color: #2C363F;
+    color: var(--accent);
     display: block;       /* ブロックにして独立表示 */
     text-align: center;   /* 中央寄せ */
     margin: 0.5rem 0;     /* 上下余白 */
 }
 
+/* help-icon */
+.right-cards i.help-icon {
+	font-size: 1.2rem;
+    color: var(--secondary);   
+}
+
+
 h1{
-	font-size: 1.7rem;
+	color: var(--primary);
+	font-size: 1.8rem;
 }
 
 /* 見出し */
 h2, h3, h4, h5 {
-    color: #636E72; /* メインカラー */
+    color: var(--text-main); /* メインカラー */
     font-weight: 600;
     margin-bottom: 0.75rem;
 }
 
 /* 右カラム文字強調 */
-.right-cards p, .right-cards span {
-    font-size: 1.3rem;      /* 大きめにして目立たせる */
-    font-weight: 700;       /* 太字でインパクト */
-    color: #636E72;         /* メインカラーで統一 */
-    line-height: 1.4;       /* 読みやすく */
-    margin-bottom: 0.5rem;  /* 行間を少し空ける */
+.right-cards p, .right-cards span, .plan-cards p, .plan-cards span {
+    font-size: 1.3rem;      	/* 大きめにして目立たせる */
+    font-weight: 700;     	  	/* 太字でインパクト */
+    color: var(--text-main);	/* メインカラーで統一 */
+    line-height: 1.4;       	/* 読みやすく */
+    margin-bottom: 0.5rem;  	/* 行間を少し空ける */
 }
-/* 数値だけさらに強調したい場合 */
-.right-cards span {
+/* 数値だけさらに強調 */
+.right-cards span, .plan-cards span {
     font-size: 1.7rem;
-    color: #A37884;         /* アクセントカラーで目立たせる */
+    color: var(--accent);         /* アクセントカラーで目立たせる */
 }
 
-
-a {
- color: #B2BEC3;
- text-decoration: none !important;
- }
- a:hover {
- color: #2C363F;
+/* help-icon */
+.help-icon {
+	font-size: 0.7rem;
+    color: var(--secondary);   
 }
 
 .goalplanningapp-logo{
@@ -99,7 +224,6 @@ a {
 	height: auto;
 }
 
- 
 .goalplanningapp-wrapper{
  	min-height: 100vh;
 	position: relative;
@@ -108,36 +232,141 @@ a {
 }
 
 .goalplanningapp-navbar{
+    color: var(--accent);
 	min-height: 60px;
 }
 
-.goalplanningapp-page-link {
-	color: #5196a6;
-}
-
-.goalplanningapp-page-link:hover {
-	color: #407784;
-}
 
 .goalplanningapp-active{
 	background-color: #5196a6 ; 
 	border-color: #5196a6;
 }
+.btn {
+	border-radius: 18px;
+	font-weight: 500;
+	transition:
+	background-color 0.25s ease,
+	transform 0.2s ease,
+	box-shadow 0.2s ease;
+}
+.btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
 
-
-.goalplanningapp-btn{
-	background-color: #636E72 ;
+.btn-primary{
+	background-color: var(--primary);
+	border: none;
 	transition: background-color 0.2s;
 }
-.goalplanningapp-btn:hover {
-    background-color: #abc3c4; 
+
+.btn-primary:hover{
+	background-color: var(--bs-success);
+	border: none;
 }
 
-
-.goalplanningapp-btn::-moz-focus-innerhover {
-	opacity: 0.8;
+.btn-secondary{
+	background-color: var(--secondary);
+	border: none;
+	transition: background-color 0.2s;
 }
 
+.btn-secondary:hover{
+	background-color: var(--bs-light);
+	border: none;
+}
+
+.btn-info{
+	background-color: var(--bs-info);
+	border: none;
+	transition: background-color 0.2s;
+}
+
+.btn-info:hover{
+	background-color: var(--bs-success);
+	border: none;
+}
+
+.btn-danger {
+	background-color: var(--bs-danger);
+	border: none;
+	transition: background-color 0.2s;
+}
+.btn-danger:hover{
+	background-color: var(--accent);
+	border: none;
+}
+
+/* outlineボタン */
+.btn-outline-primary {
+	--bs-btn-color: var(--bs-primary);
+	--bs-btn-border-color: var(--bs-primary);
+	--bs-btn-hover-border-color: var(--bs-primary);
+	--bs-btn-hover-bg: var(--bs-primary);
+	--bs-btn-hover-color: #fff;
+	--bs-btn-active-bg: var(--bs-primary);
+	--bs-btn-active-border-color: var(--bs-primary);
+}
+
+.btn-outline-danger {
+	--bs-btn-color: var(--bs-danger);
+	--bs-btn-border-color: var(--bs-danger);
+	--bs-btn-hover-border-color: var(--bs-danger);
+	--bs-btn-hover-bg: var(--bs-danger);
+	--bs-btn-hover-color: #fff;
+	--bs-btn-active-bg: var(--bs-danger);
+	--bs-btn-active-border-color: var(--bs-danger);
+}
+
+.btn-outline-success {
+	--bs-btn-color: var(--bs-success);
+	--bs-btn-border-color: var(--bs-success);
+	--bs-btn-hover-border-color: var(--bs-success);
+	--bs-btn-hover-bg: var(--bs-success);
+	--bs-btn-hover-color: #fff;
+	--bs-btn-active-bg: var(--bs-success);
+	--bs-btn-active-border-color: var(--bs-success);
+}
+
+/* フォームのチェックボックス */
+.form-check-input {
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.2rem rgba(122,168,166,0.25);
+}
+
+/* planのタイトル表示 */
+.plan-title {
+	color: var(--primary);
+	font-size: 1.7rem;
+ 	text-decoration: none !important;
+}
+
+.pagination .page-link.active {
+  color: #ffffff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/*text-linkの表示*/
+.text-link {
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.text-link:hover {
+  color: var(--bs-success);
+  text-decoration: underline;
+}
 
 #calendar{
 	margin: 20px;

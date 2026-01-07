@@ -6,10 +6,10 @@
 	
 <title th:text="${isUpdate}? 'ルーティン更新' : 'ルーティン新規登録'">ルーティンフォーム</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div class="goalplanningapp-wrapper">
 		<div th:replace="~{fragment :: header}"></div>
-		<main>
+		<main class="flex-grow-1">
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row justify-content-center">
 					<div class="col-xl-10 col-lg-11 col-md-12">

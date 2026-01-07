@@ -8,10 +8,10 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <title>学習計画</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div class="goalplanningapp-wrapper">
 		<div th:replace ="~{fragment :: header}"></div>
-		<main>
+		<main class="flex-grow-1">
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row">
 					<h1 class="text-center mt-3">学習予定</h1>
@@ -24,34 +24,48 @@
 					</div>
 				</div>
 				<!-- 目標設定済み -->
-				<div th:if="${hasGoal}" class="row">
-					<div class="card col m-2">
- 						 <!-- 必要時間表示 -->
-						<h5><span th:text="${qualigicationName}" class="fw-bold"></span> 取得するには</h5>
-						<p>1日あたり　：<span th:text="${estimatedPerDay}"></span> 分</p>
-						<p>1週間あたり：<span th:text="${estimatedPerWeek}"></span> 分</p>
-						<p>必要です。</p>
+				<div th:if="${hasGoal}" class="row equal-height align-items-stretch plan-cards">
+					<div class="col-12 col-md-6 mb-4 d-flex">
+						<div class="card flex-fill p-3 text-start">
+ 							<!-- 必要時間表示 -->
+							<h4 class="plan-title text-center"><span th:text="${qualigicationName}" class="fw-bold"></span> を取得するために</h4>
+							<p class="text-center mt-3">これまで　<span th:text="${todaysCumulativeHours}"></span>　時間勉強してきました</p>
+							<p class="text-center mt-3">残り　<span th:text="${remainingHours}"></span>　時間です</p>
+						</div>
 					</div>
-					<div class="card col m-2">
+					<div class="col-12 col-md-6 mb-4 d-flex">
+						<div class="card flex-fill p-3 text-start">
 						<!-- 残り必要時間を表示 -->
-						<h5>計画しましょう</h4>
-						<p>これまで <span th:text="${todaysCumulativeHours}"></span> 時間勉強してきたので、残り<span th:text="${remainingHours}"></span> 時間です。</p>
-						<p>1日あたり　：<span th:text="${estimatedPerDay}"></span> 分</p>	
-						<p>1週間あたり：<span th:text="${estimatedPerWeek}"></span> 分</p>
-						<p>必要です。</p>
+							<h4 class="plan-title text-center">計画を立てましょう</h4>
+							<p>1日あたり　：</p>
+							<div class="d-flex justify-content-center align-items-center mb-2">
+								<span th:text="${estimatedPerDay}"></span> 
+								<p>分　　</p>
+								<span th:text="${estimatedPerDayHours}"></span>
+								<p>時間</p>
+							</div>
+							<p>1週間あたり：</p>
+							<div class="d-flex justify-content-center align-items-center mb-2">	
+								<span th:text="${estimatedPerWeek}"></span> 
+								<p>分　　</p>
+								<span th:text="${estimatedPerWeekHours}"></span>
+								<p>時間</p>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="row">
-					<div class="card">
-						<h4 class="text-center mt-3">ルーティン表示 & 計画入力</h5>
-						<p class="text-center mt-3">ドラッグ&ドロップで計画を入力</p>
-						<!-- カレンダー本体 -->
-						<div id="calendar"></div>
-						<!-- エラーメッセージ表示-->
-						<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
-							<p th:text="${errorMessage}"></p>
-						</div>
-						<!-- カレンダー用js -->
+					<div class="col mb-4">
+						<div class="card P-3">
+							<h4 class="plan-title text-center mt-3">ルーティン表示 & 計画入力</h4>
+							<p class="text-center mt-3">空き時間をドラッグで計画</p>
+							<!-- カレンダー本体 -->
+							<div id="calendar"></div>
+								<!-- エラーメッセージ表示-->
+								<div th:if="${errorMessage}" class="justify-content-center alert-danger mb-3">
+								<p th:text="${errorMessage}"></p>
+							</div>
+							<!-- カレンダー用js -->
 								<script src="/js/calendar.js"></script>
 								<script>
 								(async () =>{
@@ -66,6 +80,7 @@
 									calendar.render();
 								})();
 								</script>
+						</div>
 					</div>
 				</div>
 			</div>

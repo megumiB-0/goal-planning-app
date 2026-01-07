@@ -5,10 +5,10 @@
 	<div th:replace="~{fragment :: styles}"></div>
 	<title>資格管理（管理者）</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div class="goalplanningapp-wrapper">
 		<div th:replace="~{fragment :: header}"></div>
-		<main>
+		<main class="flex-grow-1">
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 				<div class="row justify-content-center">
 					<div class="col-xxl-9 col-xl-10 col-lg-11">
@@ -20,11 +20,11 @@
 							<form th:action="@{/admin/qualifications}" method="get"  class="d-flex align-items-center">
 								<div class="input-group me-2">
 							    	<input type="text" class="form-control" name="keyword" placeholder="資格名で検索" th:value="${keyword}" />
-							   		<button type="submit" class="btn text-white shadow-sm goalplanningapp-btn">検索</button>
+							   		<button type="submit" class="btn text-white shadow-sm btn-primary">検索</button>
 								</div>
-								<a th:href="@{/admin/qualifications}" class="btn btn-outline-secondary text-nowrap">クリア</a>									
+								<a th:href="@{/admin/qualifications}" class="btn btn-outline-primary text-nowrap">クリア</a>									
 							</form>
-							<a th:href="@{/admin/qualifications/new}" class="btn text-white shadow-sm mb-3 goalplanningapp-btn">
+							<a th:href="@{/admin/qualifications/new}" class="btn text-white shadow-sm mb-3 btn-primary">
 								+ 新規資格登録
 							</a>
 						</div>
@@ -48,7 +48,7 @@
 									<td>
 									<!-- 編集 -->
 										<a th:href = "@{/admin/qualifications/{id}/edit(id=${q.id})}"
-								    	   class="btn text-white shadow-sm goalplanningapp-btn">
+								    	   class="btn text-white shadow-sm btn-primary">
 											編集
 										</a>
 									<!-- 論理削除 -->
@@ -67,15 +67,15 @@
 								<ul class="pagination">
 									<li class="page-item">
 										<span th:if="${qualificationsPage.first}" class="page-link disabled">前</span>
-										<a th:unless="${qualificationsPage.first}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number - 1}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link">前</a>
+										<a th:unless="${qualificationsPage.first}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number - 1}, keyword = ${keyword})}" class="page-link">前</a>
 									</li>
 									<li th:each="i : ${#numbers.sequence(0, qualificationsPage.totalPages - 1)}" class="page-item">
-										                                          <span th:if="${i == qualificationsPage.number}" class="page-link active goalplanningapp-active" th:text="${i + 1}"></span>
-                                          <a th:unless="${i == qualificationsPage.number}" th:href="@{/admin/qualifications(page = ${i}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link " th:text="${i + 1}"></a>
+										<span th:if="${i == qualificationsPage.number}" class="page-link active" th:text="${i + 1}"></span>
+										<a th:unless="${i == qualificationsPage.number}" th:href="@{/admin/qualifications(page = ${i}, keyword = ${keyword})}" class="page-link" th:text="${i + 1}"></a>
 									</li>
 									<li class="page-item">
 										<span th:if="${qualificationsPage.last}" class="page-link disabled">次</span>
-										<a th:unless="${qualificationsPage.last}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number + 1}, keyword = ${keyword})}" class="page-link goalplanningapp-page-link">次</a>
+										<a th:unless="${qualificationsPage.last}" th:href="@{/admin/qualifications(page = ${qualificationsPage.number + 1}, keyword = ${keyword})}" class="page-link">次</a>
 									</li>
 								</ul>
 							</nav>

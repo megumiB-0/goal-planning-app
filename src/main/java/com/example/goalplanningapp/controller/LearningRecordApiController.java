@@ -111,7 +111,7 @@ public class LearningRecordApiController {
 	@GetMapping("/daily-totals")
 	@ResponseBody
 	public Map<String, Long> getDailyTotals(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-		Map<LocalDate, Long>totals = learningRecordService.getDailyTotals(userDetailsImpl.getUser());
+		Map<LocalDate, Long>totals = goalService.getDailyTotals(userDetailsImpl.getUser());
 		// 型変換
 		Map<String, Long> result = totals.entrySet().stream()
 				.collect(Collectors.toMap(

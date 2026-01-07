@@ -7,9 +7,9 @@
 
 <title>Goal Planning App</title>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
 	<div th:replace ="~{fragment :: header}"></div>
-		<main>
+		<main class="flex-grow-1">
 
 			<div class="container pt-4 pb-5 goalplanningapp-container">
 <!--			<div th:if="${param.loggedIn}" class="alert alert-info">
@@ -20,7 +20,7 @@
 				</div>
 			</div>
 			<form th:action="@{/signup}" method="get" class="d-flex justify-content-center my-4">
-				<button type="submit" class="btn text-white shadow-sm w-30 goalplanningapp-btn">新規登録</button>
+				<button type="submit" class="btn btn-primary text-white shadow-sm">新規登録</button>
 			</form>
 		</main>
 		<div th:replace="~{fragment :: footer}"></div>

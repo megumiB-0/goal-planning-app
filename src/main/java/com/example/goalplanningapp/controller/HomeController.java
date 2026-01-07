@@ -17,7 +17,7 @@ import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.User;
 import com.example.goalplanningapp.repository.GoalRepository;
 import com.example.goalplanningapp.security.UserDetailsImpl;
-import com.example.goalplanningapp.service.LearningRecordService;
+import com.example.goalplanningapp.service.GoalService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,8 +26,9 @@ public class HomeController {
 	//DI
 	@Autowired
 	private GoalRepository goalRepository;
+
 	@Autowired
-	private LearningRecordService learningRecordService;
+	private GoalService goalService;
 
 	@GetMapping("/")
 	public String index() {
@@ -51,12 +52,18 @@ public class HomeController {
 		// 有効な目標を取得
 		Optional<Goal> activeGoal = goalRepository.findFirstByUserAndEndedAtIsNullOrderByStartDateDesc(loginUser);
 		
+		
+		
 		// hasGoal設定（ビューの場合分け用）
 		model.addAttribute("hasGoal",activeGoal.isPresent());
 		// 目標を渡す準備
 		if(activeGoal.isPresent()) {		
 			Goal goal = activeGoal.get();
-			//メッセージに必要な値を取得
+			// 目標達成判定
+			boolean goalAchieved = goalService.isGoalAchieved(loginUser, goal); 
+			model.addAttribute("showGoalModal",goalAchieved);
+			
+			// メッセージに必要な値を取得
 			LocalDate goalDate = goal.getGoalDate();
 			long estimatedHours = Math.round(goal.getQualification().getEstimatedMinutes() / 60);
 			String qualigicationName = goal.getQualification().getName();
@@ -64,40 +71,38 @@ public class HomeController {
 			String message =  goalDate + "までに" +
 							  estimatedHours + "時間学習して" +
 							  qualigicationName + "を取得する!";
-			//モデルに渡す
+			// モデルに渡す
 			model.addAttribute("message",message);
 
-			//右１段目（進捗割合）
-			Long achievementRate = learningRecordService.getAchievementRate(loginUser, goal);
+			// 右１段目（進捗割合）
+			Long achievementRate = goalService.getAchievementRate(loginUser, goal);
 			model.addAttribute("achievementRate", achievementRate);	
-			//右１段目（進捗評価アイコン）
-			String evalIcon = learningRecordService.evaluateProgress(loginUser,goal);
+			// 右１段目（進捗評価アイコン）
+			String evalIcon = goalService.evaluateProgress(loginUser,goal);
 			model.addAttribute("evalIcon", evalIcon);
 			
-			//右２段目　（これまでの学習時間）
-			Long todaysCumulativeHours = learningRecordService.getTodaysCumulative(loginUser) / 60;
+			// 右２段目　（これまでの学習時間）
+			Long todaysCumulativeHours = goalService.getTodaysCumulative(loginUser) / 60;
 			model.addAttribute("todaysCumulativeHours", todaysCumulativeHours);
 			//右２段目　（残りの学習時間）
-			Long remainingHours = learningRecordService.getTodaysRemaining(loginUser,goal);
+			Long remainingHours = goalService.getTodaysRemaining(loginUser,goal);
 			model.addAttribute("remainingHours", remainingHours);
 			//右３段目（1日xx時間学習で達成）
-			Double hours = learningRecordService.getEstimatedPerDay(loginUser, goal) / 60.0;
+			Double hours = goalService.getEstimatedPerDay(loginUser, goal) / 60.0;
 			Double estimatedPerDay = Math.round(hours * 10) / 10.0;
 			Double hoursPerWeek = estimatedPerDay * 7;
 			Double estimatedPerWeek = Math.round(hoursPerWeek * 10) / 10.0;
 			model.addAttribute("estimatedperday", estimatedPerDay);
 			model.addAttribute("estimatedperWeek", estimatedPerWeek);
 
-			
-			
-			
+
 			// グラフに必要なデータを取得
 			LocalDate startDate = goal.getStartDate();
 	
 			List<Map<String,Object>> studyData =new ArrayList<>();	
 			LocalDate date = startDate;
 			// 実績ライン用（累積学習時間マップを取得）
-			Map<LocalDate, Long> cumulativeMap = learningRecordService.getDailyCumulativeTotals(loginUser);
+			Map<LocalDate, Long> cumulativeMap = goalService.getDailyCumulativeTotals(loginUser);
 			LocalDate today = LocalDate.now();
 			while (!date.isAfter(today)) {
 				Map<String, Object> rec = new HashMap<>();

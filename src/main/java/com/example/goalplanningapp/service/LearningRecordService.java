@@ -2,18 +2,12 @@ package com.example.goalplanningapp.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
-import com.example.goalplanningapp.dto.DailyTotalDTO;
 import com.example.goalplanningapp.dto.LearningTimeDTO;
 import com.example.goalplanningapp.entity.Goal;
 import com.example.goalplanningapp.entity.LearningRecord;
@@ -28,14 +22,11 @@ public class LearningRecordService {
 	// DI
 	private final LearningRecordRepository learningRecordRepository;
 	private final GoalRepository goalRepository;
-	private final GoalService goalService;
 	
 	public LearningRecordService(LearningRecordRepository learningRecordRepository,
-								 GoalRepository goalRepository,
-								 GoalService goalService) {
+								 GoalRepository goalRepository) {
 		this.learningRecordRepository = learningRecordRepository;
 		this.goalRepository = goalRepository;
-		this.goalService = goalService;
 	}
 	
 	//POST用
@@ -179,8 +170,8 @@ public class LearningRecordService {
 			throw new IllegalStateException("未来の日付には登録できません。");
 		}
 	}
-
 	
+/** 	
 	//日ごとの合計学習時間計算
 	public Map<LocalDate, Long> getDailyTotals(User user){
 		List<Integer> activeGoalIds = goalService.getActiveGoalIds(user);
@@ -227,7 +218,7 @@ public class LearningRecordService {
 		}
 		return cumulativeMap;
 	}
-		
+
 	
 	//今日時点での累計学習時間(分)を計算
 	public Long getTodaysCumulative(User user) {
@@ -236,6 +227,7 @@ public class LearningRecordService {
 		Long todaysCumulativeMinutes = map.getOrDefault(today,0L);
 		return todaysCumulativeMinutes;
 	}
+
 	
 //--進捗計算--
 	//共通部分
@@ -297,7 +289,7 @@ public class LearningRecordService {
 			return "bi bi-umbrella-fill text-dark";
 		}
 	}
-	
+*/	
 }
 
 

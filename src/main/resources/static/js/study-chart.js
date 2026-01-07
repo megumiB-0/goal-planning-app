@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 							[{
 								label:'学習実績',
 								data: dataValues,
-								borderWidth: 2,
+								borderWidth: 3,
 								borderColor: '#F28C8C',	
 								spanGaps: true,
 							},{
@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 									{x:goalDate,y:estimatedHours}
 								],
 								borderWidth: 2,
-								borderColor: '#2C363F',	
+								borderColor: '#2C363F',
+								borderDash:[5, 5],
 								spanGaps: true,
 								tension: 0	
 							}]

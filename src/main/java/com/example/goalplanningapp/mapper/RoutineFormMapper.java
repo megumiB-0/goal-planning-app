@@ -44,9 +44,7 @@ public class RoutineFormMapper {
 	//並び順を変更
 	sortRows(rows);
 	
-	
 	form.setRows(rows);
-	System.out.println("mapper:"+ rows);
 	return form;
 	}
 	

@@ -27,10 +27,10 @@
 										<input type="number" step="1" class="form-control" th:field="*{estimatedHours}" required />					
 									</div>
 									<div class="d-flex justify-content-center my-4">
-										<button type="submit" class="btn text-white shadow-sm goalplanningapp-btn" th:text="${isEdit ? '更新' : '登録'}"></button>	
+										<button type="submit" class="btn text-white shadow-sm btn-primary" th:text="${isEdit ? '更新' : '登録'}"></button>	
 									</div>
 								</div>
-								<a th:href="@{/admin/qualifications}">一覧へ戻る</a>									
+								<a th:href="@{/admin/qualifications}">一覧へ戻る</a>
 							</form>
 						</div>
 					</div>
