@@ -1,5 +1,6 @@
-/* 北欧テーマカラー */
+/* == design tokens == */
 :root {
+	/* 北欧テーマカラー */
 	--bg-main: #f6f7f4;		/* 全体背景：生成り */
 	--card-bg: #ffffff;		/* カード */
 	--primary: #7aa8a6;		/* くすみティール */
@@ -7,11 +8,12 @@
 	--accent: #e8b4b8;		/* くすみピンク */
 	--text-main: #4a4a4a;		/* 文字 */
 	--border-soft: #e2e2de;	/* 枠線 */
+	/* header */
 	--header-bg: var(--secondary);
 	--header-text: var(--text-main);
 	--header-border: var(--accent);
 
-/* Bootstrap　カラー上書き */
+	/* Bootstrap　カラー上書き */
 	--bs-primary: var(--primary);
 	--bs-secondary: var(--secondary);
 	--bs-success: #9bbfad;	/* 淡いグリーン */
@@ -21,7 +23,7 @@
 	--bs-light: #e6d9c8;		/* ベージュ */
 	--bs-dark: #4a4a4a;		/* 淡い黒 */
 
-/* Bootstrap カラー RGB（必須） */
+	/* Bootstrap カラー RGB（必須） */
 	--bs-primary-rgb: 122,168,166;
 	--bs-secondary-rgb: 230,217,200;
 	--bs-success-rgb: 155,191,173;
@@ -31,23 +33,17 @@
 	--bs-light-rgb: 250,250,250;
 	--bs-dark-rgb: 74,74,74;
 
-/* Bootstrap　背景・文字 */
+	/* Bootstrap　背景・文字 */
 	--bs-body-bg: var(--bg-main);
 	--bs-body-color: var(--text-main);
-	--bs-secondary-bg: var(--secondary);
-	--bs-tertiary-bg: #f0f1ec;	/* 淡いベージュ */
-  
-/* Bootstrap　border */
 	--bs-border-color: var(--border-soft);
-	--bs-border-radius: 0.75rem;	/* 12px */
+  
+/* Bootstrap　radius */
+	--bs-border-radius: 0.75rem;
 	--bs-border-radius-sm: 0.5rem;
 	--bs-border-radius-lg: 1rem;
 
-/* Bootstrap　card */
-	--bs-card-bg: var(--card-bg);
-	--bs-card-border-color: var(--border-soft);
-	--bs-card-cap-bg: transparent;
-	
+
 /* Bootstrap　フォント */
 	--bs-font-sans-serif:
 	"Zen Maru Gothic",
@@ -59,33 +55,56 @@
 /* Bootstrap　Link */
 	--bs-link-color: var(--primary);
 	--bs-link-hover-color: var(--bs-info);
-	
+
+
+
+
+
 /* Bootstrap　focus */
 	--bs-focus-ring-color: rgba(122,168,166,0.25);
+	
+/* Bootstrap　card */
+	--bs-card-bg: var(--card-bg);
+	--bs-card-border-color: var(--border-soft);
+	--bs-card-cap-bg: transparent;
 }	
+
+/* == base == */
 
 html{
 	font-size: 14px;
-	margin: 0;
-	padding: 0;
+
 }
 
 body{
 	display: flex;
   	flex-direction: column;
-  	margin: 0;
-  	padding: 0;
+
   	overflow-x: hidden;
 }
 main {
   flex: 1;
 }
+
+h1{
+	color: var(--primary);
+	font-size: 1.8rem;
+}
+
+h2, h3, h4, h5 {
+    color: var(--text-main); 
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* == レイアウト == */
 header, footer {
-    background-color: var(--header-bg);				/*旧#B2BEC3;*/
-    color: var(--header-text) !important;						/*旧#636E72;*/
+    background-color: var(--header-bg);
+    color: var(--header-text) !important;
 } 
+
 header {
-    border-bottom: 5px solid var(--header-border); 	/*旧#FFC857*/
+    border-bottom: 5px solid var(--header-border);
 }
 
 footer {
@@ -96,40 +115,14 @@ footer {
  border-top: 2px solid var(--header-border);		/*旧#FFC857*/
  }
  
- header .goalplanningapp-navbar {
-	font-size: 1.2rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+ .goalplanningapp-wrapper{
+ 	min-height: 100vh;
+	position: relative;
+	padding-bottom: 60px;
+	box-sizing: border-box;
 }
-
-/* Navbar の文字色 */
-.navbar .nav-link {
-  color: var(--text-main);
-  font-size: 1.2rem;
-}
-
-/* hover */
-.navbar .nav-link:hover {
-  color: var(--primary);
-}
-
-.navbar .navbar-brand {
-  color: var(--text-main);
-}
-
-.navbar-brand:hover {
-  color: var(--primary);
-}
-
-/* table の見出しリンク */
-.table thead a {
-  color: var(--bs-link-color);
-  font-weight: 600;
-  text-decoration: none;
-}
-.table thead a:hover {
-  color: var(--bs-link-hover-color);
-  text-decoration: underline;
-}
+ 
+/* == Bootstrap上書き == */ 
 
 /* カード全般 */
 .card {
@@ -138,109 +131,37 @@ footer {
 	border: 1px solid var(--border-soft);
 	box-shadow: 0 8px 20px rgba(0,0,0,0.03);
 }
-
-/* GoalCard(目標) */
-.goal-card {
-  background: var(--bs-light);
-  border-radius: 18px;
-  padding: 18px 22px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Navbar の文字色 */
+.navbar .nav-link,
+.navbar .navbar-brand {
+  color: var(--text-main);
 }
 
-.goal-card i {
-	color: var(--primary);
-	font-size: 30px;
+/* hover */
+.navbar .nav-link:hover,
+.navbar-brand:hover {
+  color: var(--primary);
 }
 
-/* 左右カラムの高さ揃え（カード単位） */
-.row.equal-height {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start; /* 上端揃え */
+/* == Components == */ 
+/* 共通（アイコン非表示防止のため） */
+.bi {
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-block;
 }
-.row.equal-height > .col-md-7 .card {
-    flex: 1 1 auto; /* 左カラムのカード高さは自動 */
-}
-
-/* 右カラム3枚カードの縦グリッド */
-.right-cards {
-    display: grid;
-    gap: 1.5rem;
-    height: auto; /* 自動高さに変更 */
+/* text-linkの表示 */
+.text-link {
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 500;
 }
 
-/* 右カラムの進捗アイコンを大きく */
-.right-cards i {
-    font-size: 3rem;
-    color: var(--accent);
-    display: block;       /* ブロックにして独立表示 */
-    text-align: center;   /* 中央寄せ */
-    margin: 0.5rem 0;     /* 上下余白 */
+.text-link:hover {
+  color: var(--bs-success);
+  text-decoration: underline;
 }
 
-/* help-icon */
-.right-cards i.help-icon {
-	font-size: 1.2rem;
-    color: var(--secondary);   
-}
-
-
-h1{
-	color: var(--primary);
-	font-size: 1.8rem;
-}
-
-/* 見出し */
-h2, h3, h4, h5 {
-    color: var(--text-main); /* メインカラー */
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-}
-
-/* 右カラム文字強調 */
-.right-cards p, .right-cards span, .plan-cards p, .plan-cards span {
-    font-size: 1.3rem;      	/* 大きめにして目立たせる */
-    font-weight: 700;     	  	/* 太字でインパクト */
-    color: var(--text-main);	/* メインカラーで統一 */
-    line-height: 1.4;       	/* 読みやすく */
-    margin-bottom: 0.5rem;  	/* 行間を少し空ける */
-}
-/* 数値だけさらに強調 */
-.right-cards span, .plan-cards span {
-    font-size: 1.7rem;
-    color: var(--accent);         /* アクセントカラーで目立たせる */
-}
-
-/* help-icon */
-.help-icon {
-	font-size: 0.7rem;
-    color: var(--secondary);   
-}
-
-.goalplanningapp-logo{
-	width: 30%;
-	height: auto;
-}
-
-.goalplanningapp-wrapper{
- 	min-height: 100vh;
-	position: relative;
-	padding-bottom: 60px;
-	box-sizing: border-box;
-}
-
-.goalplanningapp-navbar{
-    color: var(--accent);
-	min-height: 60px;
-}
-
-
-.goalplanningapp-active{
-	background-color: #5196a6 ; 
-	border-color: #5196a6;
-}
 .btn {
 	border-radius: 18px;
 	font-weight: 500;
@@ -328,6 +249,30 @@ h2, h3, h4, h5 {
 	--bs-btn-active-border-color: var(--bs-success);
 }
 
+header .goalplanningapp-navbar {
+	font-size: 1.2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.goalplanningapp-navbar{
+    color: var(--accent);
+	min-height: 60px;
+}
+
+.pagination .page-link.active {
+  color: #ffffff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+/* table の見出しリンク */
+.table thead a {
+  color: var(--bs-link-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+.table thead a:hover {
+  color: var(--bs-link-hover-color);
+  text-decoration: underline;
+}
 /* フォームのチェックボックス */
 .form-check-input {
   transition: all 0.2s ease;
@@ -343,41 +288,195 @@ h2, h3, h4, h5 {
   box-shadow: 0 0 0 0.2rem rgba(122,168,166,0.25);
 }
 
-/* planのタイトル表示 */
-.plan-title {
+.goalplanningapp-active{
+	background-color: #5196a6 ; 
+	border-color: #5196a6;
+}
+
+/* == Page固有 == */ 
+
+/* = Home = */ 
+/* headerロゴ */
+.goalplanningapp-logo{
+	width: 25%;
+	height: auto;
+}
+/* GoalCard(目標) */
+.goal-card {
+  background: var(--bs-light);
+  border-radius: 18px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-card i {
+	color: var(--primary);
+	font-size: 30px;
+}
+/* タイトル */
+.home-title {
 	color: var(--primary);
 	font-size: 1.7rem;
  	text-decoration: none !important;
 }
 
-.pagination .page-link.active {
-  color: #ffffff;
-  background-color: var(--primary);
-  border-color: var(--primary);
+/* 左右カラムの高さ揃え（カード単位） */
+.row.equal-height {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start; /* 上端揃え */
+}
+.row.equal-height > .col-md-7 .card {
+    flex: 1 1 auto; /* 左カラムのカード高さは自動 */
 }
 
-/*text-linkの表示*/
-.text-link {
-  color: var(--secondary);
-  text-decoration: none;
-  font-weight: 500;
+/* 右カラム3枚カードの縦グリッド */
+.right-cards {
+    display: grid;
+    gap: 1.5rem;
+    height: auto; /* 自動高さに変更 */
 }
 
-.text-link:hover {
-  color: var(--bs-success);
-  text-decoration: underline;
+/* 右カラムの進捗アイコンを大きく */
+.right-cards i {
+    font-size: 3rem;
+    color: var(--accent);
+    display: block;       /* ブロックにして独立表示 */
+    text-align: center;   /* 中央寄せ */
+    margin: 0.5rem 0;     /* 上下余白 */
 }
 
+/* help-icon */
+.right-cards i.help-icon {
+	font-size: 1.2rem;
+    color: var(--primary);   
+}
+
+/* 右カラム文字強調 */
+.right-cards p, .right-cards span, .plan-cards p, .plan-cards span {
+    font-size: 1.3rem;      	/* 大きめにして目立たせる */
+    font-weight: 700;     	  	/* 太字でインパクト */
+    color: var(--text-main);	/* メインカラーで統一 */
+    line-height: 1.4;       	/* 読みやすく */
+    margin-bottom: 0.5rem;  	/* 行間を少し空ける */
+}
+/* 数値だけさらに強調 */
+.right-cards span, .plan-cards span {
+    font-size: 1.7rem;
+    color: var(--accent);         /* アクセントカラーで目立たせる */
+}
+
+/* カレンダー固有 */
 #calendar{
 	margin: 20px;
 }
 .fc-toolbar-title{
 	font-size: 1.5rem !important;
 }
+/* = plan = */
+.plan-title {
+	color: var(--primary);
+	font-size: 1.7rem;
+ 	text-decoration: none !important;
+}
+/* = info(LP) = */
+/* hero */
+.hero {
+	padding: 5rem 1rem;
+	background: linear-gradient(135deg, #eef4ff, var(--bg-main));
+}
+.hero-image {
+	transform: scale(1.3);
+	transform-origin: center;
+	
+}
+/* 吹き出し */
+.speech {
+	font-size: 1.05rem;
+	line-height: 1.7;
+	background: var(--card-bg);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	position: relative;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+	margin-bottom: 1.25rem;
+	min-height: 140px;
+}
+.speech::after {
+	content: "";
+	position: absolute;
+	bottom: -12px;
+	left: 30%;
+	border-width: 15px 15px 0;
+	border-style: solid;
+	border-color: var(--card-bg) transparent transparent;
+}
+.avatar {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	display: inline-flex;
+	justify-content: center;
+	overflow: hidden;
+}
+.avatar img{
+	width: 80%;
+	height: auto;
+}
+.avatar.bg-1 {background-color: var(--accent);}
+.avatar.bg-2 {background-color: var(--bs-success);}
+.avatar.bg-3 {background-color: var(--bs-info);}
 
+/* 下セクションへのめり込み防止 */
+.speech + .mt-3 {
+	margin-bottom: 1rem;
+}
+
+/*機能アイコン*/
+.feature-icon {
+	font-size: 2.5rem;
+	color: var(--primary);
+}
+/*画面イメージ*/
+.feature-col {
+	display: flex;
+	flex-direction: column;
+}
+.feature-spacer {
+	flex-grow: 1;
+}
+
+
+.feature-image {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.feature-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+	transform: scale(1.05);
+}
+
+.feature-half-wrapper {
+  overflow: hidden; /* 上半分だけ表示 */
+}
+.feature-half{
+	aspect-ratio: 4 / 1.25 ;
+	object-fit: cover;
+}
+
+
+
+/* == レスポンシブ == */ 
 @media screen and (min-width: 1400px){
 	.goalplanningapp-container {
 		max-width:1200px;
 	}
 }
- 

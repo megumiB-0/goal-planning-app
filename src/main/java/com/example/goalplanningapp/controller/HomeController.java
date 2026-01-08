@@ -79,6 +79,7 @@ public class HomeController {
 			model.addAttribute("achievementRate", achievementRate);	
 			// 右１段目（進捗評価アイコン）
 			String evalIcon = goalService.evaluateProgress(loginUser,goal);
+
 			model.addAttribute("evalIcon", evalIcon);
 			
 			// 右２段目　（これまでの学習時間）

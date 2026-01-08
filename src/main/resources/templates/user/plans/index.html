@@ -29,7 +29,7 @@
 						<div class="card flex-fill p-3 text-start">
  							<!-- 必要時間表示 -->
 							<h4 class="plan-title text-center"><span th:text="${qualigicationName}" class="fw-bold"></span> を取得するために</h4>
-							<p class="text-center mt-3">これまで　<span th:text="${todaysCumulativeHours}"></span>　時間勉強してきました</p>
+							<p class="text-center mt-3">これまで　<span th:text="${todaysCumulativeHours}"></span>　時間 勉強してきました</p>
 							<p class="text-center mt-3">残り　<span th:text="${remainingHours}"></span>　時間です</p>
 						</div>
 					</div>
@@ -56,9 +56,15 @@
 				</div>
 				<div class="row">
 					<div class="col mb-4">
-						<div class="card P-3">
-							<h4 class="plan-title text-center mt-3">ルーティン表示 & 計画入力</h4>
-							<p class="text-center mt-3">空き時間をドラッグで計画</p>
+						<div class="card p-3 position-relative">
+							<div class="d-flex flex-column justify-content-center align-items-center mt-2">
+      							<h4 class="home-title mb-0  me-3">ルーティン表示 & 計画入力</h4>
+      							<p class="text-center mt-1">空き時間をドラッグで計画</p>
+    						</div>
+						    <div class="d-flex justify-content-end me-4">
+    							<a th:href="@{/plans}" class="btn btn-primary btn-lg text-white shadow-sm ">予定時間に反映</a>
+    						</div>
+							
 							<!-- カレンダー本体 -->
 							<div id="calendar"></div>
 								<!-- エラーメッセージ表示-->

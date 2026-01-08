@@ -5,23 +5,197 @@
 	<div th:replace="~{fragment :: styles}"></div>
 
 
-<title>Goal Planning App</title>
+<title>学習計画・進捗管理アプリ｜忙しくても続けられる資格学習</title>
 </head>
 <body class="d-flex flex-column vh-100">
 	<div th:replace ="~{fragment :: header}"></div>
 		<main class="flex-grow-1">
-
 			<div class="container pt-4 pb-5 goalplanningapp-container">
-<!--			<div th:if="${param.loggedIn}" class="alert alert-info">
-					ログインしました。
-				</div> -->
 				<div th:if="${param.loggedOut}" class="alert alert-info">
 					ログアウトしました。
 				</div>
 			</div>
-			<form th:action="@{/signup}" method="get" class="d-flex justify-content-center my-4">
-				<button type="submit" class="btn btn-primary text-white shadow-sm">新規登録</button>
-			</form>
+		<!-- Heroセクション -->
+		<section class="hero">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-md-6 text-center text-md-start p-5">
+						<h1 class="fw-bold mb-3">忙しくても、もう挫折しない。</h1>
+						<p class="lead mb-4">
+							学習計画と進捗をやさしく見える化する<br>
+							資格学習サポートアプリ
+						</p>
+						<a th:href="@{/signup}" class="btn btn-primary btn-lg">
+							無料で使ってみる
+						</a>
+					</div>
+					<div class="col-md-6 text-center">
+						<!-- 画像 -->
+						<img src="/images/disp_home1600.png" alt="学習管理アプリ画面" class="img-fluid hero-image">
+					</div>
+				</div>	
+		</section>
+		<!-- 目標設定セクション -->
+		<section class="py-5 bg-light">
+			<div class="container">
+				<h2 class="text-center fw-bold mb-4">まずは、目標を決めるところから</h2>
+				<p class="text-center text-muted">
+					取得したい資格を選ぶだけで<br>
+					あなた専用の学習計画が自動でスタートします。
+				</p>
+				<div class="row justify-content-center g-4">
+					<div class="col-md-3 text-center">
+						<i class="bi bi-award feature-icon"></i>
+						<h6 class="fw-bold mt-3">資格を選択</h6>
+						<p class="small text-muted">目指したい資格を選びます（一覧にない時は自分で設定可能</p>
+					</div>
+					<div class="col-md-3 text-center">
+						<i class="bi bi-calendar feature-icon"></i>
+						<h6 class="fw-bold mt-3">学習期間を設定</h6>
+						<p class="small text-muted">試験日や期限を入力</p>
+					</div>
+					<div class="col-md-3 text-center">
+						<i class="bi bi-diagram-3 feature-icon"></i>
+						<h6 class="fw-bold mt-3">計画を作成</h6>
+						<p class="small text-muted">無理のない学習計画を作成</p>
+					</div>
+				</div>
+				
+			</div>
+		</section>
+		<!-- 悩みセクション -->
+		<section class="py-5">
+			<div class="container">
+				<h2 class="text-center fw-bold mb-5">こんなお悩みありませんか？</h2>
+				<div class="row g-4">
+					<div class="col-md-4 text-center">
+						<div class="speech">
+							家事や予定の合間に少しずつ勉強しようと思っても、
+							今どこまで進んでいるのか分からなくなって、
+							いつの間にか学習しなくなりました。
+						</div>
+						<div class="mt-3">
+							<div class="avatar bg-1 mx-auto">
+								<img src="/images/woman_uphair.png" alt="主婦">
+							</div>
+						</div>
+							<p class="fw-bold">30代・主婦</p>
+					</div>
+					<div class="col-md-4 text-center">
+						<div class="speech">
+							子育ての合間に勉強したい気持ちはあるのに、
+							急な予定変更で立てた計画が崩れ、
+							ストレスになっていました。
+						</div>
+						<div class="mt-3">
+							<div class="avatar bg-2 mx-auto">
+								<img src="/images/woman_ponytail.png" alt="子育て中">
+							</div>
+								<p class="fw-bold">30代・子育て中</p>
+						</div>
+					</div>
+					<div class="col-md-4 text-center">
+						<div class="speech">
+							仕事と家事と育児で毎日があっという間。
+							学習時間をどう確保すればいいのか悩んでいるうちに、
+							途中で諦めてしまいました。
+						</div>
+						<div class="mt-3">
+							<div class="avatar bg-3 mx-auto">
+								<img src="/images/woman_longhair.png" alt="ワーキングマザー">
+							</div>
+								<p class="fw-bold">40代・ワーキングマザー</p>			
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- 解決・機能紹介 -->
+		<section class="py-5 bg-white">
+			<div class="container">
+				<h2 class="text-center fw-bold mb-5">このアプリで解決します</h2>
+				<div class="row g-4">
+					<!-- 機能1 -->
+					<div class="col-md-4 text-center feature-col">
+						<i class="bi bi-graph-up feature-icon"></i>
+						<h5 class="fw-bold mt-3">進捗を見える化</h5>
+						<p>
+							グラフで進捗を確認し、<br>
+						   	今の位置とゴールまでの距離が
+						   	一目で分かります。
+						</p>
+						<div class="d-flex flex-column gap-2">
+							<div class="feature-wrapper">
+								<div class="feature-image">
+								<img src="/images/home_graph.png" class="img-fluid shadow-sm" alt="進捗グラフ">
+								</div>
+								<p class="small text-muted mt-1">リアルタイム進捗グラフ・達成度評価</p>
+							</div>
+						</div>
+					</div>
+					<!-- 機能2 -->
+					<div class="col-md-4 text-center feature-col">
+						<i class="bi bi-clock-history feature-icon"></i>
+						<h5 class="fw-bold mt-3">遅れても安心</h5>
+						<p>
+							目標達成までの必要学習量を自動で再計算。<br>
+							計画も何度でも立て直せます。
+						</p>
+						<div class="d-flex flex-column gap-2">
+							<div class="feature-wrapper">
+								<div class="feature-image">
+								<img src="/images/plan_input.png" class="img-fluid shadow-sm" alt="学習時間再計算">
+								</div>
+								<p class="small text-muted mt-1">バーティカル表示で再計画</p>
+							</div>
+						</div>
+					</div>
+					<!-- 機能3 -->
+					<div class="col-md-4 text-center feature-col">
+						<i class="bi bi-calendar-check feature-icon"></i>
+						<h5 class="fw-bold mt-3">隙間時間を活用</h5>
+						<p>
+							生活リズムを登録し、<br>
+							無理のない学習時間を見つけられます。
+						</p>
+						<div class="feature-spacer"></div>
+						<!-- ルーティン入力・カレンダー表示 -->
+						<div class="d-flex flex-column gap-2">
+							<div class="feature-half-wrapper">
+								<div class="feature-image feature-half">
+								<img src="/images/routine_input.png" class="img-fluid" alt="ルーティン入力">
+								</div>
+								<p class="small text-muted mt-1">ルーティン入力・更新</p>
+							</div>
+							<div class="feature-half-wrapper">
+								<div class="feature-image feature-half">
+								<img src="/images/routine_calendar.png" class="img-fluid" alt="ルーティン入力">
+								</div>
+								<p class="small text-muted mt-1">１週間分のルーティン表示</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- 機能連動イメージ -->
+		<section class="py-5 text-center">
+			<div class="container">
+				<h2 class="text-center fw-bold mb-4">3つの機能は、こうしてつながります</h2>
+				<p class="text-center text-muted mb-5">
+					状況を把握し、立て直し、続けられる。学習を止めないための一連の流れです。
+				</p>
+				<img src="/images/function_flow.png" alt="機能フロー図" class="img-fluid">
+			</div>
+		</section>
+		<!-- CTA -->
+		<section class="py-5 text-center bg-light">
+			<div class="container">
+				<h2 class="fw-bold mb-3">もう一人で悩まない学習管理を</h2>
+				<a th:href="@{/signup}" class="btn btn-primary btn-lg">今すぐ始める</a>
+			</div>
+		</section>
+
 		</main>
 		<div th:replace="~{fragment :: footer}"></div>
 	</div>

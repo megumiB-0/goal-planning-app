@@ -58,7 +58,7 @@
 							<div class="col-md-7 mb-4">
 								<div class="card p-3">
 									<div class="d-flex justify-content-center align-items-center mb-3">
-										<h4 class="mb-0  me-3">進捗グラフ</h4>
+										<h4 class="home-title mb-0  me-3">進捗グラフ</h4>
 									</div>
 										<canvas id="myChart"></canvas>			
 									<script th:inline="javascript">
@@ -99,7 +99,7 @@
 											</i>
 										</div>
 										<div class="d-flex justify-content-center mt-3">
-											<i th:class="${evalIcon}"></i>
+											<i th:class="${evalIcon}" class="progress-eval-icon"></i>
 										</div>
 									</div>
 									<!-- 上段横並び2枚 2/2 -->
@@ -126,7 +126,7 @@
 							<div class="col-12">
 								<div class="card p-3 position-relative">
 									    <div class="d-flex justify-content-center align-items-center my-3">
-      										<h4 class="mb-0  me-3">スケジュール & 実績入力</h4>
+      										<h4 class="home-title mb-0  me-3">スケジュール & 実績入力</h4>
     									</div>
 									    <div class="d-flex justify-content-end mb-3 me-4">
     										<a th:href="@{/home}" class="btn btn-primary btn-lg text-white shadow-sm ">グラフに反映</a>

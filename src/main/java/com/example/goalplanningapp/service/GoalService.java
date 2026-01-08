@@ -357,10 +357,10 @@ public class GoalService {
 			double studyProgress = (double) v.get("todaysCumulativeMinutes")/v.get("estimatedMinutes") * 100;
 			//評価
 			double diff = studyProgress / dayProgress;
-			if(diff >=1.1) {	//二重まる
+			if(diff >= 1.1) {	//二重まる
 				return "bi bi-fire";
 			}else if(diff >= 1) {	//まる
-				return "bi bi-sun-fill︎";
+				return "bi bi-sun-fill";
 			}else if(diff > 0.9) {	//さんかく
 				return "bi bi-cloud-fill";
 			}else {					//ばつ
