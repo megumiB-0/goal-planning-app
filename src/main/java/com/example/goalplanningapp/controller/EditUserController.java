@@ -1,6 +1,7 @@
 package com.example.goalplanningapp.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import com.example.goalplanningapp.form.UserEditForm;
 import com.example.goalplanningapp.security.UserDetailsImpl;
 import com.example.goalplanningapp.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -87,7 +89,8 @@ public class EditUserController {
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@Validated @ModelAttribute PasswordChangeForm form,
 			BindingResult result,
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes,
+			HttpServletRequest request) {
 		User user = userDetailsImpl.getUser();
 		// 新パスワード確認
 		if(!form.getNewPassword().equals(form.getConfirmPassword())) {
@@ -106,9 +109,11 @@ public class EditUserController {
 		// 更新
 		userService.updatePassword(user, form.getNewPassword());
 		
-		redirectAttributes.addFlashAttribute("success", "パスワードを変更しました。");
-		return "redirect:/logout";
-		
+		redirectAttributes.addFlashAttribute("successMessage", "パスワードを変更しました。再ログインしてください。");
+		SecurityContextHolder.clearContext();
+		request.getSession().invalidate();
+		return "redirect:/login";
+
 	}
 	
 }
