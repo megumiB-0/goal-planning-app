@@ -9,12 +9,12 @@ target/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -32,4 +32,24 @@ build/
 ### VS Code ###
 .vscode/
 
-/src/main/resources/application-local.properties
+### OS / Editor ###
+.DS_Store
+.metadata/
+
+### Java / Maven / Gradle ###
+*.log
+*.class
+
+### Spring Boot ###
+application-local.properties
+application-*.properties
+# 本番用 application.properties は除外しない
+!application.properties
+
+### Environment / Secret ###
+.env
+
+### Test / Temp ###
+tmp/
+*.tmp
+*.swp
