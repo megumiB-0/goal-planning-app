@@ -71,7 +71,7 @@
 									</td>
 									<td>
   										<span th:if="${user.createdAt != null}"
-        									  th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd')}"></span>
+        									  th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}"></span>
 										<span th:if="${user.createdAt == null}">—</span>
 									</td>
 									<td>
