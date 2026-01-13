@@ -1,4 +1,4 @@
-https://goal-planning-app.onrender.comtaro@example.com# Goal Planning App
+# Goal Planning App
 
 
 
@@ -95,7 +95,9 @@ https://goal-planning-app.onrender.com
 ## 使用技術
 - バックエンド：Java / Spring Boot
 - フロントエンド：HTML / CSS / JavaScript / Thymeleaf / Bootstrap
-- データベース：MySQL
+- データベース：
+  - 開発環境t: MySQL
+  - 本番環境: PostgreSQL (Render)
 - 認証：Spring Security
 - インフラ：Render
 - ライブラリ：Chart.js（学習実績の可視化）、FullCalendar（学習予定表示）
