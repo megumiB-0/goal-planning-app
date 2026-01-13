@@ -1,8 +1,11 @@
 package com.example.goalplanningapp.entity;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,10 +45,12 @@ public class LearningPlan {
 	@Column(name = "planning_minutes")
 	private Integer planningMinutes;
 	
-	@Column(name = "created_at", insertable = false, updatable = false)
-	private Timestamp createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+	private LocalDateTime createdAt;
 	
-	@Column(name = "updated_at", insertable = false, updatable = false)
-	private Timestamp updatedAt;
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
 
 }

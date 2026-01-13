@@ -1,9 +1,11 @@
 package com.example.goalplanningapp.entity;
 
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,11 +48,14 @@ public class User {
 	@Column(name = "enabled")
 	private Boolean enabled;
 	
-	@Column(name = "created_at", insertable = false, updatable =false)
-	private Timestamp createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+	private LocalDateTime createdAt;
 	
-	@Column(name = "updated_at",insertable = false, updatable = false)
-	private Timestamp updatedAt;
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
+
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
