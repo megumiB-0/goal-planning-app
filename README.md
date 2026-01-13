@@ -1,4 +1,4 @@
-# Goal Planning App
+https://goal-planning-app.onrender.comtaro@example.com# Goal Planning App
 
 
 
@@ -8,18 +8,18 @@ Goal Planning App は、急な予定変更が多い育児・介護中の方や�
 資格取得に向けた学習を無理なく、見通しを立てながら学習を継続するための学習管理アプリです。
 
 ## アプリURL
-https://xxxxx.onrender.com
+https://goal-planning-app.onrender.com
 
 ※ Render の無料プランを使用しているため、
 初回アクセス時は起動に数十秒かかる場合があります。
 ## 動作確認用アカウント
 
 ### 一般ユーザー
-- メールアドレス：user@example.com
+- メールアドレス：taro@example.com
 - パスワード：password
 
 ### 管理者ユーザー
-- メールアドレス：admin@example.com
+- メールアドレス：hanako@example.com
 - パスワード：password
 
 ## アプリ概要
